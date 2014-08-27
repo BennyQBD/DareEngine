@@ -48,7 +48,7 @@ public class Main
 
 			game.Update(display.GetInput(), delta);
 			game.Render(display.GetContext());
-			//
+			
 			display.SwapBuffers();
 			try
 			{
@@ -59,7 +59,6 @@ public class Main
 				e.printStackTrace();
 				System.exit(1);
 			}
-
 		}
 	}
 }
