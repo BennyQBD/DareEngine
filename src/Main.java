@@ -37,28 +37,7 @@ public class Main
 	public static void main(String[] args)
 	{
 		Display display = new Display(800, 600, "Software Rendering");
-		Game game = new Game();
-		
-		long previousTime = System.nanoTime();
-		while(true)
-		{
-			long currentTime = System.nanoTime();
-			float delta = (float)((currentTime - previousTime)/1000000000.0);
-			previousTime = currentTime;
-
-			game.Update(display.GetInput(), delta);
-			game.Render(display.GetContext());
-			
-			display.SwapBuffers();
-			try
-			{
-				Thread.sleep(1);
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
-				System.exit(1);
-			}
-		}
+		CoreEngine engine = new CoreEngine(display, new Game());
+		engine.Start();
 	}
 }

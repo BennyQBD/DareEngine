@@ -3,32 +3,52 @@ import java.util.*;
 
 public class Game
 {
+	private QuadTree m_scene;
+
 	public Game()
 	{
-		Entity test1 = new Entity(-1, -1, 1, 1);
+		m_scene = new QuadTree(
+				new AABB(-100, -100, 100, 100)
+				//new AABB(-0.1f, -0.1f, 0.1f, 0.1f)
+				, 1);
 
-		QuadTree tree = new QuadTree(test1, new AABB(-100, -100, 100, 100));
-		tree.Add(new Entity(-3, -3, 0, 0));
-		tree.Add(new Entity(-3, 0, 0, 3));
-		tree.Add(new Entity(-1, -1, 1, 1));
+		Entity test1 = new Entity(-0.1f, -0.1f, 0.1f, 0.1f);
+		Entity test2 = new Entity(-0.3f, -0.3f, -0.2f, -0.2f);
+		Entity test3 = new Entity(-1.1f, -1.1f, -0.9f, -0.9f);
 
-		Set<Entity> testSet = tree.QueryRange(new AABB(-2, -2, 0, 0));
-		Iterator it = testSet.iterator();
-		while(it.hasNext()) 
-		{
-			System.out.println(it.next());
-		}
+		m_scene.Add(test1);
+		m_scene.Add(test2);
+		m_scene.Add(test3);
+		//m_scene.Remove(test3);
+	}
+
+	public void AddEntity(Entity entity)
+	{
+		m_scene.Add(entity);
 	}
 
 	public void Update(Input input, float delta)
 	{
+		Set<Entity> entities = m_scene.GetAll();
+
+		Iterator it = entities.iterator();
+		while(it.hasNext())
+		{
+			((Entity)it.next()).Update(input, delta);
+		}
 	}
 
 	public void Render(RenderContext target)
 	{
 		target.Clear((byte)0x00);
-		target.FillRect(0.0f, 0.0f, 0.1f, 0.1f,
-				(byte)0x00, 
-				(byte)0x79, (byte)0xbf, (byte)0x10);
+
+		Set<Entity> renderableEntities = 
+			m_scene.QueryRange(new AABB(-1, -1, 1, 1));
+
+		Iterator it = renderableEntities.iterator();
+		while(it.hasNext())
+		{
+			((Entity)it.next()).Render(target);
+		}
 	}
 }

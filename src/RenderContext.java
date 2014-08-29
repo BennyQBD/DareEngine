@@ -5,14 +5,14 @@ public class RenderContext extends Bitmap
 		super(width, height);
 	}
 
-	public void FillRect(float xCenter, float yCenter, 
-			float width, float height,
+	public void FillRect(float xStart, float yStart, 
+			float xEnd, float yEnd,
 			byte a, byte b, byte g, byte r)
 	{
-		float xStart = xCenter - width/2.0f;
-		float yStart = yCenter - height/2.0f;
-		float xEnd = xStart + width;
-		float yEnd = yStart + height;
+//		float xStart = xCenter - width/2.0f;
+//		float yStart = yCenter - height/2.0f;
+//		float xEnd = xStart + width;
+//		float yEnd = yStart + height;
 
 		float halfWidth   = GetWidth()/2.0f;
 		float halfHeight  = GetHeight()/2.0f;

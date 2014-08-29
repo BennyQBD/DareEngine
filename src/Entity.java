@@ -26,6 +26,11 @@ public class Entity
 
 	public void Render(RenderContext target)
 	{
+		//TODO: Temp code!
+		target.FillRect(m_aabb.GetMinX(), m_aabb.GetMinY(),
+				        m_aabb.GetMaxX(), m_aabb.GetMaxY(),
+				(byte)0x00, 
+				(byte)0x79, (byte)0xbf, (byte)0x10);
 	}
 
 	public boolean IntersectAABB(Entity other)
