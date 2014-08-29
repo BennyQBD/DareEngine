@@ -43,7 +43,6 @@ local.properties
 # Build results
 
 x64/
-[Bb]in/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
