@@ -22,4 +22,4 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 main:
-	javac -d obj -sourcepath src src/Main.java
+	javac -d bin -sourcepath src src/Main.java

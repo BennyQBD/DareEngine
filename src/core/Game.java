@@ -12,7 +12,7 @@ public class Game
 	public Game()
 	{
 		m_scene = new QuadTree(
-				new AABB(-100, -100, 100, 100)
+				new AABB(-1, -1, 1, 1)
 				//new AABB(-0.1f, -0.1f, 0.1f, 0.1f)
 				, 1);
 
@@ -20,11 +20,15 @@ public class Game
 		Entity test2 = new Entity(-0.3f, -0.3f, -0.2f, -0.2f);
 		Entity test3 = new Entity(-1.1f, -1.1f, -0.9f, -0.9f);
 
+		test1.AddComponent(new TestComponent());
+		test2.AddComponent(new TestComponent());
+		test3.AddComponent(new TestComponent2());
+
 		m_scene.Add(test1);
 		m_scene.Add(test2);
 		m_scene.Add(test3);
-		//m_scene.Remove(test1);
-		//m_scene.Add(test1);
+//		m_scene.Remove(test1);
+//		m_scene.Add(test1);
 
 		m_scene.Print();
 	}
@@ -70,11 +74,15 @@ public class Game
 		Set<Entity> renderableEntities = 
 			m_scene.QueryRange(new AABB(-1, -1, 1, 1));
 
+		int numIterations = 0;
 		Iterator it = renderableEntities.iterator();
 		while(it.hasNext())
 		{
 			Entity current = (Entity)it.next();
 			current.Render(target);
+			numIterations++;
 		}
+
+		//System.out.println(numIterations);
 	}
 }

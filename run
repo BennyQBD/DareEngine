@@ -1,5 +1,5 @@
-mv res obj/res
-cd obj
+mv res bin/res
+cd bin
 
 java Main
 

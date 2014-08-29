@@ -43,8 +43,65 @@ public class QuadTree
 		}
 		else
 		{
-			System.err.println("Error: AABB not in quad tree!");
-			System.exit(1);
+			QuadTree thisAsNode = 
+				new QuadTree(m_nodes, m_entities, m_numEntities, m_aabb);
+
+			float dirX = entity.GetX() - m_aabb.GetCenterX();
+			float dirY = entity.GetY() - m_aabb.GetCenterY();
+
+			float minX = m_aabb.GetMinX();
+			float minY = m_aabb.GetMinY();
+			float maxX = m_aabb.GetMaxX();
+			float maxY = m_aabb.GetMaxY();
+
+			float expanseX = maxX - minX;
+			float expanseY = maxY - minY;
+
+			m_nodes = new QuadTree[4];
+			m_numEntities = 0;
+			m_entities = new Entity[m_entities.length];
+
+			if(dirX <= 0 && dirY <= 0)
+			{
+				m_nodes[1] = thisAsNode;
+				m_aabb = new AABB(
+						minX - expanseX, minY - expanseY, 
+						maxX, maxY);
+			}
+			else if(dirX <= 0 && dirY > 0)
+			{
+				m_nodes[3] = thisAsNode;
+				m_aabb = new AABB(
+						minX - expanseX, minY, 
+						maxX, maxY + expanseY);
+
+			}
+			else if(dirX > 0 && dirY > 0)
+			{
+				m_nodes[2] = thisAsNode;
+				m_aabb = new AABB(
+						minX, minY, 
+						maxX + expanseX, maxY + expanseY);
+				
+			}
+			else if(dirX > 0 && dirY <= 0)
+			{
+				m_nodes[0] = thisAsNode;
+				m_aabb = new AABB(
+						minX, minY - expanseY, 
+						maxX + expanseX, maxY);
+			}
+			else
+			{
+				System.err.println("Error: QuadTree direction is invalid (?): "
+						+ dirX + " (dirX) " + dirY + " (dirY)");
+				System.exit(1);
+			}
+
+			Add(entity);
+			
+//			System.err.println("Error: AABB not in quad tree!");
+//			System.exit(1);
 		}
 	}
 
