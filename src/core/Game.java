@@ -1,5 +1,9 @@
+package core;
+
 import java.awt.event.KeyEvent;
 import java.util.*;
+import physics.*;
+import rendering.*;
 
 public class Game
 {
@@ -42,7 +46,20 @@ public class Game
 		Iterator it = entities.iterator();
 		while(it.hasNext())
 		{
-			((Entity)it.next()).Update(input, delta);
+			Entity current = (Entity)it.next();
+			
+			float startX = current.GetX();
+			float startY = current.GetY();
+
+			current.Update(input, delta);
+
+			if(startX != current.GetX() ||
+			   startY != current.GetY())
+			{
+				m_scene.Remove(current);
+				current.UpdateAABB();
+				m_scene.Add(current);
+			}
 		}
 	}
 
@@ -56,7 +73,8 @@ public class Game
 		Iterator it = renderableEntities.iterator();
 		while(it.hasNext())
 		{
-			((Entity)it.next()).Render(target);
+			Entity current = (Entity)it.next();
+			current.Render(target);
 		}
 	}
 }

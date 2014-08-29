@@ -1,3 +1,7 @@
+package rendering;
+
+import core.*;
+
 public class RenderContext extends Bitmap
 {
 	public RenderContext(int width, int height)

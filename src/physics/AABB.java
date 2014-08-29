@@ -1,3 +1,5 @@
+package physics;
+
 public class AABB
 {
 	private float m_minX;
@@ -9,6 +11,16 @@ public class AABB
 	public float GetMinY() { return m_minY; }
 	public float GetMaxX() { return m_maxX; }
 	public float GetMaxY() { return m_maxY; }
+
+	public float GetCenterX()
+	{
+		return (m_minX + m_maxX)/2.0f;
+	}
+
+	public float GetCenterY()
+	{
+		return (m_minY + m_maxY)/2.0f;
+	}
 
 	public AABB(float minX, float minY, float maxX, float maxY)
 	{

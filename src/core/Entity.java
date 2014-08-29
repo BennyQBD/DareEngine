@@ -1,8 +1,15 @@
+package core;
+
+import java.util.*;
+import physics.*;
+import rendering.*;
+
 public class Entity
 {
-	private float        m_x;
-	private float        m_y;
-	private AABB         m_aabb;
+	private float                 m_x;
+	private float                 m_y;
+	private AABB                  m_aabb;
+	private List<EntityComponent> m_components;
 	
 	public float GetX()    { return m_x; }
 	public float GetY()    { return m_y; }
@@ -10,22 +17,49 @@ public class Entity
 	
 	public void SetX(float x)      { m_x = x; }
 	public void SetY(float y)      { m_y = y; }
-	public void SetAABB(AABB aabb) { m_aabb = aabb; }
 
 	public Entity(float minX, float minY, float maxX, float maxY) 
 	{
+		m_components = new ArrayList<EntityComponent>();
 		m_aabb = new AABB(minX, minY, maxX, maxY);
-		m_x = (minX + maxX)/2.0f;
-		m_y = (minY + maxY)/2.0f;
+		m_x = m_aabb.GetCenterX();
+		m_y = m_aabb.GetCenterY();
+	}
+
+	public Entity AddComponent(EntityComponent component)
+	{
+		m_components.add(component);
+		return this;
+	}
+
+	public void UpdateAABB()
+	{
+		float deltaX = m_x - m_aabb.GetCenterX();
+		float deltaY = m_y - m_aabb.GetCenterY();
+
+		float minX = m_aabb.GetMinX() + deltaX;
+		float minY = m_aabb.GetMinY() + deltaY;
+		float maxX = m_aabb.GetMaxX() + deltaX;
+		float maxY = m_aabb.GetMaxY() + deltaY;
+
+		m_aabb = new AABB(minX, minY, maxX, maxY);
 	}
 
 	public void Update(Input input, float delta)
 	{
-		
+		for(int i = 0; i < m_components.size(); i++)
+		{
+			m_components.get(i).Update(input, delta);
+		}
 	}
 
 	public void Render(RenderContext target)
 	{
+		for(int i = 0; i < m_components.size(); i++)
+		{
+			m_components.get(i).Render(target);
+		}
+
 		//TODO: Temp code!
 		target.FillRect(m_aabb.GetMinX(), m_aabb.GetMinY(),
 				        m_aabb.GetMaxX(), m_aabb.GetMaxY(),

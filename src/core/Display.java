@@ -1,3 +1,5 @@
+package core;
+
 /**
 @file
 @author Benny Bobaganoosh <thebennybox@gmail.com>
@@ -35,6 +37,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.BufferStrategy;
 import java.awt.image.DataBufferByte;
 import javax.swing.JFrame;
+import rendering.*;
 
 /**
  * Represents a window that can be drawn in using a software renderer.

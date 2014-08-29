@@ -1,3 +1,5 @@
+package core;
+
 public class Util
 {
 	public static float Clamp(float val, float min, float max)

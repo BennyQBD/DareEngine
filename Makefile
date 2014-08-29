@@ -22,4 +22,4 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 main:
-	cd ./src && $(MAKE)
+	javac -d obj -sourcepath src src/Main.java

@@ -1,4 +1,7 @@
+package core;
+
 import java.util.*;
+import physics.*;
 
 public class QuadTree
 {
