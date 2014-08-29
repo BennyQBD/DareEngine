@@ -105,8 +105,8 @@ public class RenderContext extends Bitmap
 				int thisG = GetComponent(i, j, 2) & 0xFF;
 				int thisR = GetComponent(i, j, 3) & 0xFF;
 
-//				float otherAmt = (((float)a)/128.0f + 1.0f)/2.0f;
-//				float thisAmt = 1.0f - otherAmt;
+				//This is performed using 0.8 fixed point mulitplication
+				//rather than floating point.
 				int otherAmt = a;
 				int thisAmt  = 255 - a; 
 				byte newB = (byte)((thisB*thisAmt + b*otherAmt) >> 8);
