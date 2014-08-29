@@ -19,12 +19,20 @@ public class Game
 		m_scene.Add(test1);
 		m_scene.Add(test2);
 		m_scene.Add(test3);
-		//m_scene.Remove(test3);
+		//m_scene.Remove(test1);
+		//m_scene.Add(test1);
+
+		m_scene.Print();
 	}
 
 	public void AddEntity(Entity entity)
 	{
 		m_scene.Add(entity);
+	}
+
+	public void RemoveEntity(Entity entity)
+	{
+		m_scene.Remove(entity);
 	}
 
 	public void Update(Input input, float delta)

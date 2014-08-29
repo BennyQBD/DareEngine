@@ -57,7 +57,6 @@ public class QuadTree
 			if(m_entities[i] == entity)
 			{
 				RemoveEntityFromList(i);				
-				return IsThisNodeEmpty();
 			}
 		}
 
