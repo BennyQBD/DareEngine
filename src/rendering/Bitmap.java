@@ -30,6 +30,11 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 */
 
 import java.util.Arrays;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+
 
 /**
  * Stores a set of pixels in a component-based format.
@@ -85,6 +90,47 @@ public class Bitmap
 		m_height     = height;
 		m_components = new byte[m_width * m_height * 4];
 	}
+
+	public Bitmap(String fileName)
+	{
+		int width = 0;
+		int height = 0;
+		byte[] components = null;
+
+		try
+		{
+			BufferedImage image = ImageIO.read(new File(fileName));
+
+			width = image.getWidth();
+			height = image.getHeight();
+
+			int[] pixels = new int[width * height];
+			image.getRGB(0, 0, width, height, pixels, 0, width);
+			components = new byte[width * height * 4];
+
+			for(int i = 0; i < width * height; i++)
+			{
+				components[i * 4    ] = (byte)((pixels[i] >> 24) & 0xFF);
+				components[i * 4 + 1] = (byte)((pixels[i] >>  0) & 0xFF);
+				components[i * 4 + 2] = (byte)((pixels[i] >>  8) & 0xFF);
+				components[i * 4 + 3] = (byte)((pixels[i] >> 16) & 0xFF);
+//				int pixel = pixels[i];
+//				int alpha = (~pixel) & 0xFF000000;
+//				int color = pixel & 0x00FFFFFF;
+//				pixels[i] = alpha | color;
+			}
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+			System.exit(1);
+		}
+
+		m_width = width;
+		m_height = height;
+		m_components = components;
+	}
+
 
 	/**
 	 * Sets every pixel in the bitmap to a specific shade of grey.
@@ -152,6 +198,24 @@ public class Bitmap
 				m_components[srcIndex + 2]); 
 		dest.SetComponent(destIndex + 3, 
 				m_components[srcIndex + 3]); 
+	}
+
+	public byte GetNearestComponent(float srcXFloat, float srcYFloat,
+			int component)
+	{
+		int srcX = (int)(srcXFloat * (GetWidth()-1));
+		int srcY = (int)(srcYFloat * (GetHeight()-1));
+		
+		int srcIndex = (srcX+srcY*GetWidth())*4;
+		
+		return m_components[srcIndex + component]; 
+	}
+
+	public byte GetComponent(int i, int j, int component)
+	{
+		int srcIndex = (i+j*GetWidth())*4;
+		
+		return m_components[srcIndex + component];
 	}
 
 	public Bitmap ClearScreen(byte a, byte b, byte g, byte r)
