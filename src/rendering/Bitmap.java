@@ -66,7 +66,7 @@ public class Bitmap
 	/** The height, in pixels, of the image */
 	private final int  m_height;
 	/** Every pixel component in the image */
-	private final byte m_components[];
+	protected final byte m_components[];
 
 	/** Basic getter */
 	public int GetWidth() { return m_width; }
@@ -76,6 +76,11 @@ public class Bitmap
 	public void SetComponent(int location, byte value)
 	{
 		m_components[location] = value;
+	}
+
+	public byte GetComponent(int location)
+	{
+		return m_components[location];
 	}
 
 	/**
@@ -152,21 +157,21 @@ public class Bitmap
 		m_components[index + 3] = r;
 	}
 
-	public void SafeDrawPixel(int x, int y, byte a, byte b, byte g, byte r)
-	{
-		int clampEnd = GetWidth() < GetHeight() ? GetWidth() :
-			GetHeight();
-		int clampStartY = (clampEnd - GetHeight()) / -2;
-		int clampStartX = (clampEnd - GetWidth()) / -2;
-		if(x < clampStartX || y < clampStartY 
-		  || x >= (clampEnd + clampStartX) 
-		  || y >= (clampEnd + clampStartY))
-		{
-			return;
-		}
-
-		DrawPixel(x, y, a, b, g, r);
-	}
+//	public void SafeDrawPixel(int x, int y, byte a, byte b, byte g, byte r)
+//	{
+//		int clampEnd = GetWidth() < GetHeight() ? GetWidth() :
+//			GetHeight();
+//		int clampStartY = (clampEnd - GetHeight()) / -2;
+//		int clampStartX = (clampEnd - GetWidth()) / -2;
+//		if(x < clampStartX || y < clampStartY 
+//		  || x >= (clampEnd + clampStartX) 
+//		  || y >= (clampEnd + clampStartY))
+//		{
+//			return;
+//		}
+//
+//		DrawPixel(x, y, a, b, g, r);
+//	}
 
 	/**
 	 * Copies the Bitmap into a BGR byte array.
@@ -209,13 +214,6 @@ public class Bitmap
 		int srcIndex = (srcX+srcY*GetWidth())*4;
 		
 		return m_components[srcIndex + component]; 
-	}
-
-	public byte GetComponent(int i, int j, int component)
-	{
-		int srcIndex = (i+j*GetWidth())*4;
-		
-		return m_components[srcIndex + component];
 	}
 
 	public Bitmap ClearScreen(byte a, byte b, byte g, byte r)

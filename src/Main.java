@@ -42,6 +42,6 @@ public class Main
 	{
 		Display display = new Display(800, 600, "Software Rendering");
 		CoreEngine engine = new CoreEngine(display, new Game());
-		engine.Start();
+		engine.start();
 	}
 }

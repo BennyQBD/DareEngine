@@ -89,11 +89,11 @@ public class Display extends Canvas
 		m_frame = new JFrame();
 		m_frame.add(this);
 		m_frame.pack();
-		m_frame.setResizable(false);
-		m_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		m_frame.setLocationRelativeTo(null);
 		m_frame.setTitle(title);
-		m_frame.setSize(width, height);
+		m_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		m_frame.setSize(m_frameBuffer.GetWidth(), m_frameBuffer.GetHeight());
+		m_frame.setLocationRelativeTo(null);
+		m_frame.setResizable(false);
 		m_frame.setVisible(true);
 
 		m_input = new Input();

@@ -84,26 +84,42 @@ public class RenderContext extends Bitmap
 		}
 	}
 
-	public void DrawImageAlphaBlendedInternal(Bitmap bitmap, 
+	private void DrawImageAlphaBlendedInternal(Bitmap bitmap, 
 			int xStart, int yStart, 
 			int xEnd, int yEnd,
 			float texStartX, float texStartY,
 			float srcXStep, float srcYStep)
 	{
+		int destIndex = (xStart+yStart*GetWidth())*4;
+		int destYInc = (GetWidth() - (xEnd - xStart)) * 4;
+
 		float srcY = texStartY;
+		float srcIndexFloatStep = (srcXStep * (float)(bitmap.GetWidth() - 1));
 		for(int j = yStart; j < yEnd; j++)
 		{
-			float srcX = texStartX;
-			for(int i = xStart; i < xEnd; i++)
-			{
-				int a = bitmap.GetNearestComponent(srcX, srcY, 0) & 0xFF;
-				int b = bitmap.GetNearestComponent(srcX, srcY, 1) & 0xFF;
-				int g = bitmap.GetNearestComponent(srcX, srcY, 2) & 0xFF;
-				int r = bitmap.GetNearestComponent(srcX, srcY, 3) & 0xFF;
+//			float srcX = texStartX;
+			float srcIndexFloat = ((texStartX * (bitmap.GetWidth()-1))
+					+(int)(srcY * (bitmap.GetHeight()-1))*bitmap.GetWidth());
 
-				int thisB = GetComponent(i, j, 1) & 0xFF;
-				int thisG = GetComponent(i, j, 2) & 0xFF;
-				int thisR = GetComponent(i, j, 3) & 0xFF;
+			for(int i = xStart; i < xEnd; i++)
+			{	
+				int srcIndex = (int)(srcIndexFloat) * 4;
+				
+				//The destIndex logic is equivalent to this
+//				int destIndex = (i+j*GetWidth())*4;
+
+//				//The srcIndex logic is equivalent to this
+//				int srcIndex = ((int)(srcX * (bitmap.GetWidth()-1))
+//						+(int)(srcY * (bitmap.GetHeight()-1))*bitmap.GetWidth())*4;
+ 
+				int a = bitmap.GetComponent(srcIndex + 0) & 0xFF;
+				int b = bitmap.GetComponent(srcIndex + 1) & 0xFF;
+				int g = bitmap.GetComponent(srcIndex + 2) & 0xFF;
+				int r = bitmap.GetComponent(srcIndex + 3) & 0xFF;
+
+				int thisB = GetComponent(destIndex + 1) & 0xFF;
+				int thisG = GetComponent(destIndex + 2) & 0xFF;
+				int thisR = GetComponent(destIndex + 3) & 0xFF;
 
 				//This is performed using 0.8 fixed point mulitplication
 				//rather than floating point.
@@ -113,41 +129,98 @@ public class RenderContext extends Bitmap
 				byte newG = (byte)((thisG*thisAmt + g*otherAmt) >> 8);
 				byte newR = (byte)((thisR*thisAmt + r*otherAmt) >> 8);
 
-				int index = (i + j * GetWidth()) * 4;
-				SetComponent(index + 1, newB);
-				SetComponent(index + 2, newG);
-				SetComponent(index + 3, newR);
+				SetComponent(destIndex + 1, newB);
+				SetComponent(destIndex + 2, newG);
+				SetComponent(destIndex + 3, newR);
 
-				srcX += srcXStep;
+				destIndex += 4; 
+				srcIndexFloat += srcIndexFloatStep;
+//				srcX += srcXStep;
 			}
 			srcY += srcYStep;
+			destIndex += destYInc;
 		}
 	}
 	
-	public void DrawImageBasicTransparencyInternal(Bitmap bitmap, 
+	private void DrawImageBasicTransparencyInternal(Bitmap bitmap, 
 			int xStart, int yStart, 
 			int xEnd, int yEnd,
 			float texStartX, float texStartY,
 			float srcXStep, float srcYStep)
 	{
+		int destIndex = (xStart+yStart*GetWidth())*4;
+		int destYInc = (GetWidth() - (xEnd - xStart)) * 4;
+
 		float srcY = texStartY;
+		float srcIndexFloatStep = (srcXStep * (float)(bitmap.GetWidth() - 1));
 		for(int j = yStart; j < yEnd; j++)
 		{
-			float srcX = texStartX;
+//			float srcX = texStartX;
+			float srcIndexFloat = ((texStartX * (bitmap.GetWidth()-1))
+					+(int)(srcY * (bitmap.GetHeight()-1))*bitmap.GetWidth());
+
 			for(int i = xStart; i < xEnd; i++)
-			{
-				if(bitmap.GetNearestComponent(srcX, srcY, 0) > (byte)0)
+			{	
+				int srcIndex = (int)(srcIndexFloat) * 4;
+				
+				//The destIndex logic is equivalent to this
+//				int destIndex = (i+j*GetWidth())*4;
+
+//				//The srcIndex logic is equivalent to this
+//				int srcIndex = ((int)(srcX * (bitmap.GetWidth()-1))
+//						+(int)(srcY * (bitmap.GetHeight()-1))*bitmap.GetWidth())*4;
+ 
+				byte a = bitmap.GetComponent(srcIndex + 0);
+//				byte b = bitmap.GetComponent(srcIndex + 1);
+//				byte g = bitmap.GetComponent(srcIndex + 2);
+//				byte r = bitmap.GetComponent(srcIndex + 3);
+//
+//				byte thisB = GetComponent(destIndex + 1);
+//				byte thisG = GetComponent(destIndex + 2);
+//				byte thisR = GetComponent(destIndex + 3);
+//
+//				byte mask = (byte)(a >> 7);
+//				byte newB = (byte)((b & (mask)) | (thisB & (~mask)));
+//				byte newG = (byte)((g & (mask)) | (thisG & (~mask)));
+//				byte newR = (byte)((r & (mask)) | (thisR & (~mask)));
+//
+//				SetComponent(destIndex + 1, newB);
+//				SetComponent(destIndex + 2, newG);
+//				SetComponent(destIndex + 3, newR);
+				
+				if(a < (byte)0)
 				{
-					bitmap.CopyNearest(this, i, j, srcX, srcY);
+					SetComponent(destIndex + 1, bitmap.GetComponent(srcIndex + 1));
+					SetComponent(destIndex + 2, bitmap.GetComponent(srcIndex + 2));
+					SetComponent(destIndex + 3, bitmap.GetComponent(srcIndex + 3));
 				}
-				srcX += srcXStep;
+
+				destIndex += 4; 
+				srcIndexFloat += srcIndexFloatStep;
+//				srcX += srcXStep;
 			}
 			srcY += srcYStep;
+			destIndex += destYInc;
 		}
+
+//		float srcY = texStartY;
+//		for(int j = yStart; j < yEnd; j++)
+//		{
+//			float srcX = texStartX;
+//			for(int i = xStart; i < xEnd; i++)
+//			{
+//				if(bitmap.GetNearestComponent(srcX, srcY, 0) > (byte)0)
+//				{
+//					bitmap.CopyNearest(this, i, j, srcX, srcY);
+//				}
+//				srcX += srcXStep;
+//			}
+//			srcY += srcYStep;
+//		}
 	}
 
 
-	public void DrawImageInternal(Bitmap bitmap, int xStart, int yStart, 
+	private void DrawImageInternal(Bitmap bitmap, int xStart, int yStart, 
 			int xEnd, int yEnd,
 			float texStartX, float texStartY,
 			float srcXStep, float srcYStep)
