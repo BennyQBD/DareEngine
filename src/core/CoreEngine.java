@@ -70,8 +70,8 @@ public class CoreEngine implements Runnable
 	public void run()
 	{
 		int frames = 0;
-//		double unprocessedTime = 0.0;
-//		double secondsPerFrame = 1.0/60.0;
+		double unprocessedTime = 0.0;
+		double secondsPerFrame = 1.0/60.0;
 		double frameCounterTime = 0;
 
 		long previousTime = System.nanoTime();
@@ -81,8 +81,8 @@ public class CoreEngine implements Runnable
 			long currentTime = System.nanoTime();
 			long passedTime = currentTime - previousTime;
 			previousTime = currentTime;
-			float delta = (float)(passedTime / 1000000000.0);
-			//unprocessedTime  += passedTime / 1000000000.0;
+			//float delta = (float)(passedTime / 1000000000.0);
+			unprocessedTime  += passedTime / 1000000000.0;
 			frameCounterTime += passedTime / 1000000000.0;
 
 			if(frameCounterTime >= 1.0)
@@ -92,24 +92,24 @@ public class CoreEngine implements Runnable
 				frames = 0;
 				frameCounterTime = 0.0;
 			}
-//			while(unprocessedTime > secondsPerFrame)
-//			{
+			while(unprocessedTime > secondsPerFrame)
+			{
 				render = true;
 				//m_display.Update();
-				m_game.Update(m_display.GetInput(), delta);
-//				unprocessedTime -= secondsPerFrame;
-//			}
+				m_game.Update(m_display.GetInput(), (float)secondsPerFrame);
+				unprocessedTime -= secondsPerFrame;
+			}
 
-//			//if(render || true)
-//			{
+			if(render || true)
+			{
 				frames++;
 
 				RenderContext context = m_display.GetContext();
 				m_game.Render(context);
 				m_display.SwapBuffers();
-//			}
-//			else
-//			{
+			}
+			else
+			{
 				try
 				{
 					Thread.sleep(1);
@@ -119,7 +119,7 @@ public class CoreEngine implements Runnable
 					ex.printStackTrace();
 					System.exit(1);
 				}
-//			}
+			}
 		}
 		//m_display.Dispose();
 	}

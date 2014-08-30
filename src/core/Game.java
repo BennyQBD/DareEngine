@@ -8,37 +8,41 @@ import rendering.*;
 public class Game
 {
 	private QuadTree m_scene;
-	private List<Entity> m_entities;
 
 	public Game()
 	{
 		m_scene = new QuadTree(
 				new AABB(-1, -1, 1, 1)
 				//new AABB(-0.1f, -0.1f, 0.1f, 0.1f)
-				, 16);
-		m_entities = new ArrayList<Entity>();
+				, 8);
 
-		Bitmap test = new Bitmap(20, 20);//new Bitmap("./res/bricks.jpg");//new Bitmap(50,50);
+//		Bitmap test = new Bitmap(20, 20);//new Bitmap("./res/bricks.jpg");//new Bitmap(50,50);
+//
+//		for(int j = 0; j < test.GetHeight(); j++)
+//		{
+//			for(int i = 0; i < test.GetWidth(); i++)
+//			{
+//				test.DrawPixel(i, j, 
+//						(byte)(Math.random() * 255), 
+//						(byte)(Math.random() * 255),
+//						(byte)(Math.random() * 255), 
+//						(byte)(Math.random() * 255));
+//			}
+//		}
+		Bitmap test = new Bitmap("./res/bricks.jpg");
 
-		for(int j = 0; j < test.GetHeight(); j++)
+		float range = 250.0f;
+		for(int i = 0; i < 200000; i++)
 		{
-			for(int i = 0; i < test.GetWidth(); i++)
-			{
-				test.DrawPixel(i, j, 
-						(byte)(Math.random() * 255), 
-						(byte)(Math.random() * 255),
-						(byte)(Math.random() * 255), 
-						(byte)(Math.random() * 255));
-			}
-		}
-//		Bitmap test = new Bitmap("./res/bricks.jpg");
-
-		for(int i = 0; i < 500; i++)
-		{
-			float val = (float)i * 0.001f;
+			float xLoc = ((float)Math.random()) * range * 2.0f - range;
+			float yLoc = ((float)Math.random()) * range * 2.0f - range;
+			//System.out.println(xLoc + ", " + yLoc);
+			//float val = (float)i * 0.001f;
 			AddEntity(new Entity(
-						-0.1f + val, -0.1f + val,
-						0.1f + val, 0.1f + val)
+//						xLoc, yLoc,
+//						xLoc + 0.1f, yLoc + 0.1f)
+						-0.1f + xLoc, -0.1f + yLoc,
+						0.1f + xLoc, 0.1f + yLoc)
 					.AddComponent(new TestComponent(test)));
 		}
 
@@ -57,27 +61,24 @@ public class Game
 
 	public void AddEntity(Entity entity)
 	{
-		//m_scene.Add(entity);
-		m_entities.add(entity);
+		m_scene.Add(entity);
 	}
 
 	public void RemoveEntity(Entity entity)
 	{
-		//m_scene.Remove(entity);
-		m_entities.remove(entity);
+		m_scene.Remove(entity);
 	}
 
 	public void Update(Input input, float delta)
 	{
-//		Set<Entity> entities = m_scene.GetAll();
-//
-//		Iterator it = entities.iterator();
-//		while(it.hasNext())
-//		{
-//			Entity current = (Entity)it.next();		
-		for(int i = 0; i < m_entities.size(); i++)
+		Set<Entity> entities = 
+			m_scene.QueryRange(new AABB(-2, -2, 2, 2));
+			//m_scene.GetAll();
+
+		Iterator it = entities.iterator();
+		while(it.hasNext())
 		{
-			Entity current = m_entities.get(i);	
+			Entity current = (Entity)it.next();		
 			
 			float startX = current.GetX();
 			float startY = current.GetY();
@@ -87,9 +88,9 @@ public class Game
 			if(startX != current.GetX() ||
 			   startY != current.GetY())
 			{
-//				RemoveEntity(current);
+				RemoveEntity(current);
 				current.UpdateAABB();
-//				AddEntity(current);
+				AddEntity(current);
 			}
 		}
 	}
@@ -97,23 +98,15 @@ public class Game
 	public void Render(RenderContext target)
 	{
 		target.Clear((byte)0x00);
-		for(int i = 0; i < m_entities.size(); i++)
+
+		Set<Entity> renderableEntities = 
+			m_scene.QueryRange(new AABB(-1, -1, 1, 1));
+
+		Iterator it = renderableEntities.iterator();
+		while(it.hasNext())
 		{
-			m_entities.get(i).Render(target);
+			Entity current = (Entity)it.next();
+			current.Render(target);
 		}
-
-//		Set<Entity> renderableEntities = 
-//			m_scene.QueryRange(new AABB(-1, -1, 1, 1));
-//
-//		int numIterations = 0;
-//		Iterator it = renderableEntities.iterator();
-//		while(it.hasNext())
-//		{
-//			Entity current = (Entity)it.next();
-//			current.Render(target);
-//			numIterations++;
-//		}
-
-		//System.out.println(numIterations);
 	}
 }
