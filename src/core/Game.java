@@ -31,8 +31,8 @@ public class Game
 //		}
 		Bitmap test = new Bitmap("./res/bricks.jpg");
 
-		float range = 250.0f;
-		for(int i = 0; i < 200000; i++)
+		float range = 10.0f;
+		for(int i = 0; i < 20000; i++)
 		{
 			float xLoc = ((float)Math.random()) * range * 2.0f - range;
 			float yLoc = ((float)Math.random()) * range * 2.0f - range;
@@ -98,9 +98,10 @@ public class Game
 	public void Render(RenderContext target)
 	{
 		target.Clear((byte)0x00);
+		//target.SetCameraPosition(camX, camY);
 
 		Set<Entity> renderableEntities = 
-			m_scene.QueryRange(new AABB(-1, -1, 1, 1));
+			m_scene.QueryRange(target.GetRenderArea());
 
 		Iterator it = renderableEntities.iterator();
 		while(it.hasNext())

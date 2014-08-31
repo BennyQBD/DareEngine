@@ -73,6 +73,8 @@ public class Bitmap
 	/** Basic getter */
 	public int GetHeight() { return m_height; }
 
+	public float GetAspect() { return (float)m_width/(float)m_height; }
+
 	public void SetComponent(int location, byte value)
 	{
 		m_components[location] = value;
@@ -204,6 +206,14 @@ public class Bitmap
 		dest.SetComponent(destIndex + 3, 
 				m_components[srcIndex + 3]); 
 	}
+
+//	public void CopyFromSampler(Sampler src, int destIndex)
+//	{
+//		m_components[destIndex    ] = src.GetA();
+//		m_components[destIndex + 1] = src.GetB();
+//		m_components[destIndex + 2] = src.GetG();
+//		m_components[destIndex + 3] = src.GetR();
+//	}
 
 	public byte GetNearestComponent(float srcXFloat, float srcYFloat,
 			int component)

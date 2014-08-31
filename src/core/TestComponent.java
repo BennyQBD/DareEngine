@@ -5,10 +5,12 @@ import rendering.*;
 public class TestComponent extends EntityComponent
 {
 	private Bitmap m_sprite;
+//	private Sampler m_sampler;
 
 	public TestComponent(Bitmap sprite)
 	{
 		m_sprite = sprite;
+//		m_sampler = new NearestSampler();
 	}
 
 	@Override
@@ -25,7 +27,8 @@ public class TestComponent extends EntityComponent
 				GetEntity().GetAABB().GetMinY(),
 		        GetEntity().GetAABB().GetMaxX(), 
 				GetEntity().GetAABB().GetMaxY(),
-				RenderContext.TRANSPARENCY_NONE
+				RenderContext.TRANSPARENCY_NONE,
+				RenderContext.SAMPLER_LINEAR
 			);
 
 	}

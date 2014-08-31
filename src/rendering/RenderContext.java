@@ -1,6 +1,7 @@
 package rendering;
 
 import core.*;
+import physics.*;
 
 public class RenderContext extends Bitmap
 {
@@ -8,14 +9,46 @@ public class RenderContext extends Bitmap
 	public static final int TRANSPARENCY_BASIC = 1;
 	public static final int TRANSPARENCY_FULL = 2;
 
+	public static final int SAMPLER_NEAREST = 0;
+	public static final int SAMPLER_LINEAR = 1;
+
+	private float m_cameraX;
+	private float m_cameraY;
+	
 	public RenderContext(int width, int height)
 	{
 		super(width, height);
+		m_cameraX = 0.0f;
+		m_cameraY = 0.0f;
+	}
+
+	public void SetCameraPosition(float x, float y)
+	{
+		m_cameraX = x;
+		m_cameraY = y;
+	}
+
+	public AABB GetRenderArea()
+	{
+		float aspect = GetAspect();
+		return 
+			new AABB(-aspect + m_cameraX, -1 + m_cameraY, 
+					aspect + m_cameraX, 1 + m_cameraY);
 	}
 
 	public void DrawImage(Bitmap bitmap, float xStart, float yStart, 
-			float xEnd, float yEnd, int transpencyType)
+			float xEnd, float yEnd, int transpencyType, int samplerType)
 	{
+		float aspect = GetAspect();
+
+		xStart -= m_cameraX;
+		xEnd   -= m_cameraX;
+		yStart -= m_cameraY;
+		yEnd   -= m_cameraY;
+
+		xStart /= aspect;
+		xEnd   /= aspect;
+
 		float halfWidth   = GetWidth()/2.0f;
 		float halfHeight  = GetHeight()/2.0f;
 
@@ -55,32 +88,69 @@ public class RenderContext extends Bitmap
 		xEnd   = (xEnd * halfWidth) + halfWidth;
 		yEnd   = (yEnd * halfHeight) + halfHeight;
 
-		switch(transpencyType)
+		switch(samplerType)
 		{
-			case TRANSPARENCY_NONE:
-				DrawImageInternal(bitmap, 
-						(int)xStart, (int)yStart, 
-						(int)xEnd, (int)yEnd,
-						imageXStart, imageYStart, 
-						imageXStep, imageYStep);
-				break;
-			case TRANSPARENCY_BASIC:
-				DrawImageBasicTransparencyInternal(bitmap, 
-						(int)xStart, (int)yStart, 
-						(int)xEnd, (int)yEnd,
-						imageXStart, imageYStart, 
-						imageXStep, imageYStep);
-				break;
-			case TRANSPARENCY_FULL:
-				DrawImageAlphaBlendedInternal(bitmap, 
-						(int)xStart, (int)yStart, 
-						(int)xEnd, (int)yEnd,
-						imageXStart, imageYStart, 
-						imageXStep, imageYStep);				
-				break;
+			case SAMPLER_NEAREST:
+				switch(transpencyType)
+				{
+					case TRANSPARENCY_NONE:
+						DrawImageInternal(bitmap, 
+								(int)xStart, (int)yStart, 
+								(int)xEnd, (int)yEnd,
+								imageXStart, imageYStart, 
+								imageXStep, imageYStep);
+						break;
+					case TRANSPARENCY_BASIC:
+						DrawImageBasicTransparencyInternal(bitmap, 
+								(int)xStart, (int)yStart, 
+								(int)xEnd, (int)yEnd,
+								imageXStart, imageYStart, 
+								imageXStep, imageYStep);
+						break;
+					case TRANSPARENCY_FULL:
+						DrawImageAlphaBlendedInternal(bitmap, 
+								(int)xStart, (int)yStart, 
+								(int)xEnd, (int)yEnd,
+								imageXStart, imageYStart, 
+								imageXStep, imageYStep);				
+						break;
+					default:
+						System.err.println("You used an invalid transparency value >:(");
+						System.exit(1);
+				}
+			break;
+			case SAMPLER_LINEAR:
+				switch(transpencyType)
+				{
+					case TRANSPARENCY_NONE:
+						DrawImageInternal(bitmap, 
+								(int)xStart, (int)yStart, 
+								(int)xEnd, (int)yEnd,
+								imageXStart, imageYStart, 
+								imageXStep, imageYStep);
+						break;
+					case TRANSPARENCY_BASIC:
+						DrawImageBasicTransparencyInternal(bitmap, 
+								(int)xStart, (int)yStart, 
+								(int)xEnd, (int)yEnd,
+								imageXStart, imageYStart, 
+								imageXStep, imageYStep);
+						break;
+					case TRANSPARENCY_FULL:
+						DrawImageAlphaBlendedInternal(bitmap, 
+								(int)xStart, (int)yStart, 
+								(int)xEnd, (int)yEnd,
+								imageXStart, imageYStart, 
+								imageXStep, imageYStep);				
+						break;
+					default:
+						System.err.println("You used an invalid transparency value >:(");
+						System.exit(1);
+				}
+			break;
 			default:
-				System.err.println("You used an invalid transparency value >:(");
-				System.exit(1);
+					System.err.println("You used an invalid sampler value >:(");
+					System.exit(1);
 		}
 	}
 
@@ -202,21 +272,6 @@ public class RenderContext extends Bitmap
 			srcY += srcYStep;
 			destIndex += destYInc;
 		}
-
-//		float srcY = texStartY;
-//		for(int j = yStart; j < yEnd; j++)
-//		{
-//			float srcX = texStartX;
-//			for(int i = xStart; i < xEnd; i++)
-//			{
-//				if(bitmap.GetNearestComponent(srcX, srcY, 0) > (byte)0)
-//				{
-//					bitmap.CopyNearest(this, i, j, srcX, srcY);
-//				}
-//				srcX += srcXStep;
-//			}
-//			srcY += srcYStep;
-//		}
 	}
 
 
@@ -237,7 +292,6 @@ public class RenderContext extends Bitmap
 			srcY += srcYStep;
 		}
 	}
-
 
 	public void FillRect(float xStart, float yStart, 
 			float xEnd, float yEnd,
