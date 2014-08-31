@@ -27,8 +27,7 @@ public class TestComponent extends EntityComponent
 				GetEntity().GetAABB().GetMinY(),
 		        GetEntity().GetAABB().GetMaxX(), 
 				GetEntity().GetAABB().GetMaxY(),
-				RenderContext.TRANSPARENCY_NONE,
-				RenderContext.SAMPLER_LINEAR
+				RenderContext.TRANSPARENCY_NONE
 			);
 
 	}

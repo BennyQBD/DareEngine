@@ -207,6 +207,97 @@ public class Bitmap
 				m_components[srcIndex + 3]); 
 	}
 
+//	/*
+//	   
+//float SampleShadowMapLinear(sampler2D shadowMap, vec2 coords, float compare, vec2 texelSize)
+//{
+//vec2 pixelPos = coords/texelSize + vec2(0.5);
+//vec2 fracPart = fract(pixelPos);
+//vec2 startTexel = (pixelPos - fracPart) * texelSize;
+//float blTexel = SampleShadowMap(shadowMap, startTexel, compare);
+//float brTexel = SampleShadowMap(shadowMap, startTexel + vec2(texelSize.x, 0.0), compare);
+//float tlTexel = SampleShadowMap(shadowMap, startTexel + vec2(0.0, texelSize.y), compare);
+//float trTexel = SampleShadowMap(shadowMap, startTexel + texelSize, compare);
+//float mixA = mix(blTexel, tlTexel, fracPart.y);
+//float mixB = mix(brTexel, trTexel, fracPart.y);
+//return mix(mixA, mixB, fracPart.x);
+//}
+//	 */
+//
+//	public void CopyLinear(Bitmap dest, int destX, 
+//		int destY, float srcXFloat, float srcYFloat)
+//	{
+//		int destIndex = (destX+destY*dest.GetWidth())*4;
+//
+//
+//		float texelSizeX = 1.0f/(float)(GetWidth() - 1);
+//		float texelSizeY = 1.0f/(float)(GetHeight() - 1);
+//
+//		float pixelPosX = srcXFloat/texelSizeX + 0.5f;
+//		float pixelPosY = srcYFloat/texelSizeY + 0.5f;
+//
+//		float fracPartX = pixelPosX - (int)pixelPosX;
+//		float fracPartY = pixelPosY - (int)pixelPosY;
+//
+//		float startTexelX = (pixelPosX - fracPartX) * texelSize;
+//		float startTexelY = (pixelPosY - fracPartY) * texelSize;
+//
+//		
+//		int srcXBL = (int)(startTexelX * (GetWidth()-1));
+//		int srcYBL = (int)(startTexelY * (GetHeight()-1));
+//		
+//		int srcIndexBL = (srcXBL+srcYBL*GetWidth())*4;
+//
+//		byte bla = m_components[srcIndexBL    ];
+//		byte blb = m_components[srcIndexBL + 1];
+//		byte blg = m_components[srcIndexBL + 2];
+//		byte blr = m_components[srcIndexBL + 3];
+//
+//		int srcXBR = (int)((startTexelX + texelSizeX) * (GetWidth()-1));
+//		int srcYBR = (int)(startTexelY  * (GetHeight()-1));
+//		
+//		int srcIndexBR = (srcXBR+srcYBR*GetWidth())*4;
+//
+//		byte bra = m_components[srcIndexBR    ];
+//		byte brb = m_components[srcIndexBR + 1];
+//		byte brg = m_components[srcIndexBR + 2];
+//		byte brr = m_components[srcIndexBR + 3];
+//
+//		int srcXTL = (int)(startTexelX * (GetWidth()-1));
+//		int srcYTL = (int)((startTexelY + texelSizeY)  * (GetHeight()-1));
+//		
+//		int srcIndexTL = (srcXTL+srcYTL*GetWidth())*4;
+//
+//		byte tla = m_components[srcIndexTL    ];
+//		byte tlb = m_components[srcIndexTL + 1];
+//		byte tlg = m_components[srcIndexTL + 2];
+//		byte tlr = m_components[srcIndexTL + 3];
+//
+//		int srcXTR = (int)((startTexelX + texelSizeY) * (GetWidth()-1));
+//		int srcYTR = (int)((startTexelY + texelSizeY)  * (GetHeight()-1));
+//		
+//		int srcIndexTR = (srcXTR+srcYTR*GetWidth())*4;
+//
+//		byte tra = m_components[srcIndexTR    ];
+//		byte trb = m_components[srcIndexTR + 1];
+//		byte trg = m_components[srcIndexTR + 2];
+//		byte trr = m_components[srcIndexTR + 3];
+//
+//
+//
+//
+//
+////		dest.SetComponent(destIndex, 
+////				m_components[srcIndex]); 
+////		dest.SetComponent(destIndex + 1, 
+////				m_components[srcIndex + 1]); 
+////		dest.SetComponent(destIndex + 2, 
+////				m_components[srcIndex + 2]); 
+////		dest.SetComponent(destIndex + 3, 
+////				m_components[srcIndex + 3]); 
+//	}
+
+
 //	public void CopyFromSampler(Sampler src, int destIndex)
 //	{
 //		m_components[destIndex    ] = src.GetA();

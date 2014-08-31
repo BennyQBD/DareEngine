@@ -20,4 +20,9 @@ public class Util
 	{
 		return (float)Math.sqrt(x * x + y * y);
 	}
+
+	public static float Lerp(float a, float b, float amt)
+	{
+		return (b - a) * amt + a;
+	}
 }

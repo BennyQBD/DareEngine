@@ -9,8 +9,8 @@ public class RenderContext extends Bitmap
 	public static final int TRANSPARENCY_BASIC = 1;
 	public static final int TRANSPARENCY_FULL = 2;
 
-	public static final int SAMPLER_NEAREST = 0;
-	public static final int SAMPLER_LINEAR = 1;
+//	public static final int SAMPLER_NEAREST = 0;
+//	public static final int SAMPLER_LINEAR = 1;
 
 	private float m_cameraX;
 	private float m_cameraY;
@@ -37,7 +37,7 @@ public class RenderContext extends Bitmap
 	}
 
 	public void DrawImage(Bitmap bitmap, float xStart, float yStart, 
-			float xEnd, float yEnd, int transpencyType, int samplerType)
+			float xEnd, float yEnd, int transpencyType)
 	{
 		float aspect = GetAspect();
 
@@ -88,70 +88,70 @@ public class RenderContext extends Bitmap
 		xEnd   = (xEnd * halfWidth) + halfWidth;
 		yEnd   = (yEnd * halfHeight) + halfHeight;
 
-		switch(samplerType)
-		{
-			case SAMPLER_NEAREST:
-				switch(transpencyType)
-				{
-					case TRANSPARENCY_NONE:
-						DrawImageInternal(bitmap, 
-								(int)xStart, (int)yStart, 
-								(int)xEnd, (int)yEnd,
-								imageXStart, imageYStart, 
-								imageXStep, imageYStep);
-						break;
-					case TRANSPARENCY_BASIC:
-						DrawImageBasicTransparencyInternal(bitmap, 
-								(int)xStart, (int)yStart, 
-								(int)xEnd, (int)yEnd,
-								imageXStart, imageYStart, 
-								imageXStep, imageYStep);
-						break;
-					case TRANSPARENCY_FULL:
-						DrawImageAlphaBlendedInternal(bitmap, 
-								(int)xStart, (int)yStart, 
-								(int)xEnd, (int)yEnd,
-								imageXStart, imageYStart, 
-								imageXStep, imageYStep);				
-						break;
-					default:
-						System.err.println("You used an invalid transparency value >:(");
-						System.exit(1);
-				}
-			break;
-			case SAMPLER_LINEAR:
-				switch(transpencyType)
-				{
-					case TRANSPARENCY_NONE:
-						DrawImageInternal(bitmap, 
-								(int)xStart, (int)yStart, 
-								(int)xEnd, (int)yEnd,
-								imageXStart, imageYStart, 
-								imageXStep, imageYStep);
-						break;
-					case TRANSPARENCY_BASIC:
-						DrawImageBasicTransparencyInternal(bitmap, 
-								(int)xStart, (int)yStart, 
-								(int)xEnd, (int)yEnd,
-								imageXStart, imageYStart, 
-								imageXStep, imageYStep);
-						break;
-					case TRANSPARENCY_FULL:
-						DrawImageAlphaBlendedInternal(bitmap, 
-								(int)xStart, (int)yStart, 
-								(int)xEnd, (int)yEnd,
-								imageXStart, imageYStart, 
-								imageXStep, imageYStep);				
-						break;
-					default:
-						System.err.println("You used an invalid transparency value >:(");
-						System.exit(1);
-				}
-			break;
-			default:
-					System.err.println("You used an invalid sampler value >:(");
+//		switch(samplerType)
+//		{
+//			case SAMPLER_NEAREST:
+			switch(transpencyType)
+			{
+				case TRANSPARENCY_NONE:
+					DrawImageInternal(bitmap, 
+							(int)xStart, (int)yStart, 
+							(int)xEnd, (int)yEnd,
+							imageXStart, imageYStart, 
+							imageXStep, imageYStep);
+					break;
+				case TRANSPARENCY_BASIC:
+					DrawImageBasicTransparencyInternal(bitmap, 
+							(int)xStart, (int)yStart, 
+							(int)xEnd, (int)yEnd,
+							imageXStart, imageYStart, 
+							imageXStep, imageYStep);
+					break;
+				case TRANSPARENCY_FULL:
+					DrawImageAlphaBlendedInternal(bitmap, 
+							(int)xStart, (int)yStart, 
+							(int)xEnd, (int)yEnd,
+							imageXStart, imageYStart, 
+							imageXStep, imageYStep);				
+					break;
+				default:
+					System.err.println("You used an invalid transparency value >:(");
 					System.exit(1);
-		}
+			}
+//			break;
+//			case SAMPLER_LINEAR:
+//				switch(transpencyType)
+//				{
+//					case TRANSPARENCY_NONE:
+//						DrawImageInternalLinear(bitmap, 
+//								(int)xStart, (int)yStart, 
+//								(int)xEnd, (int)yEnd,
+//								imageXStart, imageYStart, 
+//								imageXStep, imageYStep);
+//						break;
+//					case TRANSPARENCY_BASIC:
+//						DrawImageBasicTransparencyInternal(bitmap, 
+//								(int)xStart, (int)yStart, 
+//								(int)xEnd, (int)yEnd,
+//								imageXStart, imageYStart, 
+//								imageXStep, imageYStep);
+//						break;
+//					case TRANSPARENCY_FULL:
+//						DrawImageAlphaBlendedInternal(bitmap, 
+//								(int)xStart, (int)yStart, 
+//								(int)xEnd, (int)yEnd,
+//								imageXStart, imageYStart, 
+//								imageXStep, imageYStep);				
+//						break;
+//					default:
+//						System.err.println("You used an invalid transparency value >:(");
+//						System.exit(1);
+//				}
+//			break;
+//			default:
+//					System.err.println("You used an invalid sampler value >:(");
+//					System.exit(1);
+//		}
 	}
 
 	private void DrawImageAlphaBlendedInternal(Bitmap bitmap, 
@@ -292,6 +292,26 @@ public class RenderContext extends Bitmap
 			srcY += srcYStep;
 		}
 	}
+
+//	private void DrawImageInternalLinear(Bitmap bitmap, 
+//			int xStart, int yStart, 
+//			int xEnd, int yEnd,
+//			float texStartX, float texStartY,
+//			float srcXStep, float srcYStep)
+//	{
+//		float srcY = texStartY;
+//		for(int j = yStart; j < yEnd; j++)
+//		{
+//			float srcX = texStartX;
+//			for(int i = xStart; i < xEnd; i++)
+//			{
+//				bitmap.CopyNearest(this, i, j, srcX, srcY);
+//				srcX += srcXStep;
+//			}
+//			srcY += srcYStep;
+//		}
+//	}
+
 
 	public void FillRect(float xStart, float yStart, 
 			float xEnd, float yEnd,
