@@ -39,12 +39,7 @@ public class AABB
 	public boolean IntersectRect(float minX, float minY, 
 			float maxX, float maxY)
 	{
-		if(m_minX < maxX && m_maxX > minX &&
-		   m_minY < maxY && m_maxY > minY)
-		{
-			return true;
-		}
-
-		return false;
+		return m_minX < maxX && m_maxX > minX &&
+		   m_minY < maxY && m_maxY > minY;
 	}
 }
