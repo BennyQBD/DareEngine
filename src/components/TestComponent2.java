@@ -1,14 +1,10 @@
-package core;
+package components;
 
 import rendering.*;
+import core.*;
 
-public class TestComponent2 extends TestComponent
+public class TestComponent2 extends EntityComponent
 {
-	public TestComponent2(Bitmap sprite)
-	{
-		super(sprite);
-	}
-
 	@Override
 	public void Update(Input input, float delta)
 	{

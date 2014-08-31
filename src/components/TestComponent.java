@@ -1,6 +1,7 @@
-package core;
+package components;
 
 import rendering.*;
+import core.*;
 
 public class TestComponent extends EntityComponent
 {
@@ -27,8 +28,7 @@ public class TestComponent extends EntityComponent
 				GetEntity().GetAABB().GetMinY(),
 		        GetEntity().GetAABB().GetMaxX(), 
 				GetEntity().GetAABB().GetMaxY(),
-				RenderContext.TRANSPARENCY_NONE
+				RenderContext.TRANSPARENCY_FULL
 			);
-
 	}
 }

@@ -154,21 +154,12 @@ public class QuadTree
 		m_numEntities--;
 	}
 
-	public Set<Entity> QueryRange(AABB aabb)
+	public Set<Entity> GetAll(Set<Entity> result)
 	{
-		Set<Entity> result = new HashSet<Entity>();
-
-		QueryRangeInternal(aabb, result);	
-
-		return result;
+		return QueryRange(m_aabb, result);
 	}
 
-	public Set<Entity> GetAll()
-	{
-		return QueryRange(m_aabb);
-	}
-
-	private Set<Entity> QueryRangeInternal(AABB aabb, 
+	public Set<Entity> QueryRange(AABB aabb, 
 		Set<Entity> result)
 	{
 		if(!aabb.IntersectAABB(m_aabb))
@@ -188,7 +179,7 @@ public class QuadTree
 		{
 			if(m_nodes[i] != null)
 			{
-				m_nodes[i].QueryRangeInternal(aabb, result);
+				m_nodes[i].QueryRange(aabb, result);
 			}
 		}
 

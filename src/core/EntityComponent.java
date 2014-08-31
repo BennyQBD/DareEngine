@@ -9,6 +9,7 @@ public abstract class EntityComponent
 	public Entity GetEntity() { return m_entity; }
 	public void SetEntity(Entity entity) { m_entity = entity; }
 	
-	public abstract void Update(Input input, float delta);
-	public abstract void Render(RenderContext target);
+	public void OnAdd() {}
+	public void Update(Input input, float delta) {}
+	public void Render(RenderContext target) {}
 }

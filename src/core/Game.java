@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 import java.util.*;
 import physics.*;
 import rendering.*;
+import components.*;
 
 public class Game
 {
@@ -16,20 +17,20 @@ public class Game
 				//new AABB(-0.1f, -0.1f, 0.1f, 0.1f)
 				, 8);
 
-//		Bitmap test = new Bitmap(20, 20);//new Bitmap("./res/bricks.jpg");//new Bitmap(50,50);
-//
-//		for(int j = 0; j < test.GetHeight(); j++)
-//		{
-//			for(int i = 0; i < test.GetWidth(); i++)
-//			{
-//				test.DrawPixel(i, j, 
-//						(byte)(Math.random() * 255), 
-//						(byte)(Math.random() * 255),
-//						(byte)(Math.random() * 255), 
-//						(byte)(Math.random() * 255));
-//			}
-//		}
-		Bitmap test = new Bitmap("./res/bricks.jpg");
+		Bitmap test = new Bitmap(20, 20);//new Bitmap("./res/bricks.jpg");//new Bitmap(50,50);
+
+		for(int j = 0; j < test.GetHeight(); j++)
+		{
+			for(int i = 0; i < test.GetWidth(); i++)
+			{
+				test.DrawPixel(i, j, 
+						(byte)(Math.random() * 255), 
+						(byte)(Math.random() * 255),
+						(byte)(Math.random() * 255), 
+						(byte)(Math.random() * 255));
+			}
+		}
+//		Bitmap test = new Bitmap("./res/bricks.jpg");
 
 		float range = 10.0f;
 		for(int i = 0; i < 20000; i++)
@@ -43,7 +44,8 @@ public class Game
 //						xLoc + 0.1f, yLoc + 0.1f)
 						-0.1f + xLoc, -0.1f + yLoc,
 						0.1f + xLoc, 0.1f + yLoc)
-					.AddComponent(new TestComponent(test)));
+					.AddComponent(new SpriteComponent(test,
+							   	RenderContext.TRANSPARENCY_FULL, (float)i)));
 		}
 
 		//test.ClearScreen((byte)0x00, (byte)0x75, (byte)0x11, (byte)0x82);
@@ -54,7 +56,10 @@ public class Game
 
 //		test1.AddComponent(new TestComponent(test));
 //		test2.AddComponent(new TestComponent(test));
-		test3.AddComponent(new TestComponent2(test));
+		test3.AddComponent(new SpriteComponent(test, 
+					RenderContext.TRANSPARENCY_FULL, -1.0f));
+		test3.AddComponent(new TestComponent2());
+
 
 		AddEntity(test3);
 	}
@@ -72,7 +77,7 @@ public class Game
 	public void Update(Input input, float delta)
 	{
 		Set<Entity> entities = 
-			m_scene.QueryRange(new AABB(-2, -2, 2, 2));
+			m_scene.QueryRange(new AABB(-2, -2, 2, 2), new HashSet<Entity>());
 			//m_scene.GetAll();
 
 		Iterator it = entities.iterator();
@@ -101,7 +106,7 @@ public class Game
 		//target.SetCameraPosition(camX, camY);
 
 		Set<Entity> renderableEntities = 
-			m_scene.QueryRange(target.GetRenderArea());
+			m_scene.QueryRange(target.GetRenderArea(), new TreeSet<Entity>());
 
 		Iterator it = renderableEntities.iterator();
 		while(it.hasNext())

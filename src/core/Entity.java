@@ -4,10 +4,11 @@ import java.util.*;
 import physics.*;
 import rendering.*;
 
-public class Entity
+public class Entity implements Comparable<Entity>
 {
 	private float                 m_x;
 	private float                 m_y;
+	private float                 m_renderLayer;
 	private AABB                  m_aabb;
 	private List<EntityComponent> m_components;
 	
@@ -17,6 +18,7 @@ public class Entity
 	
 	public void SetX(float x)      { m_x = x; }
 	public void SetY(float y)      { m_y = y; }
+	public void SetRenderLayer(float layer) { m_renderLayer = layer; }
 
 	public Entity(float minX, float minY, float maxX, float maxY) 
 	{
@@ -24,11 +26,13 @@ public class Entity
 		m_aabb = new AABB(minX, minY, maxX, maxY);
 		m_x = m_aabb.GetCenterX();
 		m_y = m_aabb.GetCenterY();
+		m_renderLayer = 0.0f;
 	}
 
 	public Entity AddComponent(EntityComponent component)
 	{
 		component.SetEntity(this);
+		component.OnAdd();
 		m_components.add(component);
 		return this;
 	}
@@ -65,6 +69,23 @@ public class Entity
 	public boolean IntersectAABB(Entity other)
 	{
 		return m_aabb.IntersectAABB(other.GetAABB());
+	}
+
+	@Override
+	public int compareTo(Entity r)
+	{
+		final int BEFORE = -1;
+		final int AFTER = 1;
+		final int EQUAL = 0;
+		if(this == r)
+		{
+			return EQUAL;
+		}
+		if(m_renderLayer < r.m_renderLayer)
+		{
+			return AFTER;
+		}
+		return BEFORE;
 	}
 
 //	public boolean SphereIntersect(Entity other)
