@@ -21,6 +21,12 @@ public class Util
 		return (float)Math.sqrt(x * x + y * y);
 	}
 
+	public static float VectorReflect(float vec, float normal, float dot)
+	{
+		return vec - (normal * dot * 2);
+		//return *this - (normal * (this->Dot(normal) * 2));
+	}
+
 	public static float Lerp(float a, float b, float amt)
 	{
 		return (b - a) * amt + a;

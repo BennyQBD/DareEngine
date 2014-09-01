@@ -45,12 +45,41 @@ public class AABB
 
 	public float GetDistanceX(AABB other)
 	{
+		/*
+		   Vector2d direction = collider.getPos().sub(center);
+			Vector2d distance = direction.abs().sub(collider.getScale().add(halfWidths));
+			if(distance.getX() < 0 && distance.getY() < 0)
+			{
+			if(distance.getX() > distance.getY())
+			{
+			if(direction.getX() < 0)
+			return new Contact(new Vector2d(distance.getX(), 0));
+			else
+			return new Contact(new Vector2d(-distance.getX(), 0));
+			}
+			else
+			{
+			if(direction.getY() < 0)
+			return new Contact(new Vector2d(0, distance.getY()));
+			else
+			return new Contact(new Vector2d(0, -distance.getY()));
+			}
+			}
+			return null;
+		 */
+		
+//		float dirX = other.GetCenterX() - GetCenterX();
+//		float dirY = other.GetCenterY() - GetCenterY();
+//
+//		float distX = Math.abs(dirX) - GetMaxX() - GetMinX
+
 		float distance1 = other.GetMinX() - GetMaxX();
-		float distance2 = GetMinX() - other.GetMaxX(); 
+		float distance2 = GetMinX() - other.GetMaxX();
 		
 		float distance = distance1 > distance2 ? distance1 : distance2;
-
 		return distance;
+
+		//return GetMaxX() - other.GetMinX();
 	}
 	
 	public float GetDistanceY(AABB other)
@@ -59,8 +88,9 @@ public class AABB
 		float distance2 = GetMinY() - other.GetMaxY(); 
 		
 		float distance = distance1 > distance2 ? distance1 : distance2;
-
 		return distance;
+
+		//return GetMaxY() - other.GetMinY();
 	}
 
 }

@@ -58,25 +58,6 @@ public class Scene
 
 //		Bitmap test = new Bitmap("./res/bricks.jpg");
 
-		float range = 50.0f;
-		for(int i = 0; i < 20000; i++)
-		{
-			float xLoc = ((float)Math.random()) * range * 2.0f - range;
-			float yLoc = ((float)Math.random()) * range * 2.0f - range;
-			//System.out.println(xLoc + ", " + yLoc);
-			//float val = (float)i * 0.001f;
-			AddEntity(new Entity(
-//						xLoc, yLoc,
-//						xLoc + 0.1f, yLoc + 0.1f)
-						-0.1f + xLoc, -0.1f + yLoc,
-						0.1f + xLoc, 0.1f + yLoc)
-					.AddComponent(new SpriteComponent(test,
-							   	RenderContext.TRANSPARENCY_FULL, (float)i))
-					.AddComponent(new PhysicsComponent(0.0f, 0.0f)));
-		}
-
-		//test.ClearScreen((byte)0x00, (byte)0x75, (byte)0x11, (byte)0x82);
-
 //		Entity test1 = new Entity(-0.1f, -0.1f, 0.1f, 0.1f);
 //		Entity test2 = new Entity(-0.3f, -0.3f, -0.2f, -0.2f);
 		Entity test3 = new Entity(-1.1f, -1.1f, -0.9f, -0.9f);
@@ -89,6 +70,52 @@ public class Scene
 
 
 		AddEntity(test3);
+
+
+		float range = 20.0f;
+		for(int i = 0; i < 20000; i++)
+		{
+			float xLoc;
+			float yLoc;
+			Set<Entity> entitySet = new HashSet<Entity>();
+			
+			while(true)
+			{
+				xLoc = ((float)Math.random()) * range * 2.0f - range;
+				yLoc = ((float)Math.random()) * range * 2.0f - range;
+
+				m_scene.QueryRange(new AABB(-0.1f + xLoc, -0.1f + yLoc,
+							0.1f + xLoc, 0.1f + yLoc), entitySet);
+				if(entitySet.isEmpty())
+				{
+					break;
+				}
+				else
+				{
+					entitySet.clear();
+				}
+			}
+
+			
+			//System.out.println(xLoc + ", " + yLoc);
+			//float val = (float)i * 0.001f;
+			AddEntity(new Entity(
+//						xLoc, yLoc,
+//						xLoc + 0.1f, yLoc + 0.1f)
+						-0.1f + xLoc, -0.1f + yLoc,
+						0.1f + xLoc, 0.1f + yLoc)
+					.AddComponent(new SpriteComponent(test,
+							   	RenderContext.TRANSPARENCY_FULL, (float)i))
+					.AddComponent(
+							new PhysicsComponent(
+								//0.0f, 0.0f
+								(float)(Math.random() * 0.2f - 0.1f), 
+								(float)(Math.random() * 0.2f - 0.1f)
+							)));
+		}
+
+		//test.ClearScreen((byte)0x00, (byte)0x75, (byte)0x11, (byte)0x82);
+
 	}
 
 	public void AddEntity(Entity entity)
@@ -104,7 +131,7 @@ public class Scene
 	public void Update(Input input, float delta)
 	{
 		Set<Entity> entities = 
-			m_scene.QueryRange(new AABB(-2, -2, 2, 2), new HashSet<Entity>());
+			m_scene.QueryRange(new AABB(-4, -4, 4, 4), new HashSet<Entity>());
 			//m_scene.GetAll();
 
 		Iterator it = entities.iterator();
@@ -153,8 +180,6 @@ public class Scene
 						GetDistanceY(other.GetAABB());
 
 					physicsComponent.OnCollision(otherComponent,
-							distX, distY);
-					otherComponent.OnCollision(physicsComponent,
 							distX, distY);
 				}
 			}
