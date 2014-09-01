@@ -75,6 +75,7 @@ public class CoreEngine implements Runnable
 		double frameCounterTime = 0;
 
 		long previousTime = System.nanoTime();
+		String fpsString = "0 ms per frame (0 fps)";
 		while(m_isRunning)
 		{
 			boolean render = false;
@@ -87,7 +88,8 @@ public class CoreEngine implements Runnable
 
 			if(frameCounterTime >= 1.0)
 			{
-				System.out.println((1000.0/frames) + " ms per frame (" + frames + " fps)");
+				fpsString = (1000.0/frames) + " ms per frame (" + frames + " fps)";
+				System.out.println(fpsString);
 				
 				frames = 0;
 				frameCounterTime = 0.0;
@@ -106,6 +108,9 @@ public class CoreEngine implements Runnable
 
 				RenderContext context = m_display.GetContext();
 				m_game.Render(context);
+				float fontSize = 16.0f/256.0f;
+				context.DrawString(fpsString, -1.0f, 1.0f - fontSize, fontSize,
+					(byte)0xFF, (byte)0xFF, (byte)0xFF);
 				m_display.SwapBuffers();
 			}
 			else

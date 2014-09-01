@@ -40,7 +40,7 @@ public class Main
 {
 	public static void main(String[] args)
 	{
-		Display display = new Display(800, 600, "Software Rendering");
+		Display display = new Display(800, 600, "Dare Engine");
 		CoreEngine engine = new CoreEngine(display, new Game());
 		engine.start();
 	}

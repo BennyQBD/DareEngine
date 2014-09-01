@@ -32,7 +32,7 @@ public class Game
 		}
 //		Bitmap test = new Bitmap("./res/bricks.jpg");
 
-		float range = 10.0f;
+		float range = 50.0f;
 		for(int i = 0; i < 20000; i++)
 		{
 			float xLoc = ((float)Math.random()) * range * 2.0f - range;
@@ -114,5 +114,8 @@ public class Game
 			Entity current = (Entity)it.next();
 			current.Render(target);
 		}
+
+		target.DrawString("Hello, World!", -0.5f, -0.5f, 32.0f/256.0f,
+				(byte)0xF0, (byte)0xF0, (byte)0x00);
 	}
 }

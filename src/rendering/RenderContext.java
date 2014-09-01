@@ -9,17 +9,59 @@ public class RenderContext extends Bitmap
 	public static final int TRANSPARENCY_BASIC = 1;
 	public static final int TRANSPARENCY_FULL = 2;
 
-//	public static final int SAMPLER_NEAREST = 0;
-//	public static final int SAMPLER_LINEAR = 1;
-
 	private float m_cameraX;
 	private float m_cameraY;
+	private Bitmap m_font;
+	private Bitmap m_fontColor;
 	
 	public RenderContext(int width, int height)
 	{
 		super(width, height);
 		m_cameraX = 0.0f;
 		m_cameraY = 0.0f;
+		m_font = new Bitmap("./res/monospace.png");
+		m_fontColor = new Bitmap(1, 1);
+	}
+
+	public void DrawString(String text, float x, float y, float size,
+			byte b, byte g, byte r)
+	{
+		float spacingFactor = m_font.GetAspect();
+		float aspect = GetAspect();
+		m_fontColor.DrawPixel(0, 0, (byte)0x00, b, g, r);
+		
+		float halfWidth   = GetWidth()/2.0f;
+		float halfHeight  = GetHeight()/2.0f;
+
+		float currentPosX = x;
+		float currentPosY = y;
+
+		float sizeX = size;
+		float sizeY = size;
+
+		for(int i = 0; i < text.length(); i++)
+		{
+			char current = text.charAt(i);
+			int imgX = current & 0x0F;
+			int imgY = (current >> 4) & 0x0F;
+
+			float imgXStart = (float)imgX/16.0f;
+			float imgYStart = (float)imgY/16.0f + 0.01f;
+
+			float xStart = currentPosX;
+			float yStart = currentPosY;
+			float xEnd = currentPosX + sizeX;
+			float yEnd = currentPosY + sizeY;
+
+			DrawImageDispatcher(m_font, m_fontColor, 
+				xStart, yStart, 
+				xEnd, yEnd, 
+				imgXStart, imgYStart,
+				(spacingFactor)/16.0f, 1.0f/16.0f,
+				TRANSPARENCY_BASIC);
+
+			currentPosX += sizeX * spacingFactor;
+		}
 	}
 
 	public void SetCameraPosition(float x, float y)
@@ -36,10 +78,16 @@ public class RenderContext extends Bitmap
 					aspect + m_cameraX, 1 + m_cameraY);
 	}
 
-	public void DrawImage(Bitmap bitmap, float xStart, float yStart, 
-			float xEnd, float yEnd, int transpencyType)
+	private void DrawImageDispatcher(Bitmap bitmap, Bitmap source,
+		   	float xStart, float yStart, 
+			float xEnd, float yEnd, 
+			float imageXStart, float imageYStart,
+			float scaleXStep, float scaleYStep,
+			int transparencyType)
 	{
 		float aspect = GetAspect();
+		float halfWidth   = GetWidth()/2.0f;
+		float halfHeight  = GetHeight()/2.0f;
 
 		xStart -= m_cameraX;
 		xEnd   -= m_cameraX;
@@ -48,15 +96,10 @@ public class RenderContext extends Bitmap
 
 		xStart /= aspect;
 		xEnd   /= aspect;
-
-		float halfWidth   = GetWidth()/2.0f;
-		float halfHeight  = GetHeight()/2.0f;
-
-		float imageXStart = 0.0f;
-		float imageYStart = 0.0f;
-		float imageYStep  = 1.0f/(((yEnd * halfHeight) + halfHeight)
+		
+		float imageYStep  = scaleYStep/(((yEnd * halfHeight) + halfHeight)
 			   	-((yStart * halfHeight) + halfHeight));
-		float imageXStep  = 1.0f/(((xEnd * halfWidth) + halfWidth)
+		float imageXStep  = scaleXStep/(((xEnd * halfWidth) + halfWidth)
 			   	-((xStart * halfWidth) + halfWidth));
 
 		if(xStart < -1.0f)
@@ -88,70 +131,43 @@ public class RenderContext extends Bitmap
 		xEnd   = (xEnd * halfWidth) + halfWidth;
 		yEnd   = (yEnd * halfHeight) + halfHeight;
 
-//		switch(samplerType)
-//		{
-//			case SAMPLER_NEAREST:
-			switch(transpencyType)
-			{
-				case TRANSPARENCY_NONE:
-					DrawImageInternal(bitmap, 
-							(int)xStart, (int)yStart, 
-							(int)xEnd, (int)yEnd,
-							imageXStart, imageYStart, 
-							imageXStep, imageYStep);
-					break;
-				case TRANSPARENCY_BASIC:
-					DrawImageBasicTransparencyInternal(bitmap, 
-							(int)xStart, (int)yStart, 
-							(int)xEnd, (int)yEnd,
-							imageXStart, imageYStart, 
-							imageXStep, imageYStep);
-					break;
-				case TRANSPARENCY_FULL:
-					DrawImageAlphaBlendedInternal(bitmap, 
-							(int)xStart, (int)yStart, 
-							(int)xEnd, (int)yEnd,
-							imageXStart, imageYStart, 
-							imageXStep, imageYStep);				
-					break;
-				default:
-					System.err.println("You used an invalid transparency value >:(");
-					System.exit(1);
-			}
-//			break;
-//			case SAMPLER_LINEAR:
-//				switch(transpencyType)
-//				{
-//					case TRANSPARENCY_NONE:
-//						DrawImageInternalLinear(bitmap, 
-//								(int)xStart, (int)yStart, 
-//								(int)xEnd, (int)yEnd,
-//								imageXStart, imageYStart, 
-//								imageXStep, imageYStep);
-//						break;
-//					case TRANSPARENCY_BASIC:
-//						DrawImageBasicTransparencyInternal(bitmap, 
-//								(int)xStart, (int)yStart, 
-//								(int)xEnd, (int)yEnd,
-//								imageXStart, imageYStart, 
-//								imageXStep, imageYStep);
-//						break;
-//					case TRANSPARENCY_FULL:
-//						DrawImageAlphaBlendedInternal(bitmap, 
-//								(int)xStart, (int)yStart, 
-//								(int)xEnd, (int)yEnd,
-//								imageXStart, imageYStart, 
-//								imageXStep, imageYStep);				
-//						break;
-//					default:
-//						System.err.println("You used an invalid transparency value >:(");
-//						System.exit(1);
-//				}
-//			break;
-//			default:
-//					System.err.println("You used an invalid sampler value >:(");
-//					System.exit(1);
-//		}
+		switch(transparencyType)
+		{
+			case TRANSPARENCY_NONE:
+				DrawImageInternal(bitmap, 
+						(int)xStart, (int)yStart, 
+						(int)xEnd, (int)yEnd,
+						imageXStart, imageYStart, 
+						imageXStep, imageYStep);
+				break;
+			case TRANSPARENCY_BASIC:
+				DrawImageBasicTransparencyInternal(bitmap, source,
+						(int)xStart, (int)yStart, 
+						(int)xEnd, (int)yEnd,
+						imageXStart, imageYStart, 
+						imageXStep, imageYStep);
+				break;
+			case TRANSPARENCY_FULL:
+				DrawImageAlphaBlendedInternal(bitmap, 
+						(int)xStart, (int)yStart, 
+						(int)xEnd, (int)yEnd,
+						imageXStart, imageYStart, 
+						imageXStep, imageYStep);				
+				break;
+			default:
+				System.err.println("You used an invalid transparency value >:(");
+				System.exit(1);
+		}
+
+	}
+
+	public void DrawImage(Bitmap bitmap, float xStart, float yStart, 
+			float xEnd, float yEnd, int transparencyType)
+	{
+		DrawImageDispatcher(bitmap, bitmap,
+				xStart, yStart, xEnd, yEnd,
+				0.0f, 0.0f, 1.0f, 1.0f,
+				transparencyType);
 	}
 
 	private void DrawImageAlphaBlendedInternal(Bitmap bitmap, 
@@ -212,61 +228,56 @@ public class RenderContext extends Bitmap
 		}
 	}
 	
-	private void DrawImageBasicTransparencyInternal(Bitmap bitmap, 
+	private void DrawImageBasicTransparencyInternal(Bitmap bitmap, Bitmap source,
 			int xStart, int yStart, 
 			int xEnd, int yEnd,
 			float texStartX, float texStartY,
 			float srcXStep, float srcYStep)
 	{
+
+		//Note: The two bitmaps/srcIndices are a trick to reuse this function for
+		//drawing fonts. Under normal usage, the same bitmap should be given to
+		//both. However, when drawing fonts, the font bitmap should be supplied
+		//as "bitmap," and the font color bitmap should be supplied as "source."
 		int destIndex = (xStart+yStart*GetWidth())*4;
 		int destYInc = (GetWidth() - (xEnd - xStart)) * 4;
 
 		float srcY = texStartY;
-		float srcIndexFloatStep = (srcXStep * (float)(bitmap.GetWidth() - 1));
+		float srcIndexFloatStep1 = (srcXStep * (float)(source.GetWidth() - 1));
+		float srcIndexFloatStep2 = (srcXStep * (float)(bitmap.GetWidth() - 1));
 		for(int j = yStart; j < yEnd; j++)
 		{
 //			float srcX = texStartX;
-			float srcIndexFloat = ((texStartX * (bitmap.GetWidth()-1))
+			float srcIndexFloat1 = ((texStartX * (source.GetWidth()-1))
+					+(int)(srcY * (source.GetHeight()-1))*source.GetWidth());
+			float srcIndexFloat2 = ((texStartX * (bitmap.GetWidth()-1))
 					+(int)(srcY * (bitmap.GetHeight()-1))*bitmap.GetWidth());
+
 
 			for(int i = xStart; i < xEnd; i++)
 			{	
-				int srcIndex = (int)(srcIndexFloat) * 4;
+				int srcIndex1 = (int)(srcIndexFloat1) * 4;
+				int srcIndex2 = (int)(srcIndexFloat2) * 4;
 				
 				//The destIndex logic is equivalent to this
 //				int destIndex = (i+j*GetWidth())*4;
 
 //				//The srcIndex logic is equivalent to this
-//				int srcIndex = ((int)(srcX * (bitmap.GetWidth()-1))
+//				int srcIndex2 = ((int)(srcX * (bitmap.GetWidth()-1))
 //						+(int)(srcY * (bitmap.GetHeight()-1))*bitmap.GetWidth())*4;
  
-				byte a = bitmap.GetComponent(srcIndex + 0);
-//				byte b = bitmap.GetComponent(srcIndex + 1);
-//				byte g = bitmap.GetComponent(srcIndex + 2);
-//				byte r = bitmap.GetComponent(srcIndex + 3);
-//
-//				byte thisB = GetComponent(destIndex + 1);
-//				byte thisG = GetComponent(destIndex + 2);
-//				byte thisR = GetComponent(destIndex + 3);
-//
-//				byte mask = (byte)(a >> 7);
-//				byte newB = (byte)((b & (mask)) | (thisB & (~mask)));
-//				byte newG = (byte)((g & (mask)) | (thisG & (~mask)));
-//				byte newR = (byte)((r & (mask)) | (thisR & (~mask)));
-//
-//				SetComponent(destIndex + 1, newB);
-//				SetComponent(destIndex + 2, newG);
-//				SetComponent(destIndex + 3, newR);
+				byte a = bitmap.GetComponent(srcIndex2 + 0);
 				
 				if(a < (byte)0)
 				{
-					SetComponent(destIndex + 1, bitmap.GetComponent(srcIndex + 1));
-					SetComponent(destIndex + 2, bitmap.GetComponent(srcIndex + 2));
-					SetComponent(destIndex + 3, bitmap.GetComponent(srcIndex + 3));
+					SetComponent(destIndex + 1, source.GetComponent(srcIndex1 + 1));
+					SetComponent(destIndex + 2, source.GetComponent(srcIndex1 + 2));
+					SetComponent(destIndex + 3, source.GetComponent(srcIndex1 + 3));
 				}
 
 				destIndex += 4; 
-				srcIndexFloat += srcIndexFloatStep;
+				srcIndexFloat1 += srcIndexFloatStep1;
+				srcIndexFloat2 += srcIndexFloatStep2;
 //				srcX += srcXStep;
 			}
 			srcY += srcYStep;
@@ -292,155 +303,6 @@ public class RenderContext extends Bitmap
 			srcY += srcYStep;
 		}
 	}
-
-//	private void DrawImageInternalLinear(Bitmap bitmap, 
-//			int xStart, int yStart, 
-//			int xEnd, int yEnd,
-//			float texStartX, float texStartY,
-//			float srcXStep, float srcYStep)
-//	{
-//		float srcY = texStartY;
-//		for(int j = yStart; j < yEnd; j++)
-//		{
-//			float srcX = texStartX;
-//			for(int i = xStart; i < xEnd; i++)
-//			{
-//				bitmap.CopyNearest(this, i, j, srcX, srcY);
-//				srcX += srcXStep;
-//			}
-//			srcY += srcYStep;
-//		}
-//	}
-
-
-	public void FillRect(float xStart, float yStart, 
-			float xEnd, float yEnd,
-			byte a, byte b, byte g, byte r)
-	{
-//		float xStart = xCenter - width/2.0f;
-//		float yStart = yCenter - height/2.0f;
-//		float xEnd = xStart + width;
-//		float yEnd = yStart + height;
-
-		float halfWidth   = GetWidth()/2.0f;
-		float halfHeight  = GetHeight()/2.0f;
-
-		float imageXStart = 0.0f;
-		float imageYStart = 0.0f;
-		float imageYStep  = 1.0f/(((yEnd * halfHeight) + halfHeight)
-			   	-((yStart * halfHeight) + halfHeight));
-		float imageXStep  = 1.0f/(((xEnd * halfWidth) + halfWidth)
-			   	-((xStart * halfWidth) + halfWidth));
-
-		if(xStart < -1.0f)
-		{
-			imageXStart = -((xStart + 1.0f)/(xEnd - xStart));
-			xStart = -1.0f;
-		}
-		if(xStart > 1.0f)
-		{
-			imageXStart = -((xStart + 1.0f)/(xEnd - xStart));
-			xStart = 1.0f;
-		}
-		if(yStart < -1.0f)
-		{
-			imageYStart = -((yStart + 1.0f)/(yEnd - yStart));
-			yStart = -1.0f;
-		}
-		if(yStart > 1.0f)
-		{
-			imageYStart = -((yStart + 1.0f)/(yEnd - yStart));
-			yStart = 1.0f;
-		}
-
-		xEnd = Util.Clamp(xEnd, -1.0f, 1.0f);
-		yEnd = Util.Clamp(yEnd, -1.0f, 1.0f);
-		
-		xStart = (xStart * halfWidth) + halfWidth;
-		yStart = (yStart * halfHeight) + halfHeight;
-		xEnd   = (xEnd * halfWidth) + halfWidth;
-		yEnd   = (yEnd * halfHeight) + halfHeight;
-
-		FillRectInternal((int)xStart, (int)yStart, 
-				(int)xEnd, (int)yEnd,
-				a, b, g, r);
-	}
-	
-	private void FillRectInternal(int xStart, int yStart, 
-			int xEnd, int yEnd,
-			byte a, byte b, byte g, byte r)
-	{
-		for(int j = yStart; j < yEnd; j++)
-		{
-			for(int i = xStart; i < xEnd; i++)
-			{
-				DrawPixel(i, j, a, b, g, r);
-			}
-		}
-	}
-
-//	public void DrawImage(Bitmap image, float xCenter, float yCenter, float width, float height)
-//	{
-//		//Begin clipping logic
-//		float xStart = xCenter - width/2.0f;
-//		float yStart = yCenter - height/2.0f;
-//		float xEnd = xStart + width;
-//		float yEnd = yStart + height;
-//
-//		float halfWidth   = GetWidth()/2.0f;
-//		float halfHeight  = GetHeight()/2.0f;
-//		float scaleFactor = halfWidth < halfHeight ? halfWidth : halfHeight;
-//
-//		float imageXStart = 0.0f;
-//		float imageYStart = 0.0f;
-//		float imageYStep  = 1.0f/(((yEnd * scaleFactor) + halfHeight)
-//			   	-((yStart * scaleFactor) + halfHeight));
-//		float imageXStep  = 1.0f/(((xEnd * scaleFactor) + halfWidth)
-//			   	-((xStart * scaleFactor) + halfWidth));
-//
-//		if(xStart < -1.0f)
-//		{
-//			imageXStart = -((xStart + 1.0f)/(xEnd - xStart));
-//			xStart = -1.0f;
-//		}
-//		if(xStart > 1.0f)
-//		{
-//			imageXStart = -((xStart + 1.0f)/(xEnd - xStart));
-//			xStart = 1.0f;
-//		}
-//		if(yStart < -1.0f)
-//		{
-//			imageYStart = -((yStart + 1.0f)/(yEnd - yStart));
-//			yStart = -1.0f;
-//		}
-//		if(yStart > 1.0f)
-//		{
-//			imageYStart = -((yStart + 1.0f)/(yEnd - yStart));
-//			yStart = 1.0f;
-//		}
-//
-//		xEnd = Util.Clamp(xEnd, -1.0f, 1.0f);
-//		yEnd = Util.Clamp(yEnd, -1.0f, 1.0f);
-//		
-//		xStart = (xStart * scaleFactor) + halfWidth;
-//		yStart = (yStart * scaleFactor) + halfHeight;
-//		xEnd   = (xEnd * scaleFactor) + halfWidth;
-//		yEnd   = (yEnd * scaleFactor) + halfHeight;
-//		//End clipping logic
-//
-//		float imageY = imageYStart;
-//
-//		for(int y = (int)yStart; y < (int)yEnd; y++)
-//		{
-//			float imageX = imageXStart;
-//			for(int x = (int)xStart; x < (int)xEnd; x++)
-//			{
-//				image.CopyNearest(this, x, y, imageX, imageY);
-//				imageX += imageXStep;
-//			}
-//			imageY += imageYStep;
-//		}
-//	}
 
 //	public void DrawLine(float xStart, float yStart, float xEnd, 
 //			float yEnd, byte a, byte b, byte g, byte r)
