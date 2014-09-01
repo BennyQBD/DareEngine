@@ -42,4 +42,25 @@ public class AABB
 		return m_minX < maxX && m_maxX > minX &&
 		   m_minY < maxY && m_maxY > minY;
 	}
+
+	public float GetDistanceX(AABB other)
+	{
+		float distance1 = other.GetMinX() - GetMaxX();
+		float distance2 = GetMinX() - other.GetMaxX(); 
+		
+		float distance = distance1 > distance2 ? distance1 : distance2;
+
+		return distance;
+	}
+	
+	public float GetDistanceY(AABB other)
+	{
+		float distance1 = other.GetMinY() - GetMaxY();
+		float distance2 = GetMinY() - other.GetMaxY(); 
+		
+		float distance = distance1 > distance2 ? distance1 : distance2;
+
+		return distance;
+	}
+
 }

@@ -29,6 +29,20 @@ public class Entity implements Comparable<Entity>
 		m_renderLayer = 0.0f;
 	}
 
+	public EntityComponent GetComponent(String name)
+	{
+		for(int i = 0; i < m_components.size(); i++)
+		{
+			EntityComponent current = m_components.get(i);
+			if(current.GetName().equals(name))
+			{
+				return current;
+			}
+		}
+
+		return null;
+	}
+
 	public Entity AddComponent(EntityComponent component)
 	{
 		component.SetEntity(this);

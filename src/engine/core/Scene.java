@@ -30,6 +30,32 @@ public class Scene
 						(byte)(Math.random() * 255));
 			}
 		}
+
+		int numFrames = 12;
+		Bitmap animationTest[] = new Bitmap[numFrames];
+//		float animationTimes[] = new float[numFrames];
+//		int animationNext[] = new int[numFrames];
+
+		for(int k = 0; k < numFrames; k++)
+		{
+			Bitmap currentTest = new Bitmap(20, 20);
+			for(int j = 0; j < currentTest.GetHeight(); j++)
+			{
+				for(int i = 0; i < currentTest.GetWidth(); i++)
+				{
+					currentTest.DrawPixel(i, j, 
+							(byte)(Math.random() * 255), 
+							(byte)(Math.random() * 255),
+							(byte)(Math.random() * 255), 
+							(byte)(Math.random() * 255));
+				}
+			}
+			animationTest[k] = currentTest;
+//			animationTimes[k] = 0.5f;
+//			animationNext[k] = k + 1;
+		}
+//		animationNext[numFrames - 1] = 0;
+
 //		Bitmap test = new Bitmap("./res/bricks.jpg");
 
 		float range = 50.0f;
@@ -45,7 +71,8 @@ public class Scene
 						-0.1f + xLoc, -0.1f + yLoc,
 						0.1f + xLoc, 0.1f + yLoc)
 					.AddComponent(new SpriteComponent(test,
-							   	RenderContext.TRANSPARENCY_FULL, (float)i)));
+							   	RenderContext.TRANSPARENCY_FULL, (float)i))
+					.AddComponent(new PhysicsComponent(0.0f, 0.0f)));
 		}
 
 		//test.ClearScreen((byte)0x00, (byte)0x75, (byte)0x11, (byte)0x82);
@@ -56,9 +83,9 @@ public class Scene
 
 //		test1.AddComponent(new TestComponent(test));
 //		test2.AddComponent(new TestComponent(test));
-		test3.AddComponent(new SpriteComponent(test, 
-					RenderContext.TRANSPARENCY_FULL, -1.0f));
-		test3.AddComponent(new TestComponent2());
+		test3.AddComponent(new SpriteComponent(animationTest, 0.1f,
+				RenderContext.TRANSPARENCY_FULL, -1.0f));
+		test3.AddComponent(new PhysicsComponent(0.2f, 0.2f));
 
 
 		AddEntity(test3);
@@ -95,7 +122,41 @@ public class Scene
 			{
 				RemoveEntity(current);
 				current.UpdateAABB();
+				HandleCollisions(current);
 				AddEntity(current);
+			}
+		}
+	}
+
+	private void HandleCollisions(Entity current)
+	{
+		PhysicsComponent physicsComponent =(PhysicsComponent)
+			current.GetComponent(PhysicsComponent.NAME);
+
+		if(physicsComponent != null)
+		{
+			Set<Entity> collidingEntities = new HashSet<Entity>();
+			m_scene.QueryRange(current.GetAABB(), collidingEntities);
+			
+			Iterator it2 = collidingEntities.iterator();
+			while(it2.hasNext())
+			{
+				Entity other = (Entity)it2.next();
+				PhysicsComponent otherComponent =(PhysicsComponent)
+					other.GetComponent(PhysicsComponent.NAME);
+
+				if(otherComponent != null)
+				{
+					float distX = current.GetAABB().
+						GetDistanceX(other.GetAABB());
+					float distY = current.GetAABB().
+						GetDistanceY(other.GetAABB());
+
+					physicsComponent.OnCollision(otherComponent,
+							distX, distY);
+					otherComponent.OnCollision(physicsComponent,
+							distX, distY);
+				}
 			}
 		}
 	}
