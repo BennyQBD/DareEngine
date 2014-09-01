@@ -1,6 +1,6 @@
-package core;
+package engine.core;
 
-import rendering.*;
+import engine.rendering.*;
 
 public abstract class EntityComponent
 {

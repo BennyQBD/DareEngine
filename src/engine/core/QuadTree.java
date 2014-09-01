@@ -1,7 +1,7 @@
-package core;
+package engine.core;
 
 import java.util.*;
-import physics.*;
+import engine.physics.*;
 
 public class QuadTree
 {

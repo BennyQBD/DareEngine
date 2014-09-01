@@ -1,4 +1,4 @@
-package core;
+package engine.core;
 
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;

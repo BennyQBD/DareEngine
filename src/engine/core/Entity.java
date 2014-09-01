@@ -1,8 +1,8 @@
-package core;
+package engine.core;
 
 import java.util.*;
-import physics.*;
-import rendering.*;
+import engine.physics.*;
+import engine.rendering.*;
 
 public class Entity implements Comparable<Entity>
 {

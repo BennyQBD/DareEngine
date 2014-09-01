@@ -1,7 +1,7 @@
 mv res bin/res
 cd bin
 
-java Main
+java engine/Main
 
 mv res ../res
 cd ../

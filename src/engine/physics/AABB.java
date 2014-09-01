@@ -1,4 +1,4 @@
-package physics;
+package engine.physics;
 
 public class AABB
 {

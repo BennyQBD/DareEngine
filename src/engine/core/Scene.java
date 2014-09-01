@@ -1,16 +1,16 @@
-package core;
+package engine.core;
 
 import java.awt.event.KeyEvent;
 import java.util.*;
-import physics.*;
-import rendering.*;
-import components.*;
+import engine.physics.*;
+import engine.rendering.*;
+import engine.components.*;
 
-public class Game
+public class Scene
 {
 	private QuadTree m_scene;
 
-	public Game()
+	public Scene()
 	{
 		m_scene = new QuadTree(
 				new AABB(-1, -1, 1, 1)

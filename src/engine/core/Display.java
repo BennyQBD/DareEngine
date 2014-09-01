@@ -1,4 +1,4 @@
-package core;
+package engine.core;
 
 /**
 @file
@@ -37,7 +37,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.BufferStrategy;
 import java.awt.image.DataBufferByte;
 import javax.swing.JFrame;
-import rendering.*;
+import engine.rendering.*;
 
 /**
  * Represents a window that can be drawn in using a software renderer.

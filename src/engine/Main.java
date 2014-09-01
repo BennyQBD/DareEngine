@@ -1,3 +1,5 @@
+package engine;
+
 /**
 @file
 @author Benny Bobaganoosh <thebennybox@gmail.com>
@@ -27,9 +29,9 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-import core.*;
-import physics.*;
-import rendering.*;
+import engine.core.*;
+import engine.physics.*;
+import engine.rendering.*;
 
 /**
  * The sole purpose of this class is to hold the main method.
@@ -41,7 +43,7 @@ public class Main
 	public static void main(String[] args)
 	{
 		Display display = new Display(800, 600, "Dare Engine");
-		CoreEngine engine = new CoreEngine(display, new Game());
+		CoreEngine engine = new CoreEngine(display, new Scene());
 		engine.start();
 	}
 }

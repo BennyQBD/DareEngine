@@ -1,7 +1,7 @@
-package core;
+package engine.core;
 
 import java.util.Random;
-import rendering.*;
+import engine.rendering.*;
 
 /* 
  * Keeps track of the various game engine components, and controls when they
@@ -11,13 +11,13 @@ public class CoreEngine implements Runnable
 {
 	private final Thread  m_thread;    // The primary thread of execution
 	private final Display m_display;   // Where any graphics are displayed
-	private final Game    m_game;      // The game that the engine is running;
+	private final Scene   m_scene;     // The scene that the engine is running;
 	private boolean       m_isRunning; // Whether the engine is currently running or not.
 
-	public CoreEngine(Display display, Game game)
+	public CoreEngine(Display display, Scene scene)
 	{
 		m_display = display;
-		m_game = game;
+		m_scene = scene;
 		m_thread = new Thread(this);
 		m_isRunning = false;
 
@@ -98,7 +98,7 @@ public class CoreEngine implements Runnable
 			{
 				render = true;
 				//m_display.Update();
-				m_game.Update(m_display.GetInput(), (float)secondsPerFrame);
+				m_scene.Update(m_display.GetInput(), (float)secondsPerFrame);
 				unprocessedTime -= secondsPerFrame;
 			}
 
@@ -107,7 +107,7 @@ public class CoreEngine implements Runnable
 				frames++;
 
 				RenderContext context = m_display.GetContext();
-				m_game.Render(context);
+				m_scene.Render(context);
 				float fontSize = 16.0f/256.0f;
 				context.DrawString(fpsString, -1.0f, 1.0f - fontSize, fontSize,
 					(byte)0xFF, (byte)0xFF, (byte)0xFF);

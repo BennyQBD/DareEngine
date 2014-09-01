@@ -1,7 +1,7 @@
-package components;
+package engine.components;
 
-import core.*;
-import rendering.*;
+import engine.core.*;
+import engine.rendering.*;
 
 public class SpriteComponent extends EntityComponent
 {

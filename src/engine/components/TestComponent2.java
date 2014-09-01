@@ -1,7 +1,7 @@
-package components;
+package engine.components;
 
-import rendering.*;
-import core.*;
+import engine.rendering.*;
+import engine.core.*;
 
 public class TestComponent2 extends EntityComponent
 {

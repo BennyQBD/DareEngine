@@ -1,7 +1,7 @@
-package rendering;
+package engine.rendering;
 
-import core.*;
-import physics.*;
+import engine.core.*;
+import engine.physics.*;
 
 public class RenderContext extends Bitmap
 {
