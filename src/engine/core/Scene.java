@@ -58,21 +58,21 @@ public class Scene
 
 //		Bitmap test = new Bitmap("./res/bricks.jpg");
 
-//		Entity test1 = new Entity(-0.1f, -0.1f, 0.1f, 0.1f);
+		Entity test3 = new Entity(-0.1f, -0.1f, 0.1f, 0.1f);
 //		Entity test2 = new Entity(-0.3f, -0.3f, -0.2f, -0.2f);
-		Entity test3 = new Entity(-1.1f, -1.1f, -0.9f, -0.9f);
+//		Entity test3 = new Entity(-1.1f, -1.1f, -0.9f, -0.9f);
 
 //		test1.AddComponent(new TestComponent(test));
 //		test2.AddComponent(new TestComponent(test));
-		test3.AddComponent(new SpriteComponent(animationTest, 0.1f,
+		test3.AddComponent(new SpriteComponent(animationTest, 1.0f/7.5f,
 				RenderContext.TRANSPARENCY_FULL, -1.0f));
-		test3.AddComponent(new PhysicsComponent(0.2f, 0.2f));
+		test3.AddComponent(new PhysicsComponent(0.4f, 0.4f));
 
 
 		AddEntity(test3);
 
 
-		float range = 20.0f;
+		float range = 25.0f;
 		for(int i = 0; i < 20000; i++)
 		{
 			float xLoc;
@@ -108,9 +108,9 @@ public class Scene
 							   	RenderContext.TRANSPARENCY_FULL, (float)i))
 					.AddComponent(
 							new PhysicsComponent(
-								//0.0f, 0.0f
-								(float)(Math.random() * 0.2f - 0.1f), 
-								(float)(Math.random() * 0.2f - 0.1f)
+								0.0f, 0.0f
+								//(float)(Math.random() * 0.1f - 0.05f), 
+								//(float)(Math.random() * 0.1f - 0.05f)
 							)));
 		}
 
@@ -132,7 +132,7 @@ public class Scene
 	{
 		Set<Entity> entities = 
 			m_scene.QueryRange(new AABB(-4, -4, 4, 4), new HashSet<Entity>());
-			//m_scene.GetAll();
+			//m_scene.GetAll(new HashSet<Entity>());
 
 		Iterator it = entities.iterator();
 		while(it.hasNext())

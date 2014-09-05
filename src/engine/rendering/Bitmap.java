@@ -106,7 +106,7 @@ public class Bitmap
 
 		try
 		{
-			BufferedImage image = ImageIO.read(new File(fileName));
+			BufferedImage image = ImageIO.read(Bitmap.class.getResource(fileName.substring(1)));//ImageIO.read(new File(fileName));
 
 			width = image.getWidth();
 			height = image.getHeight();
