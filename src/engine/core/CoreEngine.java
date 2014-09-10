@@ -1,132 +1,185 @@
+/*
+ * Copyright (c) 2014, Benny Bobaganoosh
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer. 
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package engine.core;
 
 import engine.rendering.RenderContext;
 
-/* 
+/**
+ * The core game engine.
+ * <p>
  * Keeps track of the various game engine components, and controls when they
  * take action.
+ * 
+ * @author Benny Bobaganoosh (thebennybox@gmail.com)
+ * @version 1.0
+ * @since 2014-09-10
  */
-public class CoreEngine implements Runnable
-{
+public class CoreEngine implements Runnable {
+	/**
+	 * If true, game is rendered as often as possible, rather than staying at a
+	 * fixed framerate, such as 60 frames per second.
+	 */
 	private static final boolean IGNORE_FRAMECAP = false;
-	
-	private final Thread  m_thread;    // The primary thread of execution
-	private final Display m_display;   // Where any graphics are displayed
-	private final Scene   m_scene;     // The scene that the engine is running;
-	private boolean       m_isRunning; // Whether the engine is currently running or not.
 
-	public CoreEngine(Display display, Scene scene)
-	{
-		m_display = display;
-		m_scene = scene;
-		m_thread = new Thread(this);
-		m_isRunning = false;
+	/** The primary thread of execution */
+	private final Thread thread;
+	/* Where any graphics are displayed */
+	private final Display display;
+	/* The scene that the engine is running */
+	private final Scene scene;
+	/** Whether the engine is currently running or not */
+	private boolean isRunning;
 
-		//Display something immediately; helps reduce first frame issues.
-		m_display.SwapBuffers();
-		m_display.SwapBuffers();
+	/**
+	 * Initializes the CoreEngine to a usable state.
+	 * 
+	 * @param display
+	 *            Where any graphics are displayed.
+	 * @param scene
+	 *            The game scene that the engine should run.
+	 */
+	public CoreEngine(Display display, Scene scene) {
+		this.display = display;
+		this.scene = scene;
+		this.thread = new Thread(this);
+		this.isRunning = false;
+
+		// Display something immediately; helps reduce first frame issues.
+		display.SwapBuffers();
+		display.SwapBuffers();
 	}
 
-	/*
-	 * Begins running all the various components.
+	/**
+	 * Begins running the game engine and all it's various components. Can be
+	 * stopped by calling the {@link #stop()} method.
+	 * 
+	 * @see #stop()
 	 */
-	public void start()
-	{
-		if(m_isRunning)
-		{
+	public void start() {
+		if (isRunning) {
 			return;
 		}
-		m_isRunning = true;
+		isRunning = true;
 
-		m_thread.start();
+		thread.start();
 	}
 
-	/*
-	 * Stops running all the various components.
+	/**
+	 * Stops running the game engine and all it's various components. Can be
+	 * started by calling the {@link #start()} method.
+	 * 
+	 * @see #start()
 	 */
-	public void stop()
-	{
-		if(!m_isRunning)
-		{
+	public void stop() {
+		if (!isRunning) {
 			return;
 		}
-		m_isRunning = false;
+		isRunning = false;
 
-		try
-		{
-			m_thread.join();
-		}
-		catch(Exception ex)
-		{
+		try {
+			thread.join();
+		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.exit(0);
 		}
 	}
 
-	/*
-	 * Runs all the components.
-	 * Should not be called directly; is only public
-	 * because the Runnable interface requires it to be.
+	/**
+	 * The primary function that runs the game engine and all it's components.
+	 * <p>
+	 * This should not called directly. It is only public because the Runnable
+	 * interface requires it to be.
+	 * 
+	 * If you wish to run the engine, use the {@link #start()} method instead.
+	 * 
+	 * @see #start()
 	 */
-	public void run()
-	{
+	public void run() {
 		int frames = 0;
 		double unprocessedTime = 0.0;
-		double secondsPerFrame = 1.0/60.0;
+		// TODO: Don't hardcode framerate at 60 fps.
+		double secondsPerFrame = 1.0 / 60.0;
 		double frameCounterTime = 0;
 
 		long previousTime = System.nanoTime();
 		String fpsString = "0 ms per frame (0 fps)";
-		while(m_isRunning)
-		{
+		while (isRunning) {
 			boolean render = false;
+
+			// Update current and passed time based on time since
+			// last frame
 			long currentTime = System.nanoTime();
 			long passedTime = currentTime - previousTime;
 			previousTime = currentTime;
-			//float delta = (float)(passedTime / 1000000000.0);
-			unprocessedTime  += passedTime / 1000000000.0;
+
+			// Update time variables based on passed time
+			unprocessedTime += passedTime / 1000000000.0;
 			frameCounterTime += passedTime / 1000000000.0;
 
-			if(frameCounterTime >= 1.0)
-			{
-				fpsString = (1000.0/frames) + " ms per frame (" + frames + " fps)";
+			// If 1 second has passed since fps was displayed,
+			// then display it.
+			if (frameCounterTime >= 1.0) {
+				fpsString = (1000.0 / frames)
+						+ " ms per frame (" + frames + " fps)";
 				System.out.println(fpsString);
-				
+
 				frames = 0;
 				frameCounterTime = 0.0;
 			}
-			while(unprocessedTime > secondsPerFrame)
-			{
+
+			// As long as at least secondsPerFrame time has passed
+			// since the last update, keep updating.
+			//
+			// This simulates a fixed time delta of secondsPerFrame,
+			// which can both maintain stable performance and prevent
+			// simulation errors from excessively large or small deltas.
+			while (unprocessedTime > secondsPerFrame) {
 				render = true;
-				//m_display.Update();
-				m_scene.Update(m_display.GetInput(), (float)secondsPerFrame);
+
+				scene.Update(display.GetInput(),
+						(float) secondsPerFrame);
 				unprocessedTime -= secondsPerFrame;
 			}
 
-			if(render || IGNORE_FRAMECAP)
-			{
+			// Only render if it is actually needed.
+			if (render || IGNORE_FRAMECAP) {
 				frames++;
 
-				RenderContext context = m_display.GetContext();
-				m_scene.Render(context);
-//				float fontSize = 16.0f/256.0f;
-//				context.DrawString(fpsString, -1.0f, 1.0f - fontSize, fontSize,
-//					(byte)0xFF, (byte)0xFF, (byte)0xFF);
-				m_display.SwapBuffers();
-			}
-			else
-			{
-				try
-				{
+				RenderContext context = display.GetContext();
+				scene.Render(context);
+				display.SwapBuffers();
+			} else {
+				// If no rendering is needed, let the processor
+				// perform other tasks for a while.
+				try {
 					Thread.sleep(1);
-				}
-				catch(Exception ex)
-				{
+				} catch (Exception ex) {
 					ex.printStackTrace();
 					System.exit(1);
 				}
 			}
 		}
-		//m_display.Dispose();
 	}
 }
