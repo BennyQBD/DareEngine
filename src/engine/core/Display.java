@@ -39,8 +39,6 @@ import engine.rendering.RenderContext;
  * Represents a window that can be drawn in using a software renderer.
  *
  * @author Benny Bobaganoosh (thebennybox@gmail.com)
- * @version 1.0
- * @since 2014-09-10
  */
 public class Display extends Canvas {
 	private static final long serialVersionUID = 1L;
@@ -84,8 +82,8 @@ public class Display extends Canvas {
 				BufferedImage.TYPE_3BYTE_BGR);
 		this.displayComponents = ((DataBufferByte) displayImage
 				.getRaster().getDataBuffer()).getData();
-		this.frameBuffer.Clear((byte) 0x80);
-		this.frameBuffer.DrawPixel(100, 100, (byte) 0x00,
+		this.frameBuffer.clear((byte) 0x80);
+		this.frameBuffer.drawPixel(100, 100, (byte) 0x00,
 				(byte) 0x00, (byte) 0x00, (byte) 0xFF);
 
 		// Create a JFrame designed specifically to show this Display.
@@ -123,9 +121,9 @@ public class Display extends Canvas {
 		// Display components should be the byte array used for displayImage's
 		// pixels. Therefore, this call should effectively copy the frameBuffer
 		// into the displayImage.
-		frameBuffer.CopyToByteArray(displayComponents);
+		frameBuffer.copyToByteArray(displayComponents);
 		graphics.drawImage(displayImage, 0, 0,
-				frameBuffer.GetWidth(), frameBuffer.GetHeight(),
+				frameBuffer.getWidth(), frameBuffer.getHeight(),
 				null);
 		bufferStrategy.show();
 	}

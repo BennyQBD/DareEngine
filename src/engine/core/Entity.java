@@ -32,8 +32,6 @@ import engine.rendering.*;
  * An object in the game.
  * 
  * @author Benny Bobaganoosh (thebennybox@gmail.com)
- * @version 1.0
- * @since 2014-09-10
  */
 public class Entity implements Comparable<Entity> {
 	private float x;
@@ -45,20 +43,20 @@ public class Entity implements Comparable<Entity> {
 	/**
 	 * Creates a new Entity with minimum necessary construction.
 	 * 
-	 * @param minX
+	 * @param xMin
 	 *            Smallest X value of the entity
-	 * @param minY
+	 * @param yMin
 	 *            Smallest Y value of the entity
-	 * @param maxX
+	 * @param xMax
 	 *            Biggest X value of the entity
-	 * @param maxY
+	 * @param yMax
 	 *            Biggest Y value of the entity
 	 */
-	public Entity(float minX, float minY, float maxX, float maxY) {
+	public Entity(float xMin, float yMin, float xMax, float yMax) {
 		this.components = new ArrayList<EntityComponent>();
-		this.aabb = new AABB(minX, minY, maxX, maxY);
-		this.x = aabb.GetCenterX();
-		this.y = aabb.GetCenterY();
+		this.aabb = new AABB(xMin, yMin, xMax, yMax);
+		this.x = aabb.getCenterX();
+		this.y = aabb.getCenterY();
 		this.renderLayer = 0.0f;
 	}
 
@@ -74,7 +72,7 @@ public class Entity implements Comparable<Entity> {
 	public EntityComponent getComponent(String name) {
 		for (int i = 0; i < components.size(); i++) {
 			EntityComponent current = components.get(i);
-			if (current.GetName().equals(name)) {
+			if (current.getName().equals(name)) {
 				return current;
 			}
 		}
@@ -90,8 +88,8 @@ public class Entity implements Comparable<Entity> {
 	 * @return this, to allow easily adding multiple components.
 	 */
 	public Entity addComponent(EntityComponent component) {
-		component.SetEntity(this);
-		component.OnAdd();
+		component.setEntity(this);
+		component.onAdd();
 		components.add(component);
 		return this;
 	}
@@ -107,13 +105,13 @@ public class Entity implements Comparable<Entity> {
 	 * this entity is no longer in any acceleration structure.
 	 */
 	public void updateAABB() {
-		float deltaX = x - aabb.GetCenterX();
-		float deltaY = y - aabb.GetCenterY();
+		float deltaX = x - aabb.getCenterX();
+		float deltaY = y - aabb.getCenterY();
 
-		float minX = aabb.GetMinX() + deltaX;
-		float minY = aabb.GetMinY() + deltaY;
-		float maxX = aabb.GetMaxX() + deltaX;
-		float maxY = aabb.GetMaxY() + deltaY;
+		float minX = aabb.getMinX() + deltaX;
+		float minY = aabb.getMinY() + deltaY;
+		float maxX = aabb.getMaxX() + deltaX;
+		float maxY = aabb.getMaxY() + deltaY;
 
 		aabb = new AABB(minX, minY, maxX, maxY);
 	}
@@ -128,7 +126,7 @@ public class Entity implements Comparable<Entity> {
 	 */
 	public void update(Input input, float delta) {
 		for (int i = 0; i < components.size(); i++) {
-			components.get(i).Update(input, delta);
+			components.get(i).update(input, delta);
 		}
 	}
 
@@ -140,7 +138,7 @@ public class Entity implements Comparable<Entity> {
 	 */
 	public void render(RenderContext target) {
 		for (int i = 0; i < components.size(); i++) {
-			components.get(i).Render(target);
+			components.get(i).render(target);
 		}
 	}
 
@@ -152,7 +150,7 @@ public class Entity implements Comparable<Entity> {
 	 * @return Whether or not this Entity is intersecting the other Entity.
 	 */
 	public boolean intersectAABB(Entity other) {
-		return aabb.IntersectAABB(other.getAABB());
+		return aabb.intersectAABB(other.getAABB());
 	}
 
 	/**

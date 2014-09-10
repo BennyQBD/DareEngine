@@ -33,8 +33,6 @@ import engine.rendering.RenderContext;
  * take action.
  * 
  * @author Benny Bobaganoosh (thebennybox@gmail.com)
- * @version 1.0
- * @since 2014-09-10
  */
 public class CoreEngine implements Runnable {
 	/**
@@ -158,7 +156,7 @@ public class CoreEngine implements Runnable {
 			while (unprocessedTime > secondsPerFrame) {
 				render = true;
 
-				scene.Update(display.getInput(),
+				scene.update(display.getInput(),
 						(float) secondsPerFrame);
 				unprocessedTime -= secondsPerFrame;
 			}
@@ -168,7 +166,7 @@ public class CoreEngine implements Runnable {
 				frames++;
 
 				RenderContext context = display.getContext();
-				scene.Render(context);
+				scene.render(context);
 				display.swapBuffers();
 			} else {
 				// If no rendering is needed, let the processor

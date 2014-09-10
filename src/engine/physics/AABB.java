@@ -1,64 +1,92 @@
+/*
+ * Copyright (c) 2014, Benny Bobaganoosh
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer. 
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package engine.physics;
 
-public class AABB
-{
-	private float m_minX;
-	private float m_minY;
-	private float m_maxX;
-	private float m_maxY;
+public class AABB {
+	private float xMin;
+	private float yMin;
+	private float xMax;
+	private float yMax;
 
-	public float GetMinX() { return m_minX; }
-	public float GetMinY() { return m_minY; }
-	public float GetMaxX() { return m_maxX; }
-	public float GetMaxY() { return m_maxY; }
-
-	public float GetCenterX()
-	{
-		return (m_minX + m_maxX)/2.0f;
+	public AABB(float xMin, float yMin, float xMax, float yMax) {
+		this.xMin = xMin;
+		this.yMin = yMin;
+		this.xMax = xMax;
+		this.yMax = yMax;
 	}
 
-	public float GetCenterY()
-	{
-		return (m_minY + m_maxY)/2.0f;
+	public boolean intersectAABB(AABB other) {
+		return intersectRect(other.getMinX(), other.getMinY(),
+				other.getMaxX(), other.getMaxY());
 	}
 
-	public AABB(float minX, float minY, float maxX, float maxY)
-	{
-		m_minX = minX;
-		m_minY = minY;
-		m_maxX = maxX;
-		m_maxY = maxY;
+	public boolean intersectRect(float minX, float minY,
+			float maxX, float maxY) {
+		return minX < maxX && xMax > minX && yMin < maxY
+				&& yMax > minY;
 	}
 
-	public boolean IntersectAABB(AABB other)
-	{
-		return IntersectRect(other.GetMinX(), 
-				other.GetMinY(), other.GetMaxX(), other.GetMaxY());
+	public float getCenterX() {
+		return (xMin + xMax) / 2.0f;
 	}
 
-	public boolean IntersectRect(float minX, float minY, 
-			float maxX, float maxY)
-	{
-		return m_minX < maxX && m_maxX > minX &&
-		   m_minY < maxY && m_maxY > minY;
+	public float getCenterY() {
+		return (yMin + yMax) / 2.0f;
 	}
 
-	public float GetDistanceX(AABB other)
-	{
-		float distance1 = other.GetMinX() - GetMaxX();
-		float distance2 = GetMinX() - other.GetMaxX();
-		
-		float distance = distance1 > distance2 ? distance1 : distance2;
-		return distance;
-	}
-	
-	public float GetDistanceY(AABB other)
-	{
-		float distance1 = other.GetMinY() - GetMaxY();
-		float distance2 = GetMinY() - other.GetMaxY(); 
-		
-		float distance = distance1 > distance2 ? distance1 : distance2;
+	public float getDistanceX(AABB other) {
+		float distance1 = other.getMinX() - getMaxX();
+		float distance2 = getMinX() - other.getMaxX();
+
+		float distance = distance1 > distance2 ? distance1
+				: distance2;
 		return distance;
 	}
 
+	public float getDistanceY(AABB other) {
+		float distance1 = other.getMinY() - getMaxY();
+		float distance2 = getMinY() - other.getMaxY();
+
+		float distance = distance1 > distance2 ? distance1
+				: distance2;
+		return distance;
+	}
+
+	public float getMinX() {
+		return xMin;
+	}
+
+	public float getMinY() {
+		return yMin;
+	}
+
+	public float getMaxX() {
+		return xMax;
+	}
+
+	public float getMaxY() {
+		return yMax;
+	}
 }

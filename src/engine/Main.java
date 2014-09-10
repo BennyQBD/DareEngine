@@ -39,8 +39,6 @@ import engine.rendering.RenderContext;
  * Any other use should be placed in a separate class
  * 
  * @author Benny Bobaganoosh (thebennybox@gmail.com)
- * @version 1.0
- * @since 2014-09-10
  */
 public class Main
 {
@@ -56,7 +54,7 @@ public class Main
 
 		Bitmap test = new Bitmap("./res/bricks.jpg");
 
-		scene.AddEntity(new Entity(-1f, -1f, 1f, 1f)
+		scene.addEntity(new Entity(-1f, -1f, 1f, 1f)
 				.addComponent(
 					new SpriteComponent(test, 
 						RenderContext.TRANSPARENCY_NONE, 0)));
