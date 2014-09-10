@@ -1,7 +1,7 @@
 package engine.components;
 
-import engine.core.*;
-import engine.rendering.*;
+import engine.core.EntityComponent;
+import engine.core.Input;
 
 public class PhysicsComponent extends EntityComponent
 {
@@ -9,7 +9,6 @@ public class PhysicsComponent extends EntityComponent
 
 	private float m_velX;
 	private float m_velY;
-	private static AudioClip s_audioClip = null;
 
 	public float GetVelX() { return m_velX; }
 	public float GetVelY() { return m_velY; }
@@ -19,10 +18,6 @@ public class PhysicsComponent extends EntityComponent
 		super(NAME);
 		m_velX = velX;
 		m_velY = velY;
-		if(s_audioClip == null)
-		{
-			s_audioClip = new AudioClip("./res/beep.wav");
-		}
 	}
 
 	@Override
@@ -56,9 +51,6 @@ public class PhysicsComponent extends EntityComponent
 			m_velX *= -1;
 			m_velY *= -1;
 		}
-
-		s_audioClip.start();
-
 //		float length = Util.VectorLength(distX, distY);
 //		distX /= length;
 //		distY /= length;

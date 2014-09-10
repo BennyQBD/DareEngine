@@ -1,7 +1,6 @@
 package engine.core;
 
-import java.util.Random;
-import engine.rendering.*;
+import engine.rendering.RenderContext;
 
 /* 
  * Keeps track of the various game engine components, and controls when they
@@ -9,6 +8,8 @@ import engine.rendering.*;
  */
 public class CoreEngine implements Runnable
 {
+	private static final boolean IGNORE_FRAMECAP = false;
+	
 	private final Thread  m_thread;    // The primary thread of execution
 	private final Display m_display;   // Where any graphics are displayed
 	private final Scene   m_scene;     // The scene that the engine is running;
@@ -102,15 +103,15 @@ public class CoreEngine implements Runnable
 				unprocessedTime -= secondsPerFrame;
 			}
 
-			if(render || true)
+			if(render || IGNORE_FRAMECAP)
 			{
 				frames++;
 
 				RenderContext context = m_display.GetContext();
 				m_scene.Render(context);
-				float fontSize = 16.0f/256.0f;
-				context.DrawString(fpsString, -1.0f, 1.0f - fontSize, fontSize,
-					(byte)0xFF, (byte)0xFF, (byte)0xFF);
+//				float fontSize = 16.0f/256.0f;
+//				context.DrawString(fpsString, -1.0f, 1.0f - fontSize, fontSize,
+//					(byte)0xFF, (byte)0xFF, (byte)0xFF);
 				m_display.SwapBuffers();
 			}
 			else

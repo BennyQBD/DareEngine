@@ -30,20 +30,23 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 */
 
 import java.awt.Canvas;
-import java.awt.Graphics;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.image.BufferedImage;
+import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+
 import javax.swing.JFrame;
-import engine.rendering.*;
+
+import engine.rendering.RenderContext;
 
 /**
  * Represents a window that can be drawn in using a software renderer.
  */
 public class Display extends Canvas
 {
+	private static final long serialVersionUID = 1L;
+	
 	/** The window being used for display */
 	private final JFrame m_frame;
 	/** The bitmap representing the final image to display */

@@ -29,9 +29,13 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-import engine.core.*;
-import engine.physics.*;
-import engine.rendering.*;
+import engine.components.SpriteComponent;
+import engine.core.CoreEngine;
+import engine.core.Display;
+import engine.core.Entity;
+import engine.core.Scene;
+import engine.rendering.Bitmap;
+import engine.rendering.RenderContext;
 
 /**
  * The sole purpose of this class is to hold the main method.
@@ -43,7 +47,16 @@ public class Main
 	public static void main(String[] args)
 	{
 		Display display = new Display(800, 600, "Dare Engine");
-		CoreEngine engine = new CoreEngine(display, new Scene());
+		Scene scene = new Scene();
+
+		Bitmap test = new Bitmap("./res/bricks.jpg");
+
+		scene.AddEntity(new Entity(-1f, -1f, 1f, 1f)
+				.AddComponent(
+					new SpriteComponent(test, 
+						RenderContext.TRANSPARENCY_NONE, 0)));
+
+		CoreEngine engine = new CoreEngine(display, scene);
 		engine.start();
 	}
 }

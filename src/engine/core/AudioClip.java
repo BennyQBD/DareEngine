@@ -1,13 +1,17 @@
 package engine.core;
 
-import javax.sound.sampled.*;
 import java.io.File;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
 
 public class AudioClip
 {
 //	private static Sequencer sequencer;
-	private static final float AUDIO_VOLUME = -5.0f;
-	private static final float DECAY_FACTOR = 0.12f;
+//	private static final float AUDIO_VOLUME = -5.0f;
+//	private static final float DECAY_FACTOR = 0.12f;
 
 	private final Clip m_clip;
 
@@ -39,13 +43,12 @@ public class AudioClip
 
 	public void start()
 	{
-		if(m_clip.isRunning())
+		if(m_clip.isActive())
 		{
 			m_clip.stop();
 		}
 		
 		m_clip.setFramePosition(0);
-		//m_clip.loop(Clip.LOOP_CONTINUOUSLY);
 		m_clip.start();
 	}
 }

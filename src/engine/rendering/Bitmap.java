@@ -29,10 +29,10 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-import java.util.Arrays;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+
 import javax.imageio.ImageIO;
 
 
@@ -106,7 +106,9 @@ public class Bitmap
 
 		try
 		{
-			BufferedImage image = ImageIO.read(Bitmap.class.getResource(fileName.substring(1)));//ImageIO.read(new File(fileName));
+			BufferedImage image = 
+					ImageIO.read(Bitmap.class.getResource(fileName.substring(5)));
+					//ImageIO.read(new File(fileName));
 
 			width = image.getWidth();
 			height = image.getHeight();

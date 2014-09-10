@@ -1,7 +1,7 @@
 package engine.rendering;
 
-import engine.core.*;
-import engine.physics.*;
+import engine.core.Util;
+import engine.physics.AABB;
 
 public class RenderContext extends Bitmap
 {
@@ -27,11 +27,7 @@ public class RenderContext extends Bitmap
 			byte b, byte g, byte r)
 	{
 		float spacingFactor = m_font.GetAspect();
-		float aspect = GetAspect();
 		m_fontColor.DrawPixel(0, 0, (byte)0x00, b, g, r);
-		
-		float halfWidth   = GetWidth()/2.0f;
-		float halfHeight  = GetHeight()/2.0f;
 
 		float currentPosX = x;
 		float currentPosY = y;
