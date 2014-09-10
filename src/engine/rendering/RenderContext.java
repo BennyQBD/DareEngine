@@ -32,15 +32,15 @@ public class RenderContext extends Bitmap {
 	public static final int TRANSPARENCY_BASIC = 1;
 	public static final int TRANSPARENCY_FULL = 2;
 
-	private float xCamera;
-	private float yCamera;
+	private float cameraX;
+	private float cameraY;
 	private Bitmap font;
 	private Bitmap fontColor;
 
 	public RenderContext(int width, int height) {
 		super(width, height);
-		xCamera = 0.0f;
-		yCamera = 0.0f;
+		cameraX = 0.0f;
+		cameraY = 0.0f;
 		font = new Bitmap("./res/monospace.png");
 		fontColor = new Bitmap(1, 1);
 	}
@@ -61,16 +61,16 @@ public class RenderContext extends Bitmap {
 			int imgX = current & 0x0F;
 			int imgY = (current >> 4) & 0x0F;
 
-			float imgXStart = (float) imgX / 16.0f;
-			float imgYStart = (float) imgY / 16.0f + 0.01f;
+			float imgStartX = (float) imgX / 16.0f;
+			float imgStartY = (float) imgY / 16.0f + 0.01f;
 
-			float xStart = currentPosX;
-			float yStart = currentPosY;
-			float xEnd = currentPosX + sizeX;
-			float yEnd = currentPosY + sizeY;
+			float startX = currentPosX;
+			float startY = currentPosY;
+			float endX = currentPosX + sizeX;
+			float endY = currentPosY + sizeY;
 
-			drawImageDispatcher(font, fontColor, xStart, yStart,
-					xEnd, yEnd, imgXStart, imgYStart,
+			drawImageDispatcher(font, fontColor, startX, startY,
+					endX, endY, imgStartX, imgStartY,
 					(spacingFactor) / 16.0f, 1.0f / 16.0f,
 					TRANSPARENCY_BASIC);
 
@@ -79,80 +79,80 @@ public class RenderContext extends Bitmap {
 	}
 
 	public void setCameraPosition(float x, float y) {
-		xCamera = x;
-		yCamera = y;
+		cameraX = x;
+		cameraY = y;
 	}
 
 	public AABB getRenderArea() {
 		float aspect = getAspect();
-		return new AABB(-aspect + xCamera, -1 + yCamera, aspect
-				+ xCamera, 1 + yCamera);
+		return new AABB(-aspect + cameraX, -1 + cameraY, aspect
+				+ cameraX, 1 + cameraY);
 	}
 
 	private void drawImageDispatcher(Bitmap bitmap,
-			Bitmap source, float xStart, float yStart,
-			float xEnd, float yEnd, float imageXStart,
-			float imageYStart, float scaleXStep,
-			float scaleYStep, int transparencyType) {
+			Bitmap source, float startX, float startY,
+			float endX, float endY, float imageStartX,
+			float imageStartY, float scaleStepX,
+			float scaleStepY, int transparencyType) {
 		float aspect = getAspect();
 		float halfWidth = getWidth() / 2.0f;
 		float halfHeight = getHeight() / 2.0f;
 
-		xStart -= xCamera;
-		xEnd -= xCamera;
-		yStart -= yCamera;
-		yEnd -= yCamera;
+		startX -= cameraX;
+		endX -= cameraX;
+		startY -= cameraY;
+		endY -= cameraY;
 
-		xStart /= aspect;
-		xEnd /= aspect;
+		startX /= aspect;
+		endX /= aspect;
 
-		float imageYStep = scaleYStep
-				/ (((yEnd * halfHeight) + halfHeight) - ((yStart * halfHeight) + halfHeight));
-		float imageXStep = scaleXStep
-				/ (((xEnd * halfWidth) + halfWidth) - ((xStart * halfWidth) + halfWidth));
+		float imageYStep = scaleStepY
+				/ (((endY * halfHeight) + halfHeight) - ((startY * halfHeight) + halfHeight));
+		float imageXStep = scaleStepX
+				/ (((endX * halfWidth) + halfWidth) - ((startX * halfWidth) + halfWidth));
 
-		if (xStart < -1.0f) {
-			imageXStart = -((xStart + 1.0f) / (xEnd - xStart));
-			xStart = -1.0f;
+		if (startX < -1.0f) {
+			imageStartX = -((startX + 1.0f) / (endX - startX));
+			startX = -1.0f;
 		}
-		if (xStart > 1.0f) {
-			imageXStart = -((xStart + 1.0f) / (xEnd - xStart));
-			xStart = 1.0f;
+		if (startX > 1.0f) {
+			imageStartX = -((startX + 1.0f) / (endX - startX));
+			startX = 1.0f;
 		}
-		if (yStart < -1.0f) {
-			imageYStart = -((yStart + 1.0f) / (yEnd - yStart));
-			yStart = -1.0f;
+		if (startY < -1.0f) {
+			imageStartY = -((startY + 1.0f) / (endY - startY));
+			startY = -1.0f;
 		}
-		if (yStart > 1.0f) {
-			imageYStart = -((yStart + 1.0f) / (yEnd - yStart));
-			yStart = 1.0f;
+		if (startY > 1.0f) {
+			imageStartY = -((startY + 1.0f) / (endY - startY));
+			startY = 1.0f;
 		}
 
-		xEnd = Util.clamp(xEnd, -1.0f, 1.0f);
-		yEnd = Util.clamp(yEnd, -1.0f, 1.0f);
+		endX = Util.clamp(endX, -1.0f, 1.0f);
+		endY = Util.clamp(endY, -1.0f, 1.0f);
 
-		xStart = (xStart * halfWidth) + halfWidth;
-		yStart = (yStart * halfHeight) + halfHeight;
-		xEnd = (xEnd * halfWidth) + halfWidth;
-		yEnd = (yEnd * halfHeight) + halfHeight;
+		startX = (startX * halfWidth) + halfWidth;
+		startY = (startY * halfHeight) + halfHeight;
+		endX = (endX * halfWidth) + halfWidth;
+		endY = (endY * halfHeight) + halfHeight;
 
 		switch (transparencyType) {
 		case TRANSPARENCY_NONE:
-			drawImageInternal(bitmap, (int) xStart,
-					(int) yStart, (int) xEnd, (int) yEnd,
-					imageXStart, imageYStart, imageXStep,
+			drawImageInternal(bitmap, (int) startX,
+					(int) startY, (int) endX, (int) endY,
+					imageStartX, imageStartY, imageXStep,
 					imageYStep);
 			break;
 		case TRANSPARENCY_BASIC:
 			drawImageBasicTransparencyInternal(bitmap, source,
-					(int) xStart, (int) yStart, (int) xEnd,
-					(int) yEnd, imageXStart, imageYStart,
+					(int) startX, (int) startY, (int) endX,
+					(int) endY, imageStartX, imageStartY,
 					imageXStep, imageYStep);
 			break;
 		case TRANSPARENCY_FULL:
-			drawImageAlphaBlendedInternal(bitmap, (int) xStart,
-					(int) yStart, (int) xEnd, (int) yEnd,
-					imageXStart, imageYStart, imageXStep,
+			drawImageAlphaBlendedInternal(bitmap, (int) startX,
+					(int) startY, (int) endX, (int) endY,
+					imageStartX, imageStartY, imageXStep,
 					imageYStep);
 			break;
 		default:
@@ -163,31 +163,31 @@ public class RenderContext extends Bitmap {
 
 	}
 
-	public void drawImage(Bitmap bitmap, float xStart,
-			float yStart, float xEnd, float yEnd,
+	public void drawImage(Bitmap bitmap, float startX,
+			float startY, float endX, float endY,
 			int transparencyType) {
-		drawImageDispatcher(bitmap, bitmap, xStart, yStart,
-				xEnd, yEnd, 0.0f, 0.0f, 1.0f, 1.0f,
+		drawImageDispatcher(bitmap, bitmap, startX, startY,
+				endX, endY, 0.0f, 0.0f, 1.0f, 1.0f,
 				transparencyType);
 	}
 
 	private void drawImageAlphaBlendedInternal(Bitmap bitmap,
-			int xStart, int yStart, int xEnd, int yEnd,
-			float texStartX, float texStartY, float srcXStep,
-			float srcYStep) {
-		int destIndex = (xStart + yStart * getWidth()) * 4;
-		int destYInc = (getWidth() - (xEnd - xStart)) * 4;
+			int startX, int startY, int endX, int endY,
+			float texStartX, float texStartY, float srcStepX,
+			float srcStepY) {
+		int destIndex = (startX + startY * getWidth()) * 4;
+		int destStepY = (getWidth() - (endX - startX)) * 4;
 
 		float srcY = texStartY;
-		float srcIndexFloatStep = (srcXStep * (float) (bitmap
+		float srcIndexFloatStep = (srcStepX * (float) (bitmap
 				.getWidth() - 1));
-		for (int j = yStart; j < yEnd; j++) {
+		for (int j = startY; j < endY; j++) {
 			// float srcX = texStartX;
 			float srcIndexFloat = ((texStartX * (bitmap
 					.getWidth() - 1)) + (int) (srcY * (bitmap
 					.getHeight() - 1)) * bitmap.getWidth());
 
-			for (int i = xStart; i < xEnd; i++) {
+			for (int i = startX; i < endX; i++) {
 				int srcIndex = (int) (srcIndexFloat) * 4;
 
 				// The destIndex logic is equivalent to this
@@ -225,29 +225,29 @@ public class RenderContext extends Bitmap {
 				srcIndexFloat += srcIndexFloatStep;
 				// srcX += srcXStep;
 			}
-			srcY += srcYStep;
-			destIndex += destYInc;
+			srcY += srcStepY;
+			destIndex += destStepY;
 		}
 	}
 
 	private void drawImageBasicTransparencyInternal(
-			Bitmap bitmap, Bitmap source, int xStart,
-			int yStart, int xEnd, int yEnd, float texStartX,
-			float texStartY, float srcXStep, float srcYStep) {
+			Bitmap bitmap, Bitmap source, int startX,
+			int startY, int endX, int endY, float texStartX,
+			float texStartY, float srcStepX, float srcStepY) {
 		// Note: The two bitmaps/srcIndices are a trick to reuse this function
 		// for drawing fonts. Under normal usage, the same bitmap should be
 		// given to both. However, when drawing fonts, the font bitmap should be
 		// supplied as "bitmap," and the font color bitmap should be supplied as
 		// "source."
-		int destIndex = (xStart + yStart * getWidth()) * 4;
-		int destYInc = (getWidth() - (xEnd - xStart)) * 4;
+		int destIndex = (startX + startY * getWidth()) * 4;
+		int destYInc = (getWidth() - (endX - startX)) * 4;
 
 		float srcY = texStartY;
-		float srcIndexFloatStep1 = (srcXStep * (float) (source
+		float srcIndexFloatStep1 = (srcStepX * (float) (source
 				.getWidth() - 1));
-		float srcIndexFloatStep2 = (srcXStep * (float) (bitmap
+		float srcIndexFloatStep2 = (srcStepX * (float) (bitmap
 				.getWidth() - 1));
-		for (int j = yStart; j < yEnd; j++) {
+		for (int j = startY; j < endY; j++) {
 			// float srcX = texStartX;
 			float srcIndexFloat1 = ((texStartX * (source
 					.getWidth() - 1)) + (int) (srcY * (source
@@ -256,7 +256,7 @@ public class RenderContext extends Bitmap {
 					.getWidth() - 1)) + (int) (srcY * (bitmap
 					.getHeight() - 1)) * bitmap.getWidth());
 
-			for (int i = xStart; i < xEnd; i++) {
+			for (int i = startX; i < endX; i++) {
 				int srcIndex1 = (int) (srcIndexFloat1) * 4;
 				int srcIndex2 = (int) (srcIndexFloat2) * 4;
 
@@ -283,22 +283,22 @@ public class RenderContext extends Bitmap {
 				srcIndexFloat2 += srcIndexFloatStep2;
 				// srcX += srcXStep;
 			}
-			srcY += srcYStep;
+			srcY += srcStepY;
 			destIndex += destYInc;
 		}
 	}
 
-	private void drawImageInternal(Bitmap bitmap, int xStart,
-			int yStart, int xEnd, int yEnd, float texStartX,
-			float texStartY, float srcXStep, float srcYStep) {
+	private void drawImageInternal(Bitmap bitmap, int startX,
+			int startY, int endX, int endY, float texStartX,
+			float texStartY, float srcStepX, float srcStepY) {
 		float srcY = texStartY;
-		for (int j = yStart; j < yEnd; j++) {
+		for (int j = startY; j < endY; j++) {
 			float srcX = texStartX;
-			for (int i = xStart; i < xEnd; i++) {
+			for (int i = startX; i < endX; i++) {
 				bitmap.copyNearest(this, i, j, srcX, srcY);
-				srcX += srcXStep;
+				srcX += srcStepX;
 			}
-			srcY += srcYStep;
+			srcY += srcStepY;
 		}
 	}
 }

@@ -25,16 +25,16 @@
 package engine.physics;
 
 public class AABB {
-	private float xMin;
-	private float yMin;
-	private float xMax;
-	private float yMax;
+	private float minX;
+	private float minY;
+	private float maxX;
+	private float maxY;
 
 	public AABB(float xMin, float yMin, float xMax, float yMax) {
-		this.xMin = xMin;
-		this.yMin = yMin;
-		this.xMax = xMax;
-		this.yMax = yMax;
+		this.minX = xMin;
+		this.minY = yMin;
+		this.maxX = xMax;
+		this.maxY = yMax;
 	}
 
 	public boolean intersectAABB(AABB other) {
@@ -44,16 +44,16 @@ public class AABB {
 
 	public boolean intersectRect(float minX, float minY,
 			float maxX, float maxY) {
-		return minX < maxX && xMax > minX && yMin < maxY
-				&& yMax > minY;
+		return this.minX < maxX && this.maxX > minX
+				&& this.minY < maxY && this.maxY > minY;
 	}
 
 	public float getCenterX() {
-		return (xMin + xMax) / 2.0f;
+		return (minX + maxX) / 2.0f;
 	}
 
 	public float getCenterY() {
-		return (yMin + yMax) / 2.0f;
+		return (minY + maxY) / 2.0f;
 	}
 
 	public float getDistanceX(AABB other) {
@@ -75,18 +75,18 @@ public class AABB {
 	}
 
 	public float getMinX() {
-		return xMin;
+		return minX;
 	}
 
 	public float getMinY() {
-		return yMin;
+		return minY;
 	}
 
 	public float getMaxX() {
-		return xMax;
+		return maxX;
 	}
 
 	public float getMaxY() {
-		return yMax;
+		return maxY;
 	}
 }

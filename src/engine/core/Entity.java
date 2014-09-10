@@ -43,18 +43,18 @@ public class Entity implements Comparable<Entity> {
 	/**
 	 * Creates a new Entity with minimum necessary construction.
 	 * 
-	 * @param xMin
+	 * @param minX
 	 *            Smallest X value of the entity
-	 * @param yMin
+	 * @param minY
 	 *            Smallest Y value of the entity
-	 * @param xMax
+	 * @param maxX
 	 *            Biggest X value of the entity
-	 * @param yMax
+	 * @param maxY
 	 *            Biggest Y value of the entity
 	 */
-	public Entity(float xMin, float yMin, float xMax, float yMax) {
+	public Entity(float minX, float minY, float maxX, float maxY) {
 		this.components = new ArrayList<EntityComponent>();
-		this.aabb = new AABB(xMin, yMin, xMax, yMax);
+		this.aabb = new AABB(minX, minY, maxX, maxY);
 		this.x = aabb.getCenterX();
 		this.y = aabb.getCenterY();
 		this.renderLayer = 0.0f;

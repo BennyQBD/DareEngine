@@ -30,19 +30,19 @@ import engine.core.Input;
 public class PhysicsComponent extends EntityComponent {
 	public static final String NAME = "PhysicsComponent";
 
-	private float xVel;
-	private float yVel;
+	private float velX;
+	private float velY;
 
-	public PhysicsComponent(float xVel, float yVel) {
+	public PhysicsComponent(float velX, float velY) {
 		super(NAME);
-		this.xVel = xVel;
-		this.yVel = yVel;
+		this.velX = velX;
+		this.velY = velY;
 	}
 
 	@Override
 	public void update(Input input, float delta) {
-		getEntity().setY(getEntity().getY() + yVel * delta);
-		getEntity().setX(getEntity().getX() + xVel * delta);
+		getEntity().setY(getEntity().getY() + velY * delta);
+		getEntity().setX(getEntity().getX() + velX * delta);
 	}
 
 	public void onCollision(PhysicsComponent other, float distX,
@@ -55,13 +55,13 @@ public class PhysicsComponent extends EntityComponent {
 			float distY) {
 		if (distY > distX) {
 			distX = 0.0f;
-			yVel *= -1;
+			velY *= -1;
 		} else if (distX > distY) {
 			distY = 0.0f;
-			xVel *= -1;
+			velX *= -1;
 		} else {
-			xVel *= -1;
-			yVel *= -1;
+			velX *= -1;
+			velY *= -1;
 		}
 		// float length = Util.VectorLength(distX, distY);
 		// distX /= length;
@@ -75,11 +75,11 @@ public class PhysicsComponent extends EntityComponent {
 		// m_velY = dirY;
 	}
 
-	public float getXVel() {
-		return xVel;
+	public float getVelX() {
+		return velX;
 	}
 
-	public float getYVel() {
-		return yVel;
+	public float getVelY() {
+		return velY;
 	}
 }
