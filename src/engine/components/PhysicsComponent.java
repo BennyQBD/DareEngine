@@ -23,8 +23,8 @@ public class PhysicsComponent extends EntityComponent
 	@Override
 	public void Update(Input input, float delta)
 	{
-		GetEntity().SetY(GetEntity().GetY() + m_velY * delta);
-		GetEntity().SetX(GetEntity().GetX() + m_velX * delta);
+		GetEntity().setY(GetEntity().getY() + m_velY * delta);
+		GetEntity().setX(GetEntity().getX() + m_velX * delta);
 	}
 
 	public void OnCollision(PhysicsComponent other, 

@@ -57,7 +57,7 @@ public class Main
 		Bitmap test = new Bitmap("./res/bricks.jpg");
 
 		scene.AddEntity(new Entity(-1f, -1f, 1f, 1f)
-				.AddComponent(
+				.addComponent(
 					new SpriteComponent(test, 
 						RenderContext.TRANSPARENCY_NONE, 0)));
 

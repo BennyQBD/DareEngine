@@ -39,16 +39,16 @@ public class Scene
 		{
 			Entity current = (Entity)it.next();		
 			
-			float startX = current.GetX();
-			float startY = current.GetY();
+			float startX = current.getX();
+			float startY = current.getY();
 
-			current.Update(input, delta);
+			current.update(input, delta);
 
-			if(startX != current.GetX() ||
-			   startY != current.GetY())
+			if(startX != current.getX() ||
+			   startY != current.getY())
 			{
 				RemoveEntity(current);
-				current.UpdateAABB();
+				current.updateAABB();
 				HandleCollisions(current);
 				AddEntity(current);
 			}
@@ -58,26 +58,26 @@ public class Scene
 	private void HandleCollisions(Entity current)
 	{
 		PhysicsComponent physicsComponent =(PhysicsComponent)
-			current.GetComponent(PhysicsComponent.NAME);
+			current.getComponent(PhysicsComponent.NAME);
 
 		if(physicsComponent != null)
 		{
 			Set<Entity> collidingEntities = new HashSet<Entity>();
-			m_scene.QueryRange(current.GetAABB(), collidingEntities);
+			m_scene.QueryRange(current.getAABB(), collidingEntities);
 			
 			Iterator<Entity> it2 = collidingEntities.iterator();
 			while(it2.hasNext())
 			{
 				Entity other = (Entity)it2.next();
 				PhysicsComponent otherComponent =(PhysicsComponent)
-					other.GetComponent(PhysicsComponent.NAME);
+					other.getComponent(PhysicsComponent.NAME);
 
 				if(otherComponent != null)
 				{
-					float distX = current.GetAABB().
-						GetDistanceX(other.GetAABB());
-					float distY = current.GetAABB().
-						GetDistanceY(other.GetAABB());
+					float distX = current.getAABB().
+						GetDistanceX(other.getAABB());
+					float distY = current.getAABB().
+						GetDistanceY(other.getAABB());
 
 					physicsComponent.OnCollision(otherComponent,
 							distX, distY);
@@ -97,7 +97,7 @@ public class Scene
 		while(it.hasNext())
 		{
 			Entity current = (Entity)it.next();
-			current.Render(target);
+			current.render(target);
 		}
 	}
 }

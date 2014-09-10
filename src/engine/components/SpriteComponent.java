@@ -60,7 +60,7 @@ public class SpriteComponent extends EntityComponent
 	@Override
 	public void OnAdd()
 	{
-		GetEntity().SetRenderLayer(m_renderLayer);
+		GetEntity().setRenderLayer(m_renderLayer);
 	}
 
 	@Override
@@ -80,10 +80,10 @@ public class SpriteComponent extends EntityComponent
 	public void Render(RenderContext target)
 	{
 		target.DrawImage(m_frames[m_currentFrame],
-				GetEntity().GetAABB().GetMinX(), 
-				GetEntity().GetAABB().GetMinY(),
-		        GetEntity().GetAABB().GetMaxX(), 
-				GetEntity().GetAABB().GetMaxY(),
+				GetEntity().getAABB().GetMinX(), 
+				GetEntity().getAABB().GetMinY(),
+		        GetEntity().getAABB().GetMaxX(), 
+				GetEntity().getAABB().GetMaxY(),
 				m_transparencyType
 			);
 	}

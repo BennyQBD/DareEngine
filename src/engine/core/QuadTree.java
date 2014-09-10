@@ -29,7 +29,7 @@ public class QuadTree
 
 	public void Add(Entity entity)
 	{
-		if(entity.GetAABB().IntersectAABB(m_aabb))
+		if(entity.getAABB().IntersectAABB(m_aabb))
 		{
 			if(m_numEntities < m_entities.length)
 			{
@@ -46,8 +46,8 @@ public class QuadTree
 			QuadTree thisAsNode = 
 				new QuadTree(m_nodes, m_entities, m_numEntities, m_aabb);
 
-			float dirX = entity.GetX() - m_aabb.GetCenterX();
-			float dirY = entity.GetY() - m_aabb.GetCenterY();
+			float dirX = entity.getX() - m_aabb.GetCenterX();
+			float dirY = entity.getY() - m_aabb.GetCenterY();
 
 			float minX = m_aabb.GetMinX();
 			float minY = m_aabb.GetMinY();
@@ -107,7 +107,7 @@ public class QuadTree
 
 	public boolean Remove(Entity entity)
 	{
-		if(!entity.GetAABB().IntersectAABB(m_aabb))
+		if(!entity.getAABB().IntersectAABB(m_aabb))
 		{
 			return false;
 		}
@@ -169,7 +169,7 @@ public class QuadTree
 
 		for(int i = 0; i < m_numEntities; i++)
 		{
-			if(m_entities[i].GetAABB().IntersectAABB(aabb))
+			if(m_entities[i].getAABB().IntersectAABB(aabb))
 			{
 				result.add(m_entities[i]);
 			}
@@ -190,7 +190,7 @@ public class QuadTree
 			float minX, float minY, float maxX, float maxY,
 			int nodeIndex)
 	{
-		if(entity.GetAABB().IntersectRect(minX, minY, maxX, maxY))
+		if(entity.getAABB().IntersectRect(minX, minY, maxX, maxY))
 		{
 			if(m_nodes[nodeIndex] == null)
 			{

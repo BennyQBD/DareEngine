@@ -67,8 +67,8 @@ public class CoreEngine implements Runnable {
 		this.isRunning = false;
 
 		// Display something immediately; helps reduce first frame issues.
-		display.SwapBuffers();
-		display.SwapBuffers();
+		display.swapBuffers();
+		display.swapBuffers();
 	}
 
 	/**
@@ -158,7 +158,7 @@ public class CoreEngine implements Runnable {
 			while (unprocessedTime > secondsPerFrame) {
 				render = true;
 
-				scene.Update(display.GetInput(),
+				scene.Update(display.getInput(),
 						(float) secondsPerFrame);
 				unprocessedTime -= secondsPerFrame;
 			}
@@ -167,9 +167,9 @@ public class CoreEngine implements Runnable {
 			if (render || IGNORE_FRAMECAP) {
 				frames++;
 
-				RenderContext context = display.GetContext();
+				RenderContext context = display.getContext();
 				scene.Render(context);
-				display.SwapBuffers();
+				display.swapBuffers();
 			} else {
 				// If no rendering is needed, let the processor
 				// perform other tasks for a while.
