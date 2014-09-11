@@ -24,6 +24,17 @@
  */
 package engine.core;
 
+import java.awt.BorderLayout;
+import java.awt.Canvas;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
 import engine.rendering.RenderContext;
 
 /**
@@ -34,7 +45,9 @@ import engine.rendering.RenderContext;
  * 
  * @author Benny Bobaganoosh (thebennybox@gmail.com)
  */
-public class CoreEngine implements Runnable {
+public class CoreEngine extends Canvas implements Runnable {
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * If true, game is rendered as often as possible, rather than staying at a
 	 * fixed framerate, such as 60 frames per second.
@@ -43,30 +56,104 @@ public class CoreEngine implements Runnable {
 
 	/** The primary thread of execution */
 	private final Thread thread;
-	/* Where any graphics are displayed */
-	private final Display display;
 	/* The scene that the engine is running */
 	private final Scene scene;
 	/** Whether the engine is currently running or not */
 	private boolean isRunning;
 
+	/** The window being used for display */
+	private JFrame frame;
+	/** The bitmap representing the final image to display */
+	private final RenderContext frameBuffer;
+	/** Used to display the framebuffer in the window */
+	private final BufferedImage displayImage;
+	/** The pixels of the display image, as an array of byte components */
+	private final byte[] displayComponents;
+	/** The buffers in the Canvas */
+	private BufferStrategy bufferStrategy;
+	/** A graphics object that can draw into the Canvas's buffers */
+	private Graphics graphics;
+	/** The user input received by this display. */
+	private final Input input;
+	
+	private final float frameRate;
+
 	/**
 	 * Initializes the CoreEngine to a usable state.
-	 * 
-	 * @param display
-	 *            Where any graphics are displayed.
+	 *
+	 * @param width
+	 *            The width of the game window, in pixels
+	 * @param height
+	 *            The height of the game window, in pixels
 	 * @param scene
 	 *            The game scene that the engine should run.
 	 */
-	public CoreEngine(Display display, Scene scene) {
-		this.display = display;
+	public CoreEngine(int width, int height, float frameRate, Scene scene) {
+		this.frameRate = frameRate;
 		this.scene = scene;
 		this.thread = new Thread(this);
 		this.isRunning = false;
 
-		// Display something immediately; helps reduce first frame issues.
-		display.swapBuffers();
-		display.swapBuffers();
+		Dimension size = new Dimension(width, height);
+		setPreferredSize(size);
+		setMinimumSize(size);
+		setMaximumSize(size);
+
+		// Creates images used for display.
+		this.frameBuffer = new RenderContext(width, height);
+		this.displayImage = new BufferedImage(width, height,
+				BufferedImage.TYPE_3BYTE_BGR);
+		this.displayComponents = ((DataBufferByte) displayImage
+				.getRaster().getDataBuffer()).getData();
+		this.frameBuffer.clear((byte) 0x00);
+		this.input = new Input();
+		addKeyListener(input);
+		addFocusListener(input);
+		addMouseListener(input);
+		addMouseMotionListener(input);
+
+		setFocusable(true);
+		requestFocus();
+	}
+
+	/**
+	 * Creates a window to display the game
+	 * 
+	 * @param title
+	 *            The text in the window's title bar.
+	 * @param center
+	 *            Whether the window should be in the center or not
+	 */
+	public void createWindow(String title, boolean center) {
+		// Create a JFrame designed specifically to show this Display.
+		frame = new JFrame();
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.add(this, BorderLayout.CENTER);
+
+		frame.setContentPane(panel);
+		frame.pack();
+		frame.setLocationRelativeTo(null);
+		if (!center) {
+			frame.setLocation(0, 0);
+		}
+		frame.setResizable(false);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+		frame.setTitle(title);
+
+		// this.frame = new JFrame();
+		// this.frame.setResizable(false);
+		// this.frame.add(this);
+		// this.frame.pack();
+		// this.frame.setTitle(title);
+		// this.frame
+		// .setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		// // m_frame.setSize(width, height);
+		// this.frame.setLocationRelativeTo(null);
+		// if (!center) {
+		// this.frame.setLocation(0, 0);
+		// }
+		// this.frame.setVisible(true);
 	}
 
 	/**
@@ -117,8 +204,7 @@ public class CoreEngine implements Runnable {
 	public void run() {
 		int frames = 0;
 		double unprocessedTime = 0.0;
-		// TODO: Don't hardcode framerate at 60 fps.
-		double secondsPerFrame = 1.0 / 60.0;
+		double secondsPerFrame = 1.0 / frameRate;
 		double frameCounterTime = 0;
 
 		long previousTime = System.nanoTime();
@@ -156,8 +242,7 @@ public class CoreEngine implements Runnable {
 			while (unprocessedTime > secondsPerFrame) {
 				render = true;
 
-				scene.update(display.getInput(),
-						(float) secondsPerFrame);
+				scene.update(input, (float) secondsPerFrame);
 				unprocessedTime -= secondsPerFrame;
 			}
 
@@ -165,9 +250,8 @@ public class CoreEngine implements Runnable {
 			if (render || IGNORE_FRAMECAP) {
 				frames++;
 
-				RenderContext context = display.getContext();
-				scene.render(context);
-				display.swapBuffers();
+				scene.render(frameBuffer);
+				swapBuffers();
 			} else {
 				// If no rendering is needed, let the processor
 				// perform other tasks for a while.
@@ -179,5 +263,29 @@ public class CoreEngine implements Runnable {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Presents the user with any new images drawn in the display.
+	 */
+	private void swapBuffers() {
+		// The bufferStrategy is allocated lazily; otherwise issues
+		// can arise when using an applet.
+		if (bufferStrategy == null) {
+			// Allocates 1 display buffer, and gets access to it via the buffer
+			// strategy and a graphics object for drawing into it.
+			createBufferStrategy(2);
+			this.bufferStrategy = getBufferStrategy();
+			this.graphics = bufferStrategy.getDrawGraphics();
+		}
+
+		// Display components should be the byte array used for displayImage's
+		// pixels. Therefore, this call should effectively copy the frameBuffer
+		// into the displayImage.
+		frameBuffer.copyToByteArray(displayComponents);
+		graphics.drawImage(displayImage, 0, 0,
+				frameBuffer.getWidth(), frameBuffer.getHeight(),
+				null);
+		bufferStrategy.show();
 	}
 }

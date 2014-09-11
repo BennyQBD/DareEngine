@@ -24,10 +24,11 @@
  */
 package engine;
 
+import java.applet.Applet;
+import java.awt.BorderLayout;
 
 import engine.components.SpriteComponent;
 import engine.core.CoreEngine;
-import engine.core.Display;
 import engine.core.Entity;
 import engine.core.Scene;
 import engine.rendering.Bitmap;
@@ -40,26 +41,45 @@ import engine.rendering.RenderContext;
  * 
  * @author Benny Bobaganoosh (thebennybox@gmail.com)
  */
-public class Main
-{
-	/**
-	 * The main entry point of the program.
-	 * 
-	 * @param args The command line arguments passed to the program.
-	 */
-	public static void main(String[] args)
-	{
-		Display display = new Display(800, 600, "Dare Engine");
+public class Main extends Applet {
+	private static final long serialVersionUID = 1L;
+
+	private static CoreEngine engine = new CoreEngine(800, 600,
+			60.0f, createScene());
+
+	private static Scene createScene() {
 		Scene scene = new Scene();
 
 		Bitmap test = new Bitmap("./res/bricks.jpg");
 
 		scene.addEntity(new Entity(-1f, -1f, 1f, 1f)
-				.addComponent(
-					new SpriteComponent(test, 
+				.addComponent(new SpriteComponent(test,
 						RenderContext.TRANSPARENCY_NONE, 0)));
 
-		CoreEngine engine = new CoreEngine(display, scene);
+		return scene;
+	}
+
+	public void init() {
+		setLayout(new BorderLayout());
+		add(engine, BorderLayout.CENTER);
+	}
+
+	public void start() {
+		engine.start();
+	}
+
+	public void stop() {
+		engine.stop();
+	}
+
+	/**
+	 * The main entry point of the program.
+	 * 
+	 * @param args
+	 *            The command line arguments passed to the program.
+	 */
+	public static void main(String[] args) {
+		engine.createWindow("Dare Engine", true);
 		engine.start();
 	}
 }
