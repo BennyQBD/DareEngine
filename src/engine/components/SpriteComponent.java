@@ -27,7 +27,13 @@ package engine.components;
 import engine.core.*;
 import engine.rendering.*;
 
+/**
+ * Represents a sprite that can be rendered on screen and animated.
+ * 
+ * @author Benny Bobaganoosh (thebennybox@gmail.com)
+ */
 public class SpriteComponent extends EntityComponent {
+	/** The name of this component when attached to an entity */
 	public static final String NAME = "SpriteComponent";
 
 	private Bitmap[] frames;
@@ -38,12 +44,37 @@ public class SpriteComponent extends EntityComponent {
 	private float renderLayer;
 	private float currentFrameTime;
 
+	/**
+	 * Creates and initializes a sprite with no animation.
+	 * 
+	 * @param sprite
+	 *            The image of the sprite
+	 * @param transparencyType
+	 *            The transparency algorithm used by the sprite. Should be set
+	 *            to a RenderContext.TRANSPARENCY_ value
+	 * @param layer
+	 *            The render layer of this sprite.
+	 */
 	public SpriteComponent(Bitmap sprite, int transparencyType,
 			float layer) {
 		this(new Bitmap[] { sprite }, 0.0f, transparencyType,
 				layer);
 	}
 
+	/**
+	 * Creates and initializes a sprite with a basic looping animation.
+	 * 
+	 * @param frames
+	 *            An array of all the animation frames
+	 * @param frameTime
+	 *            The amount of time, in seconds, between each frame of
+	 *            animation
+	 * @param transparencyType
+	 *            The transparency algorithm used by the sprite. Should be set
+	 *            to a RenderContext.TRANSPARENCY_ value
+	 * @param layer
+	 *            The render layer of this sprite.
+	 */
 	public SpriteComponent(Bitmap[] frames, float frameTime,
 			int transparencyType, float layer) {
 		super(NAME);
@@ -59,6 +90,22 @@ public class SpriteComponent extends EntityComponent {
 				layer);
 	}
 
+	/**
+	 * Initializes a sprite to a usable state.
+	 * 
+	 * @param frames
+	 *            An array of all the animation frames
+	 * @param frameTimes
+	 *            An array of the duration of each animation frame
+	 * @param nextFrames
+	 *            An array containing the indices of the next animation frame at
+	 *            each frame
+	 * @param transparencyType
+	 *            The transparency algorithm used by the sprite. Should be set
+	 *            to a RenderContext.TRANSPARENCY_ value
+	 * @param layer
+	 *            The render layer of this sprite.
+	 */
 	private final void init(Bitmap[] frames, float[] frameTimes,
 			int[] nextFrames, int transparencyType, float layer) {
 		this.frames = frames;
@@ -70,6 +117,22 @@ public class SpriteComponent extends EntityComponent {
 		this.currentFrameTime = 0.0f;
 	}
 
+	/**
+	 * Creates and initializes a sprite with a custom animation.
+	 * 
+	 * @param frames
+	 *            An array of all the animation frames
+	 * @param frameTimes
+	 *            An array of the duration of each animation frame
+	 * @param nextFrames
+	 *            An array containing the indices of the next animation frame at
+	 *            each frame
+	 * @param transparencyType
+	 *            The transparency algorithm used by the sprite. Should be set
+	 *            to a RenderContext.TRANSPARENCY_ value
+	 * @param layer
+	 *            The render layer of this sprite.
+	 */
 	public SpriteComponent(Bitmap[] frames, float[] frameTimes,
 			int[] nextFrames, int transparencyType, float layer) {
 		super(NAME);
@@ -77,11 +140,22 @@ public class SpriteComponent extends EntityComponent {
 				layer);
 	}
 
+	/**
+	 * Updates the entity with proper render layers.<p>
+	 *
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onAdd() {
 		getEntity().setRenderLayer(renderLayer);
 	}
 
+	/**
+	 * Updates the animation, progressing, stopping, or restarting
+	 * if necessary.<p>
+	 *
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void update(Input input, float delta) {
 		currentFrameTime += delta;
@@ -93,6 +167,11 @@ public class SpriteComponent extends EntityComponent {
 		}
 	}
 
+	/**
+	 * Renders the current sprite to a render target.<p>
+	 * 
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void render(RenderContext target) {
 		target.drawImage(frames[currentFrame], getEntity()

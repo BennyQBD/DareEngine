@@ -27,30 +27,70 @@ package engine.components;
 import engine.core.EntityComponent;
 import engine.core.Input;
 
+/**
+ * The base class for any component that interacts with the physics engine.
+ * 
+ * @author Benny Bobaganoosh (thebennybox@gmail.com)
+ */
 public class PhysicsComponent extends EntityComponent {
+	/** The name of this component when attached to an entity */
 	public static final String NAME = "PhysicsComponent";
 
 	private float velX;
 	private float velY;
 
+	/**
+	 * Creates and initializes a new physics component.
+	 * 
+	 * @param velX
+	 *            The velocity of the object on X, in units per second.
+	 * @param velY
+	 *            The velocity of the object on Y, in units per second.
+	 */
 	public PhysicsComponent(float velX, float velY) {
 		super(NAME);
 		this.velX = velX;
 		this.velY = velY;
 	}
 
+	/**
+	 * Moves the entity into a new position based on the information in the
+	 * physics component.<p>
+	 * 
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void update(Input input, float delta) {
 		getEntity().setY(getEntity().getY() + velY * delta);
 		getEntity().setX(getEntity().getX() + velX * delta);
 	}
 
+	/**
+	 * Respond to a collision with another object.
+	 * 
+	 * @param other
+	 *            The physics component attached to the other object
+	 * @param distX
+	 *            Penetration distance on X
+	 * @param distY
+	 *            Penetration distance on Y
+	 */
 	public void onCollision(PhysicsComponent other, float distX,
 			float distY) {
 		// TODO: Temp code!
 		bounce(other, distX, distY);
 	}
 
+	/**
+	 * Bounce off of another object that is colliding with this.
+	 * 
+	 * @param other
+	 *            The physics component attached to the other object
+	 * @param distX
+	 *            Penetration distance on X
+	 * @param distY
+	 *            Penetration distance on Y
+	 */
 	public void bounce(PhysicsComponent other, float distX,
 			float distY) {
 		if (distY > distX) {
@@ -75,10 +115,20 @@ public class PhysicsComponent extends EntityComponent {
 		// m_velY = dirY;
 	}
 
+	/**
+	 * Get the velocity on the X axis
+	 * 
+	 * @return velocity along the X axis
+	 */
 	public float getVelX() {
 		return velX;
 	}
 
+	/**
+	 * Get the velocity on the Y axis
+	 * 
+	 * @return velocity along the Y axis
+	 */
 	public float getVelY() {
 		return velY;
 	}
