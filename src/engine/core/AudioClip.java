@@ -31,43 +31,46 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
 
-public class AudioClip
-{
+/**
+ * Represents a piece of audio that can be played in game.
+ * 
+ * @author Benny Bobaganoosh (thebennybox@gmail.com)
+ */
+public class AudioClip {
 	private final Clip clip;
 
-	public AudioClip(String fileName)
-	{
+	/**
+	 * Loads an audio clip from a file.
+	 * 
+	 * @param fileName
+	 *            The name of the file to load.
+	 */
+	public AudioClip(String fileName) {
 		Clip clip = null;
-		try
-		{
-			AudioInputStream stream = 
-				AudioSystem.getAudioInputStream(
-						new File(fileName));
-			clip = 
-				(Clip)AudioSystem.getLine(
-						new DataLine.Info(Clip.class,
-						   	stream.getFormat()));
-			
+		try {
+			AudioInputStream stream = AudioSystem
+					.getAudioInputStream(new File(fileName));
+			clip = (Clip) AudioSystem.getLine(new DataLine.Info(
+					Clip.class, stream.getFormat()));
+
 			clip.open(stream);
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);
-		}
-		finally
-		{
+		} finally {
 			this.clip = clip;
 		}
 	}
 
-	public void start()
-	{
-		if(clip.isActive())
-		{
+	/**
+	 * Starts playing the audio clip from the beginning. If it is already
+	 * playing, the clip is stopped and restarted.
+	 */
+	public void start() {
+		if (clip.isActive()) {
 			clip.stop();
 		}
-		
+
 		clip.setFramePosition(0);
 		clip.start();
 	}
