@@ -29,7 +29,7 @@ import engine.physics.*;
 
 /**
  * Represents a 2D space that can be recursively divided into 4 equal subspaces.
- * 
+ * <p>
  * TODO: Make this generic so it can store more than just Entities.
  * 
  * @author Benny Bobaganoosh (thebennybox@gmail.com)
