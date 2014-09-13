@@ -29,29 +29,84 @@ import java.io.IOException;
 import engine.core.Util;
 import engine.physics.AABB;
 
+/**
+ * Represents a renderable location, including relevant rendering functions.
+ * 
+ * @author Benny Bobaganoosh (thebennybox@gmail.com)
+ */
 public class RenderContext extends Bitmap {
+	/**
+	 * The transparency type to be used when no transparency is desired.
+	 * <p>
+	 * Should be referred to by name rather than value, as value may change.
+	 */
 	public static final int TRANSPARENCY_NONE = 0;
+	/**
+	 * The transparency type to be used when some pixels should be transparent,
+	 * but no color blending is desired.
+	 * <p>
+	 * Should be referred to by name rather than value, as value may change.
+	 */
 	public static final int TRANSPARENCY_BASIC = 1;
+	/**
+	 * The transparency type to be used when pixel color blending based on based
+	 * on alpha value is desired.
+	 * <p>
+	 * Should be referred to by name rather than value, as value may change.
+	 */
 	public static final int TRANSPARENCY_FULL = 2;
+
+	private static Bitmap font;
 
 	private float cameraX;
 	private float cameraY;
-	private Bitmap font;
 	private Bitmap fontColor;
 
+	/**
+	 * Creates a new render target.
+	 * 
+	 * @param width
+	 *            The width of the render target.
+	 * @param height
+	 *            The height of the render target.
+	 */
 	public RenderContext(int width, int height) {
 		super(width, height);
 		cameraX = 0.0f;
 		cameraY = 0.0f;
-		try {
-			font = new Bitmap("monospace.png");
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new AssertionError("Error: Font file could not be loaded");
+		if (font == null) {
+			try {
+				font = new Bitmap("monospace.png");
+			} catch (IOException e) {
+				e.printStackTrace();
+				throw new AssertionError(
+						"Error: Font file could not be loaded");
+			}
 		}
 		fontColor = new Bitmap(1, 1);
 	}
 
+	/**
+	 * Draws a string of text to the screen starting at the location specified
+	 * by (x,y), in the color specified by (b, g, r).
+	 * 
+	 * @param text
+	 *            The string of text to draw
+	 * @param x
+	 *            The location text drawing should start at on X, normalized
+	 *            into the range (-1, 1)
+	 * @param y
+	 *            The location text drawing should start at on Y, normalized
+	 *            into the range (-1, 1)
+	 * @param size
+	 *            How big the font should be, where 1 unit is the screen height.
+	 * @param b
+	 *            The blue value of the desired font color.
+	 * @param g
+	 *            The green value of the desired font color.
+	 * @param r
+	 *            The red value of the desired font color.
+	 */
 	public void drawString(String text, float x, float y,
 			float size, byte b, byte g, byte r) {
 		float spacingFactor = font.getAspect();
@@ -85,17 +140,72 @@ public class RenderContext extends Bitmap {
 		}
 	}
 
+	/**
+	 * Changes the rendering camera to x, y
+	 * 
+	 * @param x
+	 *            The X location of the camera, normalized into the range (-1,
+	 *            1)
+	 * @param y
+	 *            The Y location of the camera, normalized into the range (-1,
+	 *            1)
+	 */
 	public void setCameraPosition(float x, float y) {
 		cameraX = x;
 		cameraY = y;
 	}
 
+	/**
+	 * Creates an AABB covering the entire renderable area.
+	 * 
+	 * @return An AABB covering the entire renderable area.
+	 */
 	public AABB getRenderArea() {
 		float aspect = getAspect();
 		return new AABB(-aspect + cameraX, -1 + cameraY, aspect
 				+ cameraX, 1 + cameraY);
 	}
 
+	/**
+	 * Internal function to draw an image. Translates render location to account
+	 * for camera position, clips the image against screen boundaries, and calls
+	 * the appropriate low level rendering function to draw it on the screen.
+	 * 
+	 * @param bitmap
+	 *            The bitmap to draw
+	 * @param source
+	 *            Also the bitmap to draw; only in font rendering should this be
+	 *            changed to a different bitmap containing the font color.
+	 * @param startX
+	 *            The start location on X, normalized into the range (-1, 1)
+	 * @param startY
+	 *            The start location on Y, normalized into the range (-1, 1)
+	 * @param endX
+	 *            The end location on X, normalized into the range (-1, 1)
+	 * @param endY
+	 *            The end location on Y, normalized into the range (-1, 1)
+	 * @param imageStartX
+	 *            The location in the image on X where pixels should begin being
+	 *            copied, normalized into the range (0, 1)
+	 * @param imageStartY
+	 *            The location in the image on Y where pixels should begin being
+	 *            copied, normalized into the range (0, 1)
+	 * @param scaleStepX
+	 *            Controls how much the image is "zoomed in" on X. For instance,
+	 *            if the imageStartX and imageStartY are 0, and scaleStepX is
+	 *            1.0f, then the entire image will be scaled to fit in the final
+	 *            output. However, if scaleStepX is 0.5, then only the first
+	 *            half of the image on X will be drawn in the final output.
+	 * @param scaleStepY
+	 *            Controls how much the image is "zoomed in" on Y. For instance,
+	 *            if the imageStartX and imageStartY are 0, and scaleStepY is
+	 *            1.0f, then the entire image will be scaled to fit in the final
+	 *            output. However, if scaleStepY is 0.5, then only the first
+	 *            half of the image on Y will be drawn in the final output.
+	 * @param transparencyType
+	 *            The type of transparency to be used. Should be one of the
+	 *            RenderContext.TRANSPARENCY_ types.
+	 */
 	private void drawImageDispatcher(Bitmap bitmap,
 			Bitmap source, float startX, float startY,
 			float endX, float endY, float imageStartX,
@@ -163,13 +273,31 @@ public class RenderContext extends Bitmap {
 					imageYStep);
 			break;
 		default:
-			System.err
-					.println("You used an invalid transparency value >:(");
-			System.exit(1);
+			throw new IllegalArgumentException(
+					"You used an invalid transparency value >:(. Please use one of the transparency values specified by RenderContext.TRANSPARENCY_");
 		}
-
 	}
 
+	/**
+	 * Draws an image.
+	 * <p>
+	 * The image is not drawn to scale. It is resized to fit in the range
+	 * (startX, startY). This way, all image drawing is resolution independent.
+	 * 
+	 * @param bitmap
+	 *            The bitmap to draw
+	 * @param startX
+	 *            The start location on X, normalized into the range (-1, 1)
+	 * @param startY
+	 *            The start location on Y, normalized into the range (-1, 1)
+	 * @param endX
+	 *            The end location on X, normalized into the range (-1, 1)
+	 * @param endY
+	 *            The end location on Y, normalized into the range (-1, 1)
+	 * @param transparencyType
+	 *            The type of transparency to be used. Should be one of the
+	 *            RenderContext.TRANSPARENCY_ types.
+	 */
 	public void drawImage(Bitmap bitmap, float startX,
 			float startY, float endX, float endY,
 			int transparencyType) {
@@ -178,6 +306,32 @@ public class RenderContext extends Bitmap {
 				transparencyType);
 	}
 
+	/**
+	 * Draws an image to the screen, with alpha blending.
+	 * 
+	 * @param bitmap
+	 *            The bitmap to draw
+	 * @param startX
+	 *            The start location on X, normalized into the range (-1, 1)
+	 * @param startY
+	 *            The start location on Y, normalized into the range (-1, 1)
+	 * @param endX
+	 *            The end location on X, normalized into the range (-1, 1)
+	 * @param endY
+	 *            The end location on Y, normalized into the range (-1, 1)
+	 * @param texStartX
+	 *            The location in the image on X where pixels should begin being
+	 *            copied, normalized into the range (0, 1)
+	 * @param texStartY
+	 *            The location in the image on Y where pixels should begin being
+	 *            copied, normalized into the range (0, 1)
+	 * @param srcStepX
+	 *            The distance to move in the image for each pixel in the
+	 *            destination on X, normalized in the range (0, 1)
+	 * @param srcStepY
+	 *            The distance to move in the image for each pixel in the
+	 *            destination on y, normalized in the range (0, 1)
+	 */
 	private void drawImageAlphaBlendedInternal(Bitmap bitmap,
 			int startX, int startY, int endX, int endY,
 			float texStartX, float texStartY, float srcStepX,
@@ -237,6 +391,32 @@ public class RenderContext extends Bitmap {
 		}
 	}
 
+	/**
+	 * Draws an image to the screen, with basic transparency.
+	 * 
+	 * @param bitmap
+	 *            The bitmap to draw
+	 * @param startX
+	 *            The start location on X, normalized into the range (-1, 1)
+	 * @param startY
+	 *            The start location on Y, normalized into the range (-1, 1)
+	 * @param endX
+	 *            The end location on X, normalized into the range (-1, 1)
+	 * @param endY
+	 *            The end location on Y, normalized into the range (-1, 1)
+	 * @param texStartX
+	 *            The location in the image on X where pixels should begin being
+	 *            copied, normalized into the range (0, 1)
+	 * @param texStartY
+	 *            The location in the image on Y where pixels should begin being
+	 *            copied, normalized into the range (0, 1)
+	 * @param srcStepX
+	 *            The distance to move in the image for each pixel in the
+	 *            destination on X, normalized in the range (0, 1)
+	 * @param srcStepY
+	 *            The distance to move in the image for each pixel in the
+	 *            destination on y, normalized in the range (0, 1)
+	 */
 	private void drawImageBasicTransparencyInternal(
 			Bitmap bitmap, Bitmap source, int startX,
 			int startY, int endX, int endY, float texStartX,
@@ -295,6 +475,32 @@ public class RenderContext extends Bitmap {
 		}
 	}
 
+	/**
+	 * Draws an image to the screen, with no transparency.
+	 * 
+	 * @param bitmap
+	 *            The bitmap to draw
+	 * @param startX
+	 *            The start location on X, normalized into the range (-1, 1)
+	 * @param startY
+	 *            The start location on Y, normalized into the range (-1, 1)
+	 * @param endX
+	 *            The end location on X, normalized into the range (-1, 1)
+	 * @param endY
+	 *            The end location on Y, normalized into the range (-1, 1)
+	 * @param texStartX
+	 *            The location in the image on X where pixels should begin being
+	 *            copied, normalized into the range (0, 1)
+	 * @param texStartY
+	 *            The location in the image on Y where pixels should begin being
+	 *            copied, normalized into the range (0, 1)
+	 * @param srcStepX
+	 *            The distance to move in the image for each pixel in the
+	 *            destination on X, normalized in the range (0, 1)
+	 * @param srcStepY
+	 *            The distance to move in the image for each pixel in the
+	 *            destination on y, normalized in the range (0, 1)
+	 */
 	private void drawImageInternal(Bitmap bitmap, int startX,
 			int startY, int endX, int endY, float texStartX,
 			float texStartY, float srcStepX, float srcStepY) {

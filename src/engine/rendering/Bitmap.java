@@ -55,6 +55,8 @@ import javax.imageio.ImageIO;
  * is compromised for the sake of performance. If you need to store and use
  * images outside of a software renderer, it is recommended that you use Java's
  * standard image classes instead.
+ * 
+ * @author Benny Bobaganoosh (thebennybox@gmail.com)
  */
 public class Bitmap {
 	/** The width, in pixels, of the image */

@@ -54,6 +54,8 @@ public class SpriteComponent extends EntityComponent {
 	 *            to a RenderContext.TRANSPARENCY_ value
 	 * @param layer
 	 *            The render layer of this sprite.
+	 *            
+	 * @see engine.rendering.RenderContext
 	 */
 	public SpriteComponent(Bitmap sprite, int transparencyType,
 			float layer) {
