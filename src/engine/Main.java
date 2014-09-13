@@ -26,6 +26,7 @@ package engine;
 
 import java.applet.Applet;
 import java.awt.BorderLayout;
+import java.io.IOException;
 
 import engine.components.SpriteComponent;
 import engine.core.CoreEngine;
@@ -50,7 +51,13 @@ public class Main extends Applet {
 	private static Scene createScene() {
 		Scene scene = new Scene();
 
-		Bitmap test = new Bitmap("./res/bricks.jpg");
+		Bitmap test = null;
+		try {
+			test = new Bitmap("bricks.jpg");
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new AssertionError("Error: Unable to load resource.");
+		}
 
 		scene.add(new Entity(-1f, -1f, 1f, 1f)
 				.add(new SpriteComponent(test,

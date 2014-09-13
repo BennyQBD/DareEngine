@@ -24,6 +24,8 @@
  */
 package engine.rendering;
 
+import java.io.IOException;
+
 import engine.core.Util;
 import engine.physics.AABB;
 
@@ -41,7 +43,12 @@ public class RenderContext extends Bitmap {
 		super(width, height);
 		cameraX = 0.0f;
 		cameraY = 0.0f;
-		font = new Bitmap("./res/monospace.png");
+		try {
+			font = new Bitmap("monospace.png");
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new AssertionError("Error: Font file could not be loaded");
+		}
 		fontColor = new Bitmap(1, 1);
 	}
 
