@@ -52,22 +52,34 @@ public class Main extends Applet {
 
 		Bitmap test = new Bitmap("./res/bricks.jpg");
 
-		scene.addEntity(new Entity(-1f, -1f, 1f, 1f)
-				.addComponent(new SpriteComponent(test,
+		scene.add(new Entity(-1f, -1f, 1f, 1f)
+				.add(new SpriteComponent(test,
 						RenderContext.TRANSPARENCY_NONE, 0)));
 
 		return scene;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void init() {
 		setLayout(new BorderLayout());
 		add(engine, BorderLayout.CENTER);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void start() {
 		engine.start();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void stop() {
 		engine.stop();
 	}

@@ -33,24 +33,59 @@ import engine.components.PhysicsComponent;
 import engine.physics.AABB;
 import engine.rendering.RenderContext;
 
+/**
+ * Represents an entire game scene, including any objects or players.
+ * <p>
+ * This can almost be thought of as a game level. The difference is this can
+ * also represent other interactive game aspects, such as the title screen and
+ * main menu.
+ * 
+ * @author Benny Bobaganoosh (thebennybox@gmail.com)
+ */
 public class Scene {
-	private QuadTree scene;
+	private QuadTree sceneTree;
 
+	/**
+	 * Creates a new, empty game scene.
+	 */
 	public Scene() {
-		scene = new QuadTree(new AABB(-1, -1, 1, 1), 8);
+		sceneTree = new QuadTree(new AABB(-1, -1, 1, 1), 8);
 	}
 
-	public void addEntity(Entity entity) {
-		scene.add(entity);
+	/**
+	 * Adds an object to the scene.
+	 * 
+	 * @param entity
+	 *            The object to be added
+	 */
+	public void add(Entity entity) {
+		sceneTree.add(entity);
 	}
 
-	public void removeEntity(Entity entity) {
-		scene.remove(entity);
+	/**
+	 * Removes an object from the scene
+	 * 
+	 * @param entity
+	 *            The object to be removed.
+	 */
+	public void remove(Entity entity) {
+		sceneTree.remove(entity);
 	}
 
+	/**
+	 * Updates every object within the update range.
+	 * <p>
+	 * Objects that are not within the update range are unaffected.
+	 * 
+	 * @param input
+	 *            User input to be considered
+	 * @param delta
+	 *            The amount of time, in seconds, since the last update.
+	 */
 	public void update(Input input, float delta) {
-		Set<Entity> entities = scene.queryRange(new AABB(-4, -4,
-				4, 4), new HashSet<Entity>());
+		//TODO: Don't hardcode the update range.
+		Set<Entity> entities = sceneTree.queryRange(new AABB(-4,
+				-4, 4, 4), new HashSet<Entity>());
 
 		Iterator<Entity> it = entities.iterator();
 		while (it.hasNext()) {
@@ -63,21 +98,27 @@ public class Scene {
 
 			if (startX != current.getX()
 					|| startY != current.getY()) {
-				removeEntity(current);
+				remove(current);
 				current.updateAABB();
 				handleCollisions(current);
-				addEntity(current);
+				add(current);
 			}
 		}
 	}
 
+	/**
+	 * Processes collisions for a particular entity.
+	 * 
+	 * @param current
+	 *            The entity to be tested against and affected by any collisions
+	 */
 	private void handleCollisions(Entity current) {
 		PhysicsComponent physicsComponent = (PhysicsComponent) current
 				.getComponent(PhysicsComponent.NAME);
 
 		if (physicsComponent != null) {
 			Set<Entity> collidingEntities = new HashSet<Entity>();
-			scene.queryRange(current.getAABB(),
+			sceneTree.queryRange(current.getAABB(),
 					collidingEntities);
 
 			Iterator<Entity> it2 = collidingEntities.iterator();
@@ -99,10 +140,19 @@ public class Scene {
 		}
 	}
 
+	/**
+	 * Draws any objects that are within the bounds of the render target to the
+	 * render target. 
+	 * <p>
+	 * Objects that are not within the bounds of the render target are unaffected.
+	 * 
+	 * @param target
+	 *            The location to be rendered to.
+	 */
 	public void render(RenderContext target) {
 		target.clear((byte) 0x00);
 
-		Set<Entity> renderableEntities = scene.queryRange(
+		Set<Entity> renderableEntities = sceneTree.queryRange(
 				target.getRenderArea(), new TreeSet<Entity>());
 
 		Iterator<Entity> it = renderableEntities.iterator();

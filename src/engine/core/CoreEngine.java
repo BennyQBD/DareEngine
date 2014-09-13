@@ -51,6 +51,9 @@ public class CoreEngine extends Canvas implements Runnable {
 	/**
 	 * If true, game is rendered as often as possible, rather than staying at a
 	 * fixed framerate, such as 60 frames per second.
+	 * <p>
+	 * This should only be used for profiling/debugging purposes, as enabling it
+	 * will prevent the thread from sleeping.
 	 */
 	private static final boolean IGNORE_FRAMECAP = false;
 
@@ -75,7 +78,7 @@ public class CoreEngine extends Canvas implements Runnable {
 	private Graphics graphics;
 	/** The user input received by this display. */
 	private final Input input;
-	
+	/** The number of frames to be rendered per second, on average. */
 	private final float frameRate;
 
 	/**
@@ -85,10 +88,13 @@ public class CoreEngine extends Canvas implements Runnable {
 	 *            The width of the game window, in pixels
 	 * @param height
 	 *            The height of the game window, in pixels
+	 * @param frameRate
+	 *            The number of frames to be rendered per second, on average.
 	 * @param scene
 	 *            The game scene that the engine should run.
 	 */
-	public CoreEngine(int width, int height, float frameRate, Scene scene) {
+	public CoreEngine(int width, int height, float frameRate,
+			Scene scene) {
 		this.frameRate = frameRate;
 		this.scene = scene;
 		this.thread = new Thread(this);
@@ -187,7 +193,7 @@ public class CoreEngine extends Canvas implements Runnable {
 			thread.join();
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			System.exit(0);
+			Thread.currentThread().interrupt();
 		}
 	}
 
@@ -209,6 +215,12 @@ public class CoreEngine extends Canvas implements Runnable {
 
 		long previousTime = System.nanoTime();
 		String fpsString = "0 ms per frame (0 fps)";
+
+		if (!isRunning) {
+			throw new AssertionError(
+					"Error: CoreEngine.run() should not be called directly. Use CoreEngine.start() instead.");
+		}
+
 		while (isRunning) {
 			boolean render = false;
 
@@ -257,9 +269,9 @@ public class CoreEngine extends Canvas implements Runnable {
 				// perform other tasks for a while.
 				try {
 					Thread.sleep(1);
-				} catch (Exception ex) {
+				} catch (InterruptedException ex) {
 					ex.printStackTrace();
-					System.exit(1);
+					Thread.currentThread().interrupt();
 				}
 			}
 		}

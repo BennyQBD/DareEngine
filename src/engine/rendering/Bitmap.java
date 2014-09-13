@@ -99,6 +99,7 @@ public class Bitmap {
 				// pixels[i] = alpha | color;
 			}
 		} catch (IOException e) {
+			//TODO: Proper Error Handling!
 			e.printStackTrace();
 			System.exit(1);
 		}

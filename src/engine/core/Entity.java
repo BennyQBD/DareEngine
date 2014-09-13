@@ -87,7 +87,7 @@ public class Entity implements Comparable<Entity> {
 	 *            The component to add.
 	 * @return this, to allow easily adding multiple components.
 	 */
-	public Entity addComponent(EntityComponent component) {
+	public Entity add(EntityComponent component) {
 		component.setEntity(this);
 		component.onAdd();
 		components.add(component);

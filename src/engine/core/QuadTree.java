@@ -27,12 +27,28 @@ package engine.core;
 import java.util.*;
 import engine.physics.*;
 
+/**
+ * Represents a 2D space that can be recursively divided into 4 equal subspaces.
+ * 
+ * TODO: Make this generic so it can store more than just Entities.
+ * 
+ * @author Benny Bobaganoosh (thebennybox@gmail.com)
+ */
 public class QuadTree {
 	private QuadTree nodes[];
 	private Entity entities[];
 	private int numEntities;
 	private AABB aabb;
 
+	/**
+	 * Initializes a QuadTree from an AABB.
+	 * 
+	 * @param aabb
+	 *            Represents the 2D space inside the QuadTree
+	 * @param numChildrenPerNode
+	 *            The number of objects that can be added to each leaf of the
+	 *            QuadTree.
+	 */
 	public QuadTree(AABB aabb, int numChildrenPerNode) {
 		this.nodes = new QuadTree[4];
 		this.entities = new Entity[numChildrenPerNode];
@@ -40,14 +56,26 @@ public class QuadTree {
 		this.aabb = aabb;
 	}
 
-	public QuadTree(QuadTree[] nodes, Entity[] entities,
-			int numEntities, AABB aabb) {
-		this.nodes = nodes;
-		this.entities = entities;
-		this.numEntities = numEntities;
-		this.aabb = aabb;
+	/**
+	 * Copy constructor. Initializes this as a copy of another QuadTree, copying
+	 * by reference.
+	 * 
+	 * @param other
+	 *            The QuadTree to copy from
+	 */
+	private QuadTree(QuadTree other) {
+		this.nodes = other.nodes;
+		this.entities = other.entities;
+		this.numEntities = other.numEntities;
+		this.aabb = other.aabb;
 	}
 
+	/**
+	 * Adds a new object to the QuadTree
+	 * 
+	 * @param entity
+	 *            The object to add.
+	 */
 	public void add(Entity entity) {
 		if (entity.getAABB().intersectAABB(aabb)) {
 			if (numEntities < entities.length) {
@@ -57,8 +85,7 @@ public class QuadTree {
 				addToChild(entity);
 			}
 		} else {
-			QuadTree thisAsNode = new QuadTree(nodes, entities,
-					numEntities, aabb);
+			QuadTree thisAsNode = new QuadTree(this);
 
 			float dirX = entity.getX() - aabb.getCenterX();
 			float dirY = entity.getY() - aabb.getCenterY();
@@ -94,22 +121,25 @@ public class QuadTree {
 				aabb = new AABB(minX, minY - expanseY, maxX
 						+ expanseX, maxY);
 			} else {
-				System.err
-						.println("Error: QuadTree direction is invalid (?): "
-								+ dirX
-								+ " (dirX) "
-								+ dirY
+				throw new AssertionError(
+						"Error: QuadTree direction is invalid (?): "
+								+ dirX + " (dirX) " + dirY
 								+ " (dirY)");
-				System.exit(1);
 			}
 
 			add(entity);
-
-			// System.err.println("Error: AABB not in quad tree!");
-			// System.exit(1);
 		}
 	}
 
+	/**
+	 * Removes an object from the QuadTree.
+	 * <p>
+	 * This method will automatically prune any empty leaves from the tree.
+	 * 
+	 * @param entity
+	 *            The object to remove
+	 * @return Whether or not the tree is empty after removal
+	 */
 	public boolean remove(Entity entity) {
 		if (!entity.getAABB().intersectAABB(aabb)) {
 			return false;
@@ -130,6 +160,11 @@ public class QuadTree {
 		return isThisNodeEmpty();
 	}
 
+	/**
+	 * Determines if this node contains anything.
+	 * 
+	 * @return Whether or not this node contains any leaves or entities.
+	 */
 	private boolean isThisNodeEmpty() {
 		for (int i = 0; i < nodes.length; i++) {
 			if (nodes[i] != null) {
@@ -140,6 +175,12 @@ public class QuadTree {
 		return numEntities == 0;
 	}
 
+	/**
+	 * Removes an entity from the list, and shifts everything over so there are
+	 * no gaps in the entities array.
+	 * 
+	 * @param index
+	 */
 	private void removeEntityFromList(int index) {
 		for (int i = index + 1; i < numEntities; i++) {
 			entities[i - 1] = entities[i];
@@ -148,10 +189,27 @@ public class QuadTree {
 		numEntities--;
 	}
 
+	/**
+	 * Returns a set of every object in the tree
+	 * 
+	 * @param result
+	 *            The Set of objects to store all the tree's objects in.
+	 * @return The result parameter, but returned for programmer convenience.
+	 */
 	public Set<Entity> getAll(Set<Entity> result) {
 		return queryRange(aabb, result);
 	}
 
+	/**
+	 * Returns every object in the tree that intersects a certain space.
+	 * 
+	 * @param aabb
+	 *            The space of interest.
+	 * @param result
+	 *            The Set of objects to store all the objects that intersect
+	 *            aabb.
+	 * @return The result parameter, but returned for programmer convenience.
+	 */
 	public Set<Entity> queryRange(AABB aabb, Set<Entity> result) {
 		if (!aabb.intersectAABB(aabb)) {
 			return result;
@@ -172,6 +230,17 @@ public class QuadTree {
 		return result;
 	}
 
+	/**
+	 * Adds an object to the child node if and only if the object intersects the
+	 * child node.
+	 * 
+	 * @param entity The object that may be added
+	 * @param minX 
+	 * @param minY
+	 * @param maxX
+	 * @param maxY
+	 * @param nodeIndex
+	 */
 	private void tryToAddToChildNode(Entity entity, float minX,
 			float minY, float maxX, float maxY, int nodeIndex) {
 		if (entity.getAABB().intersectRect(minX, minY, maxX,
@@ -185,6 +254,11 @@ public class QuadTree {
 		}
 	}
 
+	/**
+	 * Adds an object to any relevant child nodes.
+	 * 
+	 * @param entity The object to add to child nodes
+	 */
 	private void addToChild(Entity entity) {
 		float minX = aabb.getMinX();
 		float minY = aabb.getMinY();
@@ -215,30 +289,33 @@ public class QuadTree {
 		tryToAddToChildNode(entity, minX, minY, maxX, maxY, 2);
 	}
 
-	public void print() {
-		print(0, "NW");
-	}
+	// TODO: Use this code to create an appropriate "toString" method for the
+	// QuadTree
 
-	private void print(int depth, String location) {
-		String prefix = "";
-		for (int i = 0; i < depth; i++) {
-			prefix += "-";
-		}
-		for (int i = 0; i < numEntities; i++) {
-			System.out.println(prefix + location + " " + i
-					+ ": " + entities[i]);
-		}
-		if (nodes[0] != null) {
-			nodes[0].print(depth + 1, "NW");
-		}
-		if (nodes[1] != null) {
-			nodes[1].print(depth + 1, "NE");
-		}
-		if (nodes[2] != null) {
-			nodes[2].print(depth + 1, "SW");
-		}
-		if (nodes[3] != null) {
-			nodes[3].print(depth + 1, "SE");
-		}
-	}
+	// public void print() {
+	// print(0, "NW");
+	// }
+	//
+	// private void print(int depth, String location) {
+	// String prefix = "";
+	// for (int i = 0; i < depth; i++) {
+	// prefix += "-";
+	// }
+	// for (int i = 0; i < numEntities; i++) {
+	// System.out.println(prefix + location + " " + i
+	// + ": " + entities[i]);
+	// }
+	// if (nodes[0] != null) {
+	// nodes[0].print(depth + 1, "NW");
+	// }
+	// if (nodes[1] != null) {
+	// nodes[1].print(depth + 1, "NE");
+	// }
+	// if (nodes[2] != null) {
+	// nodes[2].print(depth + 1, "SW");
+	// }
+	// if (nodes[3] != null) {
+	// nodes[3].print(depth + 1, "SE");
+	// }
+	// }
 }
