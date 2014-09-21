@@ -55,7 +55,8 @@ public class PhysicsComponent extends EntityComponent {
 
 	/**
 	 * Moves the entity into a new position based on the information in the
-	 * physics component.<p>
+	 * physics component.
+	 * <p>
 	 * 
 	 * {@inheritDoc}
 	 */
@@ -93,6 +94,27 @@ public class PhysicsComponent extends EntityComponent {
 	 */
 	public void bounce(PhysicsComponent other, float distX,
 			float distY) {
+
+		// TODO: This calculation is not completely correct.
+		// The bounce direction shouldn't be determined just based on distY >
+		// distX or whatnot. Instead, it should be based on which side of the
+		// other object is hit first.
+
+		// For instance, if this object is moving and the other object is still,
+		// then logically "slide" this object backwards based on it's velocity
+		// until it's at the point of impact. From there, the side to bounce off
+		// can be determined from whether distY or distX reached 0 first.
+
+		// Once this is solved, making it work for general cases where both
+		// objects might be moving is relatively simple.
+		
+		// Some useful equations:
+		// let t = time since impact
+		// let impactY = Y location at impact point
+		//
+		// distX - velX * t = 0
+		// distY - velY * t = impactY
+
 		if (distY > distX) {
 			distX = 0.0f;
 			velY *= -1;

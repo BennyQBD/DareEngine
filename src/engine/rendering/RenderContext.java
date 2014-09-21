@@ -141,7 +141,7 @@ public class RenderContext extends Bitmap {
 	}
 
 	/**
-	 * Changes the rendering camera to x, y
+	 * Moves the rendering camera to location (x, y)
 	 * 
 	 * @param x
 	 *            The X location of the camera, normalized into the range (-1,
@@ -279,10 +279,12 @@ public class RenderContext extends Bitmap {
 	}
 
 	/**
-	 * Draws an image.
+	 * Draws an image starting at location (startX, startY) and ending at (endX,
+	 * endY), resizing as necessary.
 	 * <p>
 	 * The image is not drawn to scale. It is resized to fit in the range
-	 * (startX, startY). This way, all image drawing is resolution independent.
+	 * (startX, endX) on X, and (startY, endY) on Y. This way, all image drawing
+	 * is resolution independent.
 	 * 
 	 * @param bitmap
 	 *            The bitmap to draw
@@ -396,6 +398,9 @@ public class RenderContext extends Bitmap {
 	 * 
 	 * @param bitmap
 	 *            The bitmap to draw
+	 * @param source
+	 *            Also the bitmap to draw; only in font rendering should this be
+	 *            changed to a different bitmap containing the font color.
 	 * @param startX
 	 *            The start location on X, normalized into the range (-1, 1)
 	 * @param startY
