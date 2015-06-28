@@ -1,104 +1,81 @@
-/*
- * Copyright (c) 2014, Benny Bobaganoosh
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer. 
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *   this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
 package engine;
 
-import java.applet.Applet;
-import java.awt.BorderLayout;
 import java.io.IOException;
 
+import org.lwjgl.LWJGLException;
+
+import engine.components.ColliderComponent;
+import engine.components.CollisionComponent;
+import engine.components.LightComponent;
 import engine.components.SpriteComponent;
 import engine.core.CoreEngine;
-import engine.core.Entity;
 import engine.core.Scene;
-import engine.rendering.Bitmap;
-import engine.rendering.RenderContext;
+import engine.core.entity.Entity;
+import engine.rendering.Color;
+import engine.rendering.IDisplay;
+import engine.rendering.IRenderContext;
+import engine.rendering.IRenderDevice;
+import engine.rendering.LightMap;
+import engine.rendering.SpriteSheet;
+import engine.rendering.opengl.OpenGLDisplay;
+import engine.space.AABB;
+import engine.space.QuadTree;
+import engine.util.factory.BitmapFactory;
+import engine.util.factory.SpriteSheetFactory;
 
-/**
- * The sole purpose of this class is to hold the main method.
- * <p>
- * Any other use should be placed in a separate class
- * 
- * @author Benny Bobaganoosh (thebennybox@gmail.com)
- */
-public class Main extends Applet {
-	private static final long serialVersionUID = 1L;
+public class Main {
+	private static class TestScene extends Scene {
+		SpriteSheet font;
+		Entity e2;
 
-	private static CoreEngine engine = new CoreEngine(800, 600,
-			60.0f, createScene());
+		public TestScene(IRenderDevice device) throws IOException {
+			super(new QuadTree<Entity>(new AABB(-1, -1, 1, 1), 8));
+			SpriteSheetFactory sprites = new SpriteSheetFactory(
+					new BitmapFactory(device, "./res/"));
 
-	private static Scene createScene() {
-		Scene scene = new Scene();
+			font = sprites.get("monospace.png", 16, 16, 1,
+					IRenderDevice.FILTER_LINEAR);
 
-		Bitmap test = null;
-		try {
-			test = new Bitmap("bricks.jpg");
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new AssertionError("Error: Unable to load resource.");
+			Entity e = new Entity(getStructure(), 0, 0, 0);
+			new ColliderComponent(e);
+			new CollisionComponent(e);
+			new SpriteComponent(e, 1.0, 1.0, sprites.get("bricks.jpg", 1, 1, 0,
+					IRenderDevice.FILTER_LINEAR), 0, Color.WHITE);
+			LightMap light = new LightMap(device, 32, Color.WHITE);
+			new LightComponent(e, light, 2.0, 2.0, 0.0, 0.0);
+
+			e2 = new Entity(getStructure(), -1.25, 0, 0);
+			new ColliderComponent(e2);
+			new CollisionComponent(e2);
+			new SpriteComponent(e2, 0.5, 0.5, sprites.get("bricks.jpg", 1, 1,
+					0, IRenderDevice.FILTER_LINEAR), 0, Color.WHITE);
 		}
 
-		scene.add(new Entity(-1f, -1f, 1f, 1f)
-				.add(new SpriteComponent(test,
-						RenderContext.TRANSPARENCY_NONE, 0)));
+		@Override
+		public boolean update(double delta) {
+			super.updateRange(delta, new AABB(-2, -2, 2, 2));
+			e2.move((float) (delta * 0.25), 0);
+			return false;
+		}
 
-		return scene;
+		@Override
+		public void render(IRenderContext target) {
+			target.clear(0.0, 0.0, 0.0, 0.0);
+			target.clearLighting(0.1, 0.1, 0.1, 0.1);
+			super.renderRange(target, 0, 0);
+			target.applyLighting();
+
+			double y = 0.75;
+			y = target.drawString("Hello, World!", font, -1, y, 0.25,
+					Color.WHITE, 1.0);
+		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void init() {
-		setLayout(new BorderLayout());
-		add(engine, BorderLayout.CENTER);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void start() {
+	public static void main(String[] args) throws LWJGLException, IOException {
+		IDisplay display = new OpenGLDisplay(640, 480, "My Display");
+		CoreEngine engine = new CoreEngine(display, new TestScene(
+				display.getRenderDevice()), 60.0);
 		engine.start();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void stop() {
-		engine.stop();
-	}
-
-	/**
-	 * The main entry point of the program.
-	 * 
-	 * @param args
-	 *            The command line arguments passed to the program.
-	 */
-	public static void main(String[] args) {
-		engine.createWindow("Dare Engine", true);
-		engine.start();
+		display.dispose();
 	}
 }

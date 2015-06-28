@@ -15,6 +15,8 @@ thebennybox Game Engine for Ludum Dare
 - Open your preferred Java IDE, and create a new project.
 - Import everything under the src folder as source files.
 - Copy the res folder into your Java IDE's folder for your project.
+- Under your project settings, include lib/lwjgl in your build path
+- Set lwjgl to use natives from lib/natives/(your OS here)
 - Build and run
 
 ##Additional Credits##

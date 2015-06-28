@@ -1,185 +1,187 @@
-/*
- * Copyright (c) 2014, Benny Bobaganoosh
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer. 
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *   this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
 package engine.components;
 
-import engine.core.*;
-import engine.rendering.*;
+import engine.core.entity.Entity;
+import engine.core.entity.EntityComponent;
+import engine.rendering.Color;
+import engine.rendering.IRenderContext;
+import engine.rendering.SpriteSheet;
+import engine.space.AABB;
+import engine.util.IDAssigner;
 
-/**
- * Represents a sprite that can be rendered on screen and animated.
- * 
- * @author Benny Bobaganoosh (thebennybox@gmail.com)
- */
 public class SpriteComponent extends EntityComponent {
-	/** The name of this component when attached to an entity */
-	public static final String NAME = "SpriteComponent";
+	private class Animation {
+		private SpriteSheet[] sheets;
+		private int[] indices;
+		private double[] frameTimes;
+		private int[] nextFrames;
+		private int currentFrame;
+		private double currentFrameTime;
 
-	private Bitmap[] frames;
-	private float[] frameTimes;
-	private int[] nextFrames;
-	private int currentFrame;
-	private int transparencyType;
-	private float renderLayer;
-	private float currentFrameTime;
+		public Animation(SpriteSheet[] sheets, int[] indices,
+				double[] frameTimes, int[] nextFrames) {
+			this.sheets = sheets;
+			this.indices = indices;
+			this.frameTimes = frameTimes;
+			this.nextFrames = nextFrames;
+			this.currentFrame = 0;
+			this.currentFrameTime = 0.0;
+		}
 
-	/**
-	 * Creates and initializes a sprite with no animation.
-	 * 
-	 * @param sprite
-	 *            The image of the sprite
-	 * @param transparencyType
-	 *            The transparency algorithm used by the sprite. Should be set
-	 *            to a RenderContext.TRANSPARENCY_ value
-	 * @param layer
-	 *            The render layer of this sprite.
-	 *            
-	 * @see engine.rendering.RenderContext
-	 */
-	public SpriteComponent(Bitmap sprite, int transparencyType,
-			float layer) {
-		this(new Bitmap[] { sprite }, 0.0f, transparencyType,
-				layer);
+		public void update(double delta) {
+			currentFrameTime += delta;
+			while (frameTimes[currentFrame] != 0
+					&& currentFrameTime > frameTimes[currentFrame]) {
+				currentFrameTime -= frameTimes[currentFrame];
+				int nextFrame = nextFrames[currentFrame];
+				currentFrame = nextFrame;
+			}
+		}
+
+		public SpriteSheet getSheet() {
+			return sheets[currentFrame];
+		}
+
+		public int getSpriteIndex() {
+			return indices[currentFrame];
+		}
+
+		public void setFrame(int frame) {
+			currentFrame = frame;
+			currentFrameTime = 0.0;
+		}
 	}
 
-	/**
-	 * Creates and initializes a sprite with a basic looping animation.
-	 * 
-	 * @param frames
-	 *            An array of all the animation frames
-	 * @param frameTime
-	 *            The amount of time, in seconds, between each frame of
-	 *            animation
-	 * @param transparencyType
-	 *            The transparency algorithm used by the sprite. Should be set
-	 *            to a RenderContext.TRANSPARENCY_ value
-	 * @param layer
-	 *            The render layer of this sprite.
-	 */
-	public SpriteComponent(Bitmap[] frames, float frameTime,
-			int transparencyType, float layer) {
-		super(NAME);
-		float frameTimes[] = new float[frames.length];
-		int nextFrames[] = new int[frames.length];
+	public static final int ID = IDAssigner.getId();
+	private Animation animation;
+	private double halfWidth;
+	private double halfHeight;
+	private double spriteOffsetFlippedX;
+	private double spriteOffsetFlippedY;
+	private double transparency;
+	private boolean flipX;
+	private boolean flipY;
+	private Color color;
 
-		for (int i = 0; i < frames.length; i++) {
+	public SpriteComponent(Entity entity, double width, double height, SpriteSheet sheet, int spriteIndex,
+			Color color) {
+		this(entity, width, height, new SpriteSheet[] { sheet }, new int[] { spriteIndex },
+				0.0, color);
+	}
+
+	public SpriteComponent(Entity entity, double width, double height, SpriteSheet sheet, double frameTime,
+			Color color) {
+		super(entity, ID);
+		SpriteSheet[] sheets = new SpriteSheet[sheet.getNumSprites()];
+		int[] indices = new int[sheets.length];
+		for (int i = 0; i < sheets.length; i++) {
+			indices[i] = i;
+			sheets[i] = sheet;
+		}
+		init(entity, width, height, sheets, indices, frameTime, color);
+	}
+
+	public SpriteComponent(Entity entity, double width, double height, SpriteSheet sheet, int[] indices,
+			double frameTime, Color color) {
+		super(entity, ID);
+		SpriteSheet[] sheets = new SpriteSheet[indices.length];
+		for (int i = 0; i < sheets.length; i++) {
+			sheets[i] = sheet;
+		}
+		init(entity, width, height, sheets, indices, frameTime, color);
+	}
+
+	public SpriteComponent(Entity entity, double width, double height, SpriteSheet[] sheets, int[] indices,
+			double frameTime, Color color) {
+		super(entity, ID);
+		init(entity, width, height, sheets, indices, frameTime, color);
+	}
+
+	public SpriteComponent(Entity entity, double width, double height, SpriteSheet[] sheets, int[] indices,
+			double[] frameTimes, int[] nextFrames, Color color) {
+		super(entity, ID);
+		init(entity, width, height, sheets, indices, frameTimes, nextFrames, color);
+	}
+
+	private void init(Entity entity, double width, double height, SpriteSheet[] sheets, int[] indices,
+			double frameTime, Color color) {
+		double frameTimes[] = new double[sheets.length];
+		int nextFrames[] = new int[sheets.length];
+
+		for (int i = 0; i < sheets.length; i++) {
 			frameTimes[i] = frameTime;
 			nextFrames[i] = i + 1;
 		}
-		nextFrames[frames.length - 1] = 0;
-		init(frames, frameTimes, nextFrames, transparencyType,
-				layer);
+		nextFrames[sheets.length - 1] = 0;
+		init(entity, width, height, sheets, indices, frameTimes, nextFrames, color);
 	}
 
-	/**
-	 * Initializes a sprite to a usable state.
-	 * 
-	 * @param frames
-	 *            An array of all the animation frames
-	 * @param frameTimes
-	 *            An array of the duration of each animation frame
-	 * @param nextFrames
-	 *            An array containing the indices of the next animation frame at
-	 *            each frame
-	 * @param transparencyType
-	 *            The transparency algorithm used by the sprite. Should be set
-	 *            to a RenderContext.TRANSPARENCY_ value
-	 * @param layer
-	 *            The render layer of this sprite.
-	 */
-	private final void init(Bitmap[] frames, float[] frameTimes,
-			int[] nextFrames, int transparencyType, float layer) {
-		this.frames = frames;
-		this.frameTimes = frameTimes;
-		this.nextFrames = nextFrames;
-		this.transparencyType = transparencyType;
-		this.renderLayer = layer;
-		this.currentFrame = 0;
-		this.currentFrameTime = 0.0f;
+	private void init(Entity entity, double width, double height, SpriteSheet[] sheets, int[] indices,
+			double[] frameTimes, int[] nextFrames, Color color) {
+		this.animation = new Animation(sheets, indices, frameTimes, nextFrames);
+		this.halfWidth = width/2.0;
+		this.halfHeight = height/2.0;
+
+		AABB spriteAABB = animation.getSheet().getAABB(
+				animation.getSpriteIndex(), width, height);
+		ColliderComponent c = (ColliderComponent) getEntity().getComponent(
+				ColliderComponent.ID);
+		if (c != null) {
+			c.fitAABB(spriteAABB);
+		} else {
+			getEntity().fitAABB(spriteAABB);
+		}
+		spriteOffsetFlippedX = -spriteAABB.getMaxX() - spriteAABB.getMinX();
+		spriteOffsetFlippedY = -spriteAABB.getMaxY() - spriteAABB.getMinY();
+
+		this.transparency = 1.0;
+		this.flipX = false;
+		this.flipY = false;
+		this.color = color;
 	}
 
-	/**
-	 * Creates and initializes a sprite with a custom animation.
-	 * 
-	 * @param frames
-	 *            An array of all the animation frames
-	 * @param frameTimes
-	 *            An array of the duration of each animation frame
-	 * @param nextFrames
-	 *            An array containing the indices of the next animation frame at
-	 *            each frame
-	 * @param transparencyType
-	 *            The transparency algorithm used by the sprite. Should be set
-	 *            to a RenderContext.TRANSPARENCY_ value
-	 * @param layer
-	 *            The render layer of this sprite.
-	 */
-	public SpriteComponent(Bitmap[] frames, float[] frameTimes,
-			int[] nextFrames, int transparencyType, float layer) {
-		super(NAME);
-		init(frames, frameTimes, nextFrames, transparencyType,
-				layer);
-	}
-
-	/**
-	 * Updates the entity with proper render layers.<p>
-	 *
-	 * {@inheritDoc}
-	 */
 	@Override
-	public void onAdd() {
-		getEntity().setRenderLayer(renderLayer);
+	public void update(double delta) {
+		animation.update(delta);
 	}
 
-	/**
-	 * Updates the animation, progressing, stopping, or restarting
-	 * if necessary.<p>
-	 *
-	 * {@inheritDoc}
-	 */
 	@Override
-	public void update(Input input, float delta) {
-		currentFrameTime += delta;
-		while (frameTimes[currentFrame] != 0
-				&& currentFrameTime > frameTimes[currentFrame]) {
-			currentFrameTime -= frameTimes[currentFrame];
-			int nextFrame = nextFrames[currentFrame];
-			currentFrame = nextFrame;
+	public void render(IRenderContext target, double viewportX, double viewportY) {
+		SpriteSheet sheet = animation.getSheet();
+		int spriteIndex = animation.getSpriteIndex();
+		if (sheet != null) {
+			double spriteOffX = 0;
+			double spriteOffY = 0;
+			if (flipX) {
+				spriteOffX = spriteOffsetFlippedX;
+			}
+			if (flipY) {
+				spriteOffY = spriteOffsetFlippedY;
+			}
+			double centerX = getEntity().getX() - viewportX - spriteOffX;
+			double centerY = getEntity().getY() - viewportY - spriteOffY;
+			target.drawSprite(sheet, spriteIndex, centerX - halfWidth, centerY
+					- halfHeight, centerX + halfWidth, centerY + halfHeight,
+					transparency, flipX, flipY, color);
 		}
 	}
 
-	/**
-	 * Renders the current sprite to a render target.<p>
-	 * 
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void render(RenderContext target) {
-		target.drawImage(frames[currentFrame], getEntity()
-				.getAABB().getMinX(), getEntity().getAABB()
-				.getMinY(), getEntity().getAABB().getMaxX(),
-				getEntity().getAABB().getMaxY(),
-				transparencyType);
+	public void setFlipX(boolean flipX) {
+		this.flipX = flipX;
+	}
+
+	public void setFlipY(boolean flipY) {
+		this.flipY = flipY;
+	}
+
+	public double getTransparency() {
+		return transparency;
+	}
+
+	public void setTransparency(double transparency) {
+		this.transparency = transparency;
+	}
+
+	public void setFrame(int frame) {
+		animation.setFrame(frame);
 	}
 }

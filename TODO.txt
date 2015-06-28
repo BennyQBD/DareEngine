@@ -1,0 +1,4 @@
+- Replace int[] images with ArrayBitmap class
+- Update to LWJGL 3
+- Support for loading JSON files
+- Add support for 3D (possibly take stuff from 3D Game Engine)
