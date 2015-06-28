@@ -20,7 +20,7 @@ import engine.rendering.SpriteSheet;
 import engine.rendering.opengl.OpenGLDisplay;
 import engine.space.AABB;
 import engine.space.QuadTree;
-import engine.util.factory.BitmapFactory;
+import engine.util.factory.TextureFactory;
 import engine.util.factory.SpriteSheetFactory;
 
 public class Main {
@@ -31,7 +31,7 @@ public class Main {
 		public TestScene(IRenderDevice device) throws IOException {
 			super(new QuadTree<Entity>(new AABB(-1, -1, 1, 1), 8));
 			SpriteSheetFactory sprites = new SpriteSheetFactory(
-					new BitmapFactory(device, "./res/"));
+					new TextureFactory(device, "./res/"));
 
 			font = sprites.get("monospace.png", 16, 16, 1,
 					IRenderDevice.FILTER_LINEAR);

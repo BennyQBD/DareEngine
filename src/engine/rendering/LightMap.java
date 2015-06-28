@@ -1,12 +1,6 @@
 package engine.rendering;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
-import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-
-import javax.imageio.ImageIO;
 
 import engine.util.Util;
 
@@ -23,8 +17,7 @@ public class LightMap {
 		this.width = radius * 2;
 		this.height = radius * 2;
 		this.scale = 1;
-		initTextures(width, height, scale,
-				generateLighting(radius, width, height, color));
+		initTextures(generateLighting(radius, width, height, color));
 	}
 
 	public LightMap(IRenderDevice device, int width, int height, double scale) {
@@ -32,12 +25,12 @@ public class LightMap {
 		this.width = width;
 		this.height = height;
 		this.scale = scale;
-		int[] data = new int[width * height];
-		Arrays.fill(data, 0);
-		initTextures(width, height, scale, data);
+		ArrayBitmap image = new ArrayBitmap(width, height);
+		image.clear(0);
+		initTextures(image);
 	}
 
-	private void initTextures(int width, int height, double scale, int[] data) {
+	private void initTextures(ArrayBitmap data) {
 		this.id = device.createTexture(width, height, data,
 				IRenderDevice.FILTER_LINEAR);
 		this.fbo = 0;
@@ -92,16 +85,16 @@ public class LightMap {
 				color);
 	}
 
-	private static int[] generateLighting(int radius, int width, int height,
+	private static ArrayBitmap generateLighting(int radius, int width, int height,
 			Color color) {
-		int[] result = new int[width * height];
+		ArrayBitmap result = new ArrayBitmap(width, height);
 		int centerX = width / 2;
 		int centerY = height / 2;
 		int radiusSq = radius * radius;
 		for (int j = 0, distY = -centerY; j < height; j++, distY++) {
 			for (int i = 0, distX = -centerX; i < width; i++, distX++) {
-				result[i + j * width] = calcLight(radius, radiusSq, distX,
-						distY, Dither.getDither(i, j), color);
+				result.set(i, j, calcLight(radius, radiusSq, distX,
+						distY, Dither.getDither(i, j), color));
 			}
 		}
 		return result;
@@ -111,17 +104,17 @@ public class LightMap {
 		return id;
 	}
 
-	public void save(String filetype, File file) throws IOException {
-		BufferedImage output = new BufferedImage(width, height,
-				BufferedImage.TYPE_INT_ARGB);
-		int[] displayComponents = ((DataBufferInt) output.getRaster()
-				.getDataBuffer()).getData();
-		device.getTexture(id, displayComponents, 0, 0, width, height);
-		for (int i = 0; i < displayComponents.length; i++) {
-			displayComponents[i] |= 0xFF000000;
-		}
-
-		ImageIO.write(output, "png", file);
+	public void save(String fileName, String outputFileFormat) throws IOException {
+		final ArrayBitmap image = device.getTexture(id, 0, 0, width, height);
+		
+		image.visitAll(new ArrayBitmap.IVisitor() {
+			@Override
+			public void visit(int x, int y, int pixel) {
+				image.set(x, y, pixel | 0xFF000000);
+			}
+		});
+		
+		image.save(fileName, outputFileFormat);
 	}
 
 	public void addLight(LightMap light, double startX, double startY,

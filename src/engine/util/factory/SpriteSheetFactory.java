@@ -8,10 +8,10 @@ import java.util.Map;
 import engine.rendering.SpriteSheet;
 
 public class SpriteSheetFactory {
-	private final BitmapFactory bitmaps;
+	private final TextureFactory bitmaps;
 	private final Map<String, SoftReference<SpriteSheet>> loadedSpriteSheets;
 
-	public SpriteSheetFactory(BitmapFactory bitmaps) {
+	public SpriteSheetFactory(TextureFactory bitmaps) {
 		this.bitmaps = bitmaps;
 		this.loadedSpriteSheets = new HashMap<>();
 	}

@@ -43,6 +43,10 @@ public class Color {
 		return (int) (Util.saturate(c) * ARGB_COMPONENT_MASK + 0.5);
 	}
 
+	public static byte getARGBComponent(int pixel, int component) {
+		return (byte)((pixel >> getComponentShift(component)) & ARGB_COMPONENT_MASK);
+	}
+	
 	private static int getComponentShift(int component) {
 		return (ARGB_COMPONENT_BITS * (ARGB_NUM_COMPONENTS - component - 1));
 	}

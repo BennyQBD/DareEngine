@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.lwjgl.BufferUtils;
 
+import engine.rendering.ArrayBitmap;
 import engine.rendering.Color;
 import engine.rendering.IRenderDevice;
 
@@ -56,14 +57,8 @@ public class OpenGLRenderDevice implements IRenderDevice {
 	}
 
 	@Override
-	public int createTexture(int width, int height, int[] data, int filter) {
-		return createTexture(width, height, data, filter, GL_RGBA8);
-	}
-
-	@Override
-	public int createTexture(int width, int height, byte[] data, int filter) {
-		return createTexture(width, height, byteToInt(data), filter,
-				GL_INTENSITY8);
+	public int createTexture(int width, int height, ArrayBitmap image, int filter) {
+		return createTexture(width, height, image, filter, GL_RGBA8);
 	}
 
 	@Override
@@ -79,29 +74,16 @@ public class OpenGLRenderDevice implements IRenderDevice {
 	}
 
 	@Override
-	public int[] getTexture(int id, int[] dest, int x, int y, int width,
-			int height) {
-		if (dest == null || dest.length < width * height) {
-			dest = new int[width * height];
-		}
+	public ArrayBitmap getTexture(int id, int x, int y, int width, int height) {
+		int[] dest = new int[width * height];
 		TextureData tex = textures.get(id);
 		ByteBuffer buffer = BufferUtils.createByteBuffer(tex.width * tex.height
 				* 4);
 		bindTexture(id);
 		glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 
-		if (x == 0 && y == 0 && width == tex.width && height == tex.height) {
-			return byteBufferToInt(dest, buffer, tex.width, tex.height);
-		}
-
-		int[] pixels = byteBufferToInt(new int[tex.width * tex.height], buffer,
-				tex.width, tex.height);
-		for (int j = 0, srcY = y; j < height; j++, srcY++) {
-			for (int i = 0, srcX = x; i < width; i++, srcX++) {
-				dest[i + j * width] = pixels[srcX + srcY * tex.width];
-			}
-		}
-		return dest;
+		dest = byteBufferToInt(dest, buffer, tex.width, tex.height);
+		return new ArrayBitmap(width, height, dest, x, y, width);
 	}
 
 	@Override
@@ -148,8 +130,9 @@ public class OpenGLRenderDevice implements IRenderDevice {
 
 	@Override
 	public void drawRect(int fbo, int texId, BlendMode mode, double startX,
-			double startY, double endX, double endY, double texStartX, double texStartY,
-			double texEndX, double texEndY, Color c, double transparency) {
+			double startY, double endX, double endY, double texStartX,
+			double texStartY, double texEndX, double texEndY, Color c,
+			double transparency) {
 		bindRenderTarget(fbo);
 
 		glColor4f((float) c.getRed(), (float) c.getGreen(),
@@ -205,7 +188,7 @@ public class OpenGLRenderDevice implements IRenderDevice {
 		boundTex = texId;
 	}
 
-	private int createTexture(int width, int height, int[] data, int filter,
+	private int createTexture(int width, int height, ArrayBitmap image, int filter,
 			int format) {
 		int id = glGenTextures();
 		bindTexture(id);
@@ -214,35 +197,25 @@ public class OpenGLRenderDevice implements IRenderDevice {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_RGBA,
-				GL_UNSIGNED_BYTE, makeRGBABuffer(data, width, height));
+				GL_UNSIGNED_BYTE, makeRGBABuffer(image));
 		textures.put(id, new TextureData(width, height));
 		return id;
 	}
 
-	private static int[] byteToInt(byte[] data) {
-		if (data == null) {
+	private static ByteBuffer makeRGBABuffer(ArrayBitmap image) {
+		if (image == null) {
 			return null;
 		}
-		int[] result = new int[data.length];
-		for (int i = 0; i < result.length; i++) {
-			int val = data[i] & 0xFF;
-			result[i] = (val << 24) | (val << 16) | (val << 8) | val;
-		}
-		return result;
-	}
-
-	private static ByteBuffer makeRGBABuffer(int[] data, int width, int height) {
-		if (data == null) {
-			return null;
-		}
-		ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * 4);
-		for (int i = 0; i < width * height; i++) {
-			int pixel = data[i];
-			buffer.put((byte) ((pixel >> 16) & 0xFF));
-			buffer.put((byte) ((pixel >> 8) & 0xFF));
-			buffer.put((byte) ((pixel) & 0xFF));
-			buffer.put((byte) ((pixel >> 24) & 0xFF));
-		}
+		final ByteBuffer buffer = BufferUtils.createByteBuffer(image.getWidth() * image.getHeight() * 4);
+		image.visitAll(new ArrayBitmap.IVisitor() {
+			@Override
+			public void visit(int x, int y, int pixel) {
+				buffer.put(Color.getARGBComponent(pixel, 1));
+				buffer.put(Color.getARGBComponent(pixel, 2));
+				buffer.put(Color.getARGBComponent(pixel, 3));
+				buffer.put(Color.getARGBComponent(pixel, 0));
+			}
+		});
 		buffer.flip();
 		return buffer;
 	}

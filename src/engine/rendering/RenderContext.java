@@ -119,8 +119,4 @@ public class RenderContext implements IRenderContext {
 				IRenderDevice.BlendMode.APPLY_LIGHT, -1, -1, 1, 1, 0, 0, 1, 1,
 				Color.WHITE, 1.0);
 	}
-
-	public void getPixels(int[] dest) {
-		device.getTexture(0, dest, 0, 0, width, height);
-	}
 }

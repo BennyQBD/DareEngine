@@ -4,7 +4,7 @@ import engine.space.AABB;
 import engine.util.Util;
 
 public class SpriteSheet {
-	private final Bitmap sheet;
+	private final Texture sheet;
 	private final int spritesPerX;
 	private final int spritesPerY;
 	private final int spriteWidth;
@@ -14,7 +14,7 @@ public class SpriteSheet {
 	private final int spriteBorderSize;
 	private final AABB[] spriteAABBs;
 
-	public SpriteSheet(Bitmap spriteSheet, int spritesPerX, int spritesPerY, int spriteBorderSize) {
+	public SpriteSheet(Texture spriteSheet, int spritesPerX, int spritesPerY, int spriteBorderSize) {
 		this.sheet = spriteSheet;
 		this.spritesPerX = spritesPerX;
 		this.spritesPerY = spritesPerY;
@@ -25,7 +25,7 @@ public class SpriteSheet {
 		this.spriteHeight = borderedSpriteHeight - 2 * spriteBorderSize;
 
 		spriteAABBs = new AABB[getNumSprites()];
-		int[] pixels = sheet.getPixels(null);
+		ArrayBitmap pixels = sheet.getPixels();
 		for (int i = 0; i < getNumSprites(); i++) {
 			spriteAABBs[i] = generateAABB(i, pixels);
 		}
@@ -43,7 +43,7 @@ public class SpriteSheet {
 		return (double)spriteWidth/(double)spriteHeight;
 	}
 
-	public Bitmap getSheet() {
+	public Texture getSheet() {
 		return sheet;
 	}
 
@@ -66,9 +66,9 @@ public class SpriteSheet {
 		return ((index / spritesPerX) % spritesPerY) * borderedSpriteHeight + spriteBorderSize;
 	}
 
-	private boolean rowHasOpaque(int y, int imgStartX, int imgEndX, int[] pixels) {
+	private boolean rowHasOpaque(int y, int imgStartX, int imgEndX, ArrayBitmap pixels) {
 		for (int x = imgStartX; x < imgEndX; x++) {
-			if (pixels[x + y * sheet.getWidth()] < 0) {
+			if (pixels.isMoreOpaqueThanTransparent(x, y)) {
 				return true;
 			}
 		}
@@ -76,16 +76,16 @@ public class SpriteSheet {
 	}
 
 	private boolean columnHasOpaque(int x, int imgStartY, int imgEndY,
-			int[] pixels) {
+			ArrayBitmap pixels) {
 		for (int y = imgStartY; y < imgEndY; y++) {
-			if (pixels[x + y * sheet.getWidth()] < 0) {
+			if (pixels.isMoreOpaqueThanTransparent(x, y)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	private AABB generateAABB(int index, int[] pixels) {
+	private AABB generateAABB(int index, ArrayBitmap pixels) {
 		int imgStartX = getStartX(index);
 		int imgStartY = getStartY(index);
 		int imgEndX = imgStartX + spriteWidth;

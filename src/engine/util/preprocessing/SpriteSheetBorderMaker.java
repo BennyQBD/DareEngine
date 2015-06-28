@@ -2,7 +2,7 @@ package engine.util.preprocessing;
 
 import java.io.IOException;
 
-import engine.util.ArrayBitmap;
+import engine.rendering.ArrayBitmap;
 
 public class SpriteSheetBorderMaker {
 	public static void generateBorder(String inputFileName,
