@@ -2,6 +2,7 @@ package engine.util.parsing;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -13,22 +14,9 @@ import java.util.Map.Entry;
 
 public class Config {
 	private Map<String, String> map;
-
-	public static void write(String fileName, Map<String, String> map)
-			throws IOException {
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
-			Iterator<Entry<String, String>> it = map.entrySet().iterator();
-			while (it.hasNext()) {
-				Entry<String, String> pair = it.next();
-				String line = pair.getKey() + "=" + pair.getValue() + "\n";
-				bw.write(line);
-			}
-		}
-	}
-
-	public Config(String fileName) throws IOException, ParseException {
+	
+	public Config(String fileName) throws FileNotFoundException, IOException, ParseException {
 		map = new HashMap<String, String>();
-
 		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
 			String line;
 			int lineNumber = 0;
@@ -44,11 +32,27 @@ public class Config {
 				}
 				String[] tokens = line.split("=");
 				if (tokens.length != 2) {
-					throw new ParseException("Line has too many '='",
+					throw new ParseException("Line has too many '=' (line " + lineNumber + ")",
 							lineNumber);
 				}
 
 				map.put(tokens[0].trim(), tokens[1].trim());
+			}
+		}
+	}
+	
+	public Config(Map<String, String> map) {
+		this.map = map;
+	}
+	
+	public void write(String fileName)
+			throws IOException {
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
+			Iterator<Entry<String, String>> it = map.entrySet().iterator();
+			while (it.hasNext()) {
+				Entry<String, String> pair = it.next();
+				String line = pair.getKey() + "=" + pair.getValue() + "\n";
+				bw.write(line);
 			}
 		}
 	}

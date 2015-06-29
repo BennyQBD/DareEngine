@@ -1,0 +1,29 @@
+{
+	"test1": 76.1, 
+	"myObj2": {
+		"test1": 76.1, 
+		"test6": true, 
+		"test4": null, 
+		"test5": false, 
+		"test2": "123", 
+		"test3": 143
+	}, 
+	"myObj1": {
+		"test1": 76.1, 
+		"test6": true, 
+		"test4": null, 
+		"test5": false, 
+		"test2": "123", 
+		"test3": 143
+	}, 
+	"myObj3": {
+		"test1": 76.1, 
+		"test6": true, 
+		"test4": null, 
+		"test5": false, 
+		"test2": "123", 
+		"test3": 143
+	}, 
+	"test2": 123, 
+	"test3": 143
+}

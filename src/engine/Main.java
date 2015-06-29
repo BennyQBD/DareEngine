@@ -1,6 +1,7 @@
 package engine;
 
 import java.io.IOException;
+import java.text.ParseException;
 
 import org.lwjgl.LWJGLException;
 
@@ -22,6 +23,11 @@ import engine.space.AABB;
 import engine.space.QuadTree;
 import engine.util.factory.TextureFactory;
 import engine.util.factory.SpriteSheetFactory;
+import engine.util.parsing.json.JSON;
+import engine.util.parsing.json.JSONLiteral;
+import engine.util.parsing.json.JSONNumber;
+import engine.util.parsing.json.JSONObject;
+import engine.util.parsing.json.JSONString;
 
 public class Main {
 	private static class TestScene extends Scene {
@@ -71,7 +77,7 @@ public class Main {
 		}
 	}
 
-	public static void main(String[] args) throws LWJGLException, IOException {
+	public static void main(String[] args) throws LWJGLException, IOException, ParseException {
 		IDisplay display = new OpenGLDisplay(640, 480, "My Display");
 		CoreEngine engine = new CoreEngine(display, new TestScene(
 				display.getRenderDevice()), 60.0);
