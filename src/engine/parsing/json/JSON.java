@@ -1,4 +1,4 @@
-package engine.util.parsing.json;
+package engine.parsing.json;
 
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -6,7 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.ParseException;
 
-import engine.util.parsing.TokenReader;
+import engine.parsing.TokenReader;
 
 public class JSON {
 	private JSONValue value;

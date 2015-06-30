@@ -1,4 +1,4 @@
-package engine.util.parsing.json;
+package engine.parsing.json;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -6,7 +6,7 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
-import engine.util.parsing.TokenReader;
+import engine.parsing.TokenReader;
 
 public abstract class JSONValue {
 	public static JSONValue parse(TokenReader tokens, String currentToken)
@@ -30,6 +30,46 @@ public abstract class JSONValue {
 		}
 
 		throw new IOException(currentToken + " is not a recognized JSON value");
+	}
+	
+	public static JSONValue create(int value) {
+		return new JSONNumber(value);
+	}
+	
+	public static JSONValue create(long value) {
+		return new JSONNumber(value);
+	}
+	
+	public static JSONValue create(float value) {
+		return new JSONNumber(value);
+	}
+	
+	public static JSONValue create(double value) {
+		return new JSONNumber(value);
+	}
+	
+	public static JSONValue create(short value) {
+		return new JSONNumber(value);
+	}
+	
+	public static JSONValue create(byte value) {
+		return new JSONNumber(value);
+	}
+	
+	public static JSONValue create(char value) {
+		return new JSONString(value);
+	}
+	
+	public static JSONValue create(boolean value) {
+		return JSONLiteral.create(value);
+	}
+	
+	public static JSONValue create(String value) {
+		if(value == null) {
+			return JSONLiteral.NULL;
+		} else {
+			return new JSONString(value);
+		}
 	}
 
 	public abstract void write(Writer writer) throws IOException;

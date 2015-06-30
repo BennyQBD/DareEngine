@@ -21,13 +21,8 @@ import engine.rendering.SpriteSheet;
 import engine.rendering.opengl.OpenGLDisplay;
 import engine.space.AABB;
 import engine.space.QuadTree;
-import engine.util.factory.TextureFactory;
 import engine.util.factory.SpriteSheetFactory;
-import engine.util.parsing.json.JSON;
-import engine.util.parsing.json.JSONLiteral;
-import engine.util.parsing.json.JSONNumber;
-import engine.util.parsing.json.JSONObject;
-import engine.util.parsing.json.JSONString;
+import engine.util.factory.TextureFactory;
 
 public class Main {
 	private static class TestScene extends Scene {

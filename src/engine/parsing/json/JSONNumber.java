@@ -1,10 +1,10 @@
-package engine.util.parsing.json;
+package engine.parsing.json;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.text.ParseException;
 
-import engine.util.parsing.TokenReader;
+import engine.parsing.TokenReader;
 
 public class JSONNumber extends JSONValue {
 	public static JSONValue parse(TokenReader tokens, String currentToken)
@@ -21,6 +21,30 @@ public class JSONNumber extends JSONValue {
 		this.value = value;
 	}
 	
+	public JSONNumber(byte value) {
+		this(Byte.toString(value));
+	}
+	
+	public JSONNumber(short value) {
+		this(Short.toString(value));
+	}
+	
+	public JSONNumber(int value) {
+		this(Integer.toString(value));
+	}
+	
+	public JSONNumber(long value) {
+		this(Long.toString(value));
+	}
+	
+	public JSONNumber(float value) {
+		this(Float.toString(value));
+	}
+	
+	public JSONNumber(double value) {
+		this(Double.toString(value));
+	}
+
 	@Override
 	public boolean isNumber() {
 		return true;

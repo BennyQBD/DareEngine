@@ -1,10 +1,10 @@
-package engine.util.parsing.json;
+package engine.parsing.json;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.text.ParseException;
 
-import engine.util.parsing.TokenReader;
+import engine.parsing.TokenReader;
 
 public class JSONString extends JSONValue {
 	public static JSONValue parse(TokenReader tokens, String currentToken)
@@ -16,7 +16,14 @@ public class JSONString extends JSONValue {
 	private String value;
 
 	public JSONString(String value) {
+		if(value == null) {
+			throw new NullPointerException("String cannot have a null value");
+		}
 		this.value = value;
+	}
+
+	public JSONString(char value) {
+		this(Character.toString(value));
 	}
 
 	@Override

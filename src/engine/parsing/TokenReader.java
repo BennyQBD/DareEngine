@@ -1,4 +1,4 @@
-package engine.util.parsing;
+package engine.parsing;
 
 import java.io.BufferedReader;
 import java.io.IOException;

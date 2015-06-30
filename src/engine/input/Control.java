@@ -3,8 +3,8 @@ package engine.input;
 import java.util.ArrayList;
 import java.util.List;
 
+import engine.parsing.Config;
 import engine.util.Util;
-import engine.util.parsing.Config;
 
 public class Control {
 	private int[] keyCodes;

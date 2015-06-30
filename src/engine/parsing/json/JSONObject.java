@@ -1,4 +1,4 @@
-package engine.util.parsing.json;
+package engine.parsing.json;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import engine.util.parsing.TokenReader;
+import engine.parsing.TokenReader;
 
 public class JSONObject extends JSONValue {
 	public static JSONValue parse(TokenReader tokens, String token)
@@ -39,13 +39,49 @@ public class JSONObject extends JSONValue {
 	public JSONObject() {
 		map = new HashMap<String, JSONValue>();
 	}
+	
+	public void put(String key, int value) {
+		put(key, JSONValue.create(value));
+	}
+	
+	public void put(String key, byte value) {
+		put(key, JSONValue.create(value));
+	}
+	
+	public void put(String key, short value) {
+		put(key, JSONValue.create(value));
+	}
+	
+	public void put(String key, long value) {
+		put(key, JSONValue.create(value));
+	}
+	
+	public void put(String key, float value) {
+		put(key, JSONValue.create(value));
+	}
+	
+	public void put(String key, double value) {
+		put(key, JSONValue.create(value));
+	}
+	
+	public void put(String key, boolean value) {
+		put(key, JSONValue.create(value));
+	}
+	
+	public void put(String key, char value) {
+		put(key, JSONValue.create(value));
+	}
+	
+	public void put(String key, String value) {
+		put(key, JSONValue.create(value));
+	}
 
 	public void put(String key, JSONValue value) {
 		if (key == null) {
 			throw new NullPointerException("Key cannot be null");
 		}
 		if (value == null) {
-			throw new NullPointerException("JSONValue cannot be null");
+			throw new NullPointerException("value cannot be null");
 		}
 		map.put(key, value);
 	}

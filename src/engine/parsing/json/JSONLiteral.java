@@ -1,10 +1,10 @@
-package engine.util.parsing.json;
+package engine.parsing.json;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.text.ParseException;
 
-import engine.util.parsing.TokenReader;
+import engine.parsing.TokenReader;
 
 public class JSONLiteral extends JSONValue {
 	public static JSONValue parse(TokenReader tokens, String currentToken) throws IOException, ParseException {
@@ -40,6 +40,10 @@ public class JSONLiteral extends JSONValue {
 	public static final JSONLiteral FALSE = new JSONLiteral("false");
 	
 	private String string;
+	
+	public static JSONLiteral create(boolean value) {
+		return value ? TRUE : FALSE;
+	}
 	
 	private JSONLiteral(String string) {
 		this.string = string;
