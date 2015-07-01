@@ -32,10 +32,12 @@ public class CollisionComponent extends EntityComponent {
 						}
 						ColliderComponent c2 = (ColliderComponent) entity
 								.getComponent(ColliderComponent.ID);
-						AABB collider2 = c2 != null ? c2.getAABB() : entity
-								.getAABB();
+						if(c2 == null) {
+							return;
+						}
+						AABB collider2 = c2.getAABB();
 
-						if (entity.getAABB().intersects(collisionRange)) {
+						if (collider2.intersects(collisionRange)) {
 							amts.setVal1(collider.resolveCollisionX(collider2,
 									amts.getVal1()));
 							amts.setVal2(collider.resolveCollisionY(collider2,

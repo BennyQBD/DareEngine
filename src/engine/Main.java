@@ -3,8 +3,7 @@ package engine;
 import java.io.IOException;
 import java.text.ParseException;
 
-import org.lwjgl.LWJGLException;
-
+import engine.audio.IAudioDevice;
 import engine.components.ColliderComponent;
 import engine.components.CollisionComponent;
 import engine.components.LightComponent;
@@ -12,6 +11,8 @@ import engine.components.SpriteComponent;
 import engine.core.CoreEngine;
 import engine.core.Scene;
 import engine.core.entity.Entity;
+import engine.input.Axis;
+import engine.input.IInput;
 import engine.rendering.Color;
 import engine.rendering.IDisplay;
 import engine.rendering.IRenderContext;
@@ -29,7 +30,11 @@ public class Main {
 		SpriteSheet font;
 		Entity e2;
 
-		public TestScene(IRenderDevice device) throws IOException {
+		Axis movementX;
+		Axis movementY;
+
+		public TestScene(IInput input, IRenderDevice device,
+				IAudioDevice audioDevice) throws IOException {
 			super(new QuadTree<Entity>(new AABB(-1, -1, 1, 1), 8));
 			SpriteSheetFactory sprites = new SpriteSheetFactory(
 					new TextureFactory(device, "./res/"));
@@ -50,12 +55,23 @@ public class Main {
 			new CollisionComponent(e2);
 			new SpriteComponent(e2, 0.5, 0.5, sprites.get("bricks.jpg", 1, 1,
 					0, IRenderDevice.FILTER_LINEAR), 0, Color.WHITE);
+
+			movementX = new Axis(input, new int[] { IInput.KEY_A,
+					IInput.KEY_LEFT }, new int[] { IInput.KEY_D,
+					IInput.KEY_RIGHT }, null, null, 0.0, 0.0, 0, new int[] { 7 },
+					new int[] { 5 }, new int[] { 0 });
+			movementY = new Axis(input, new int[] { IInput.KEY_W,
+					IInput.KEY_UP }, new int[] { IInput.KEY_S,
+					IInput.KEY_DOWN }, null, null, 0.0, 0.0, 0, new int[] { 4 },
+					new int[] { 6 }, new int[] { 1 });
 		}
 
 		@Override
 		public boolean update(double delta) {
 			super.updateRange(delta, new AABB(-2, -2, 2, 2));
-			e2.move((float) (delta * 0.25), 0);
+			double speed = delta;
+			e2.move((float)(movementX.getAmount() * speed), 0);
+			e2.move(0, (float)(-movementY.getAmount() * speed));
 			return false;
 		}
 
@@ -72,10 +88,11 @@ public class Main {
 		}
 	}
 
-	public static void main(String[] args) throws LWJGLException, IOException, ParseException {
+	public static void main(String[] args) throws IOException, ParseException {
 		IDisplay display = new OpenGLDisplay(640, 480, "My Display");
 		CoreEngine engine = new CoreEngine(display, new TestScene(
-				display.getRenderDevice()), 60.0);
+				display.getInput(), display.getRenderDevice(),
+				display.getAudioDevice()), 60.0);
 		engine.start();
 		display.dispose();
 	}

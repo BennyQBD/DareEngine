@@ -4,6 +4,7 @@ import engine.audio.IAudioDevice;
 import engine.input.IInput;
 
 public interface IDisplay {
+	public void update();
 	public void swapBuffers();
 
 	public boolean isClosed();

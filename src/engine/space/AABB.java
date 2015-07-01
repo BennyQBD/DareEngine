@@ -91,15 +91,15 @@ public class AABB {
 	}
 
 	public double getCenterX() {
-		return (minX + maxX) / 2.0f;
+		return (minX + maxX) / 2.0;
 	}
 
 	public double getCenterY() {
-		return (minY + maxY) / 2.0f;
+		return (minY + maxY) / 2.0;
 	}
 
 	public double getCenterZ() {
-		return (minZ + maxZ) / 2.0f;
+		return (minZ + maxZ) / 2.0;
 	}
 
 	public double getMinX() {

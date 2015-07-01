@@ -1,10 +1,15 @@
 package engine.rendering.opengl;
 
-import org.lwjgl.LWJGLException;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
+import static org.lwjgl.glfw.Callbacks.*;
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.system.MemoryUtil.*;
+
+import java.nio.ByteBuffer;
+
+import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWvidmode;
+import org.lwjgl.opengl.GLContext;
 
 import engine.audio.IAudioDevice;
 import engine.audio.openal.OpenALAudioDevice;
@@ -22,29 +27,55 @@ public class OpenGLDisplay implements IDisplay {
 	private final IRenderContext frameBuffer;
 	private final IInput input;
 
-	public OpenGLDisplay(int width, int height, String title) throws LWJGLException {
-		Display.setTitle(title);
+	private GLFWErrorCallback errorCallback;
+	private long window;
 
-		Display.setDisplayMode(new DisplayMode(width, height));
-		Display.create();
-		Keyboard.create();
-		Mouse.create();
+	public OpenGLDisplay(int width, int height, String title) {
+		glfwSetErrorCallback(errorCallback = errorCallbackPrint(System.err));
 
-		Display.setVSyncEnabled(!Debug.IGNORE_FRAME_CAP);
+		if (glfwInit() != GL_TRUE) {
+			throw new IllegalStateException("Unable to initialize GLFW");
+		}
+
+		glfwDefaultWindowHints();
+		glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+		glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+
+		window = glfwCreateWindow(width, height, title, NULL, NULL);
+		if (window == NULL) {
+			throw new RuntimeException("Failed to create the GLFW window");
+		}
+
+		ByteBuffer vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+		glfwSetWindowPos(window, (GLFWvidmode.width(vidmode) - width) / 2,
+				(GLFWvidmode.height(vidmode) - height) / 2);
+
+		glfwMakeContextCurrent(window);
+		glfwSwapInterval(Debug.IGNORE_FRAME_CAP ? 0 : 1);
+
+		glfwShowWindow(window);
+		GLContext.createFromCurrent();
+
 		device = new OpenGLRenderDevice(width, height);
 		frameBuffer = new RenderContext(device);
-		input = new OpenGLInput();
+		input = new OpenGLInput(window);
 		audioDevice = new OpenALAudioDevice();
 	}
 
 	@Override
 	public void swapBuffers() {
-		Display.update();
+		glfwSwapBuffers(window);
+	}
+	
+	@Override
+	public void update() {
+		glfwPollEvents();
+        input.update();
 	}
 
 	@Override
 	public boolean isClosed() {
-		return Display.isCloseRequested();
+		return (glfwWindowShouldClose(window) == GL_TRUE) ? true : false;
 	}
 
 	@Override
@@ -52,9 +83,9 @@ public class OpenGLDisplay implements IDisplay {
 		device.dispose();
 		audioDevice.dispose();
 		frameBuffer.dispose();
-		Display.destroy();
-		Keyboard.destroy();
-		Mouse.destroy();
+		glfwDestroyWindow(window);
+        glfwTerminate();
+        errorCallback.release();
 	}
 
 	@Override

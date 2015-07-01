@@ -1,4 +1,5 @@
 package engine.audio.openal;
+
 import static org.lwjgl.openal.AL10.*;
 
 import java.nio.ByteBuffer;
@@ -9,8 +10,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.lwjgl.LWJGLException;
 import org.lwjgl.openal.AL;
+import org.lwjgl.openal.ALContext;
 
 import engine.audio.IAudioDevice;
 
@@ -37,7 +38,7 @@ public class OpenALAudioDevice implements IAudioDevice {
 		}
 
 		public void dispose() {
-			if(source != 0) {
+			if (source != 0) {
 				alDeleteSources(source);
 			}
 			source = 0;
@@ -52,9 +53,10 @@ public class OpenALAudioDevice implements IAudioDevice {
 	private Map<Integer, AudioObject> objects;
 	private Map<Integer, AudioChannel> channels;
 	private int currentObjectId;
+	private ALContext context;
 
-	public OpenALAudioDevice() throws LWJGLException {
-		AL.create();
+	public OpenALAudioDevice() {
+		context = ALContext.create();
 		channels = new HashMap<>();
 		objects = new HashMap<>();
 		currentObjectId = 1;
@@ -67,7 +69,7 @@ public class OpenALAudioDevice implements IAudioDevice {
 		while (it.hasNext()) {
 			it.next().getValue().dispose();
 		}
-		AL.destroy();
+		AL.destroy(context);
 	}
 
 	private static ByteBuffer toByteBuffer(byte[] data, boolean isStereo,
@@ -97,7 +99,8 @@ public class OpenALAudioDevice implements IAudioDevice {
 		int buffer = alGenBuffers();
 		boolean isStereo = format == IAudioDevice.FORMAT_STEREO_16
 				|| format == IAudioDevice.FORMAT_MONO_16;
-		alBufferData(buffer, format, toByteBuffer(data, isStereo, isBigEndian), sampleRate);
+		alBufferData(buffer, format, toByteBuffer(data, isStereo, isBigEndian),
+				sampleRate);
 		return buffer;
 	}
 
@@ -117,10 +120,11 @@ public class OpenALAudioDevice implements IAudioDevice {
 		objects.put(id, object);
 		return id;
 	}
-	
+
 	@Override
-	public void updateAudioObject(int objectId, double volume, double pitch, boolean shouldLoop) {
-		if(objectId == 0) {
+	public void updateAudioObject(int objectId, double volume, double pitch,
+			boolean shouldLoop) {
+		if (objectId == 0) {
 			return;
 		}
 		AudioObject object = objects.get(objectId);

@@ -48,6 +48,7 @@ public class CoreEngine {
 			}
 
 			while (unprocessedTime > frameTime) {
+				display.update();
 				render = true;
 				boolean shouldExit = scene.update(frameTime);
 				if (shouldExit) {
