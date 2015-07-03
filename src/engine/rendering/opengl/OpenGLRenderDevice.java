@@ -1,7 +1,8 @@
 package engine.rendering.opengl;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengl.EXTFramebufferObject.*;
+//import static org.lwjgl.opengl.GL30.*;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -88,12 +89,12 @@ public class OpenGLRenderDevice implements IRenderDevice {
 
 	@Override
 	public int createRenderTarget(int width, int height, int texId) {
-		int fbo = glGenFramebuffers();
+		int fbo = glGenFramebuffersEXT();
 		FramebufferData data = new FramebufferData(width, height);
 		framebuffers.put(fbo, data);
 		if (texId != 0 && texId != -1) {
 			bindRenderTarget(fbo);
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+			glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
 					GL_TEXTURE_2D, texId, 0);
 		}
 		return fbo;
@@ -112,7 +113,7 @@ public class OpenGLRenderDevice implements IRenderDevice {
 	@Override
 	public int releaseRenderTarget(int fbo) {
 		if (fbo != 0 && fbo != -1) {
-			glDeleteFramebuffers(fbo);
+			glDeleteFramebuffersEXT(fbo);
 			framebuffers.remove(fbo);
 			if (fbo == boundFbo) {
 				boundFbo = -1;
@@ -170,7 +171,7 @@ public class OpenGLRenderDevice implements IRenderDevice {
 			return;
 		}
 		FramebufferData data = framebuffers.get(fbo);
-		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo);
 		boundFbo = fbo;
 
 		glMatrixMode(GL_PROJECTION);
