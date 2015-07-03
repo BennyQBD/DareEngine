@@ -22,7 +22,7 @@ public class CollisionComponent extends EntityComponent {
 			return amts;
 		}
 		final AABB collider = c.getAABB();
-		final AABB collisionRange = getEntity().getAABB().stretch(amtX, amtY);
+		final AABB collisionRange = collider.stretch(amtX, amtY);
 		getEntity().visitInRange(CollisionComponent.ID, collisionRange,
 				new IEntityVisitor() {
 					@Override

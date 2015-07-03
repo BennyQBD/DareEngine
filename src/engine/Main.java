@@ -55,6 +55,7 @@ public class Main {
 			new CollisionComponent(e2);
 			new SpriteComponent(e2, 0.5, 0.5, sprites.get("bricks.jpg", 1, 1,
 					0, IRenderDevice.FILTER_LINEAR), 0, Color.WHITE);
+			new LightComponent(e2, light, 2.0, 2.0, 0.0, 0.0);
 
 			movementX = new Axis(input, new int[] { IInput.KEY_A,
 					IInput.KEY_LEFT }, new int[] { IInput.KEY_D,
