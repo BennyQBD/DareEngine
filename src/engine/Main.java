@@ -78,8 +78,8 @@ public class Main {
 
 		@Override
 		public void render(IRenderContext target) {
-			target.clear(0.0, 0.0, 0.0, 0.0);
-			target.clearLighting(0.1, 0.1, 0.1, 0.1);
+			target.clear(Color.BLACK);
+			target.clearLighting(new Color(0.1));
 			super.renderRange(target, 0, 0);
 			target.applyLighting();
 

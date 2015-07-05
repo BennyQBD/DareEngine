@@ -1,23 +1,42 @@
+/** 
+ * Copyright (c) 2015, Benny Bobaganoosh. All rights reserved.
+ * License terms are in the included LICENSE.txt file.
+ */
 package engine.core;
 
 import engine.rendering.IDisplay;
 import engine.util.Debug;
 
+/**
+ * The core game engine. Updates and renders a scene in a display at a
+ * consistent rate.
+ * 
+ * @author Benny Bobaganoosh (thebennybox@gmail.com)
+ */
 public class CoreEngine {
 	private final IDisplay display;
 	private final double frameTime;
 	private final Scene scene;
 
+	/**
+	 * Creates a new CoreEngine in a usable state.
+	 * 
+	 * @param display
+	 *            The display to render the game in.
+	 * @param scene
+	 *            The game scene that the engine should run.
+	 * @param frameRate
+	 *            The number of frames to be rendered per second, on average.
+	 */
 	public CoreEngine(IDisplay display, Scene scene, double frameRate) {
 		this.frameTime = 1.0 / frameRate;
 		this.display = display;
 		this.scene = scene;
 	}
 
-	public void dispose() {
-		display.dispose();
-	}
-
+	/**
+	 * Begins running the game engine and all it's various components
+	 */
 	@SuppressWarnings("unused")
 	public void start() {
 		int frames = 0;
@@ -60,7 +79,7 @@ public class CoreEngine {
 			if (render || Debug.IGNORE_FRAME_CAP) {
 				frames++;
 				scene.render(display.getRenderContext());
-				display.swapBuffers();
+				display.present();
 			} else {
 				try {
 					Thread.sleep(1);

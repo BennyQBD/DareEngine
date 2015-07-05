@@ -1,3 +1,7 @@
+/** 
+ * Copyright (c) 2015, Benny Bobaganoosh. All rights reserved.
+ * License terms are in the included LICENSE.txt file.
+ */
 package engine.space;
 
 import java.util.ArrayList;
@@ -5,20 +9,33 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-public class QuadTree<T extends ISpatialObject> implements
-		ISpatialStructure<T> {
+/**
+ * Represents a 2D space that can be recursively divided into 4 equal subspaces.
+ * 
+ * @author Benny Bobaganoosh (thebennybox@gmail.com)
+ */
+public class QuadTree<T extends ISpatialObject> implements ISpatialStructure<T> {
 	private QuadTree<T> nodes[];
 	private int capacity;
 	private List<T> objects;
 	private AABB aabb;
 
+	/**
+	 * Initializes a QuadTree from an AABB.
+	 * 
+	 * @param aabb
+	 *            Represents the 2D space inside the QuadTree.
+	 * @param capacity
+	 *            The number of objects that can be added to the QuadTree before
+	 *            it subdivides.
+	 */
 	public QuadTree(AABB aabb, int capacity) {
 		this.aabb = aabb;
 		this.capacity = capacity;
 		objects = new ArrayList<>();
 		nodes = null;
 	}
-	
+
 	private QuadTree(QuadTree<T> other) {
 		this.nodes = other.nodes;
 		this.objects = other.objects;
@@ -31,13 +48,13 @@ public class QuadTree<T extends ISpatialObject> implements
 		if (addInternal(obj)) {
 			return;
 		}
-		
+
 		double dirX = obj.getAABB().getCenterX() - aabb.getCenterX();
 		double dirY = obj.getAABB().getCenterY() - aabb.getCenterY();
 		expand(dirX, dirY);
 		add(obj);
 	}
-	
+
 	private void expand(double dirX, double dirY) {
 		QuadTree<T> thisAsNode = new QuadTree<>(this);
 
@@ -51,8 +68,8 @@ public class QuadTree<T extends ISpatialObject> implements
 
 		nodes = null;
 		objects = new ArrayList<>();
-		
-		if (dirX <= 0 && dirY <= 0) {	
+
+		if (dirX <= 0 && dirY <= 0) {
 			aabb = new AABB(minX - expanseX, minY - expanseY, maxX, maxY);
 			subdivide();
 			nodes[1] = thisAsNode;
@@ -133,8 +150,8 @@ public class QuadTree<T extends ISpatialObject> implements
 	}
 
 	private boolean addToChildNode(T obj) {
-		for(int i = 0; i < nodes.length; i++) {
-			if(nodes[i].addInternal(obj)) {
+		for (int i = 0; i < nodes.length; i++) {
+			if (nodes[i].addInternal(obj)) {
 				return true;
 			}
 		}
@@ -143,108 +160,109 @@ public class QuadTree<T extends ISpatialObject> implements
 
 	@Override
 	public void remove(T obj) {
-		if(!removeInternal(obj)) {
+		if (!removeInternal(obj)) {
 			objects.remove(obj);
 		}
 	}
-	
+
 	private boolean removeInternal(T obj) {
-		if(!aabb.contains(obj.getAABB())) {
+		if (!aabb.contains(obj.getAABB())) {
 			return false;
 		}
-		
-		if(objects.remove(obj)) {
+
+		if (objects.remove(obj)) {
 			return true;
 		}
-		
-		if(nodes == null) {
+
+		if (nodes == null) {
 			return false;
 		}
-		
-		for(int i = 0; i < nodes.length; i++) {
-			if(nodes[i].removeInternal(obj)) {
+
+		for (int i = 0; i < nodes.length; i++) {
+			if (nodes[i].removeInternal(obj)) {
 				prune();
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
 	private void prune() {
-		if(!isNodesEmpty()) {
+		if (!isNodesEmpty()) {
 			return;
 		}
-		
+
 		nodes = null;
 	}
-	
+
 	private boolean isNodesEmpty() {
-		for(int i = 0; i < nodes.length; i++) {
-			if(!nodes[i].isEmpty()) {
+		for (int i = 0; i < nodes.length; i++) {
+			if (!nodes[i].isEmpty()) {
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
 
 	private boolean isEmpty() {
-		if(!objects.isEmpty()) {
+		if (!objects.isEmpty()) {
 			return false;
 		}
-		
-		if(nodes == null) {
+
+		if (nodes == null) {
 			return true;
 		}
-		
+
 		return isNodesEmpty();
 	}
 
 	@Override
 	public void clear() {
 		objects.clear();
-		
-		if(nodes != null) {
-			for(int i = 0; i < nodes.length; i++) {
+
+		if (nodes != null) {
+			for (int i = 0; i < nodes.length; i++) {
 				nodes[i].clear();
 			}
 		}
+		nodes = null;
 	}
 
 	@Override
 	public Set<T> getAll(Set<T> result) {
 		return addAll(result);
 	}
-	
+
 	private Set<T> addAll(Set<T> result) {
 		result.addAll(objects);
-		
-		if(nodes != null) {
-			for(int i = 0; i < nodes.length; i++) {
+
+		if (nodes != null) {
+			for (int i = 0; i < nodes.length; i++) {
 				nodes[i].addAll(result);
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	@Override
 	public Set<T> queryRange(Set<T> result, AABB range) {
 		if (!aabb.intersects(range)) {
 			return result;
 		}
-		
-		if(range.contains(aabb)) {
+
+		if (range.contains(aabb)) {
 			return addAll(result);
 		}
-		
-		if(nodes != null) {
+
+		if (nodes != null) {
 			for (int i = 0; i < nodes.length; i++) {
 				result = nodes[i].queryRange(result, range);
 			}
 		}
-		
+
 		Iterator<T> it = objects.iterator();
 		while (it.hasNext()) {
 			T current = it.next();
@@ -252,7 +270,7 @@ public class QuadTree<T extends ISpatialObject> implements
 				result.add(current);
 			}
 		}
-		
+
 		return result;
 	}
 }

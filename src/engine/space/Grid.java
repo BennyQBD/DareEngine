@@ -1,3 +1,7 @@
+/** 
+ * Copyright (c) 2015, Benny Bobaganoosh. All rights reserved.
+ * License terms are in the included LICENSE.txt file.
+ */
 package engine.space;
 
 import java.util.ArrayList;
@@ -7,12 +11,24 @@ import java.util.Set;
 
 import engine.util.Util;
 
+/**
+ * Represents a 2D space with a grid
+ * 
+ * @author Benny Bobaganoosh (thebennybox@gmail.com)
+ */
 public class Grid<T extends ISpatialObject> implements ISpatialStructure<T> {
 	private final int tileSize;
 	private final int width;
 	private final int height;
 	private final List<T>[] tiles;
 
+	/**
+	 * Creates a new grid
+	 * 
+	 * @param tileSize How much space each tile in the grid consumes
+	 * @param width How many tiles there are on x.
+	 * @param height How many tiles there are on y.
+	 */
 	@SuppressWarnings("unchecked")
 	public Grid(int tileSize, int width, int height) {
 		this.tileSize = tileSize;

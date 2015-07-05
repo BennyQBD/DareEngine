@@ -1,3 +1,7 @@
+/** 
+ * Copyright (c) 2015, Benny Bobaganoosh. All rights reserved.
+ * License terms are in the included LICENSE.txt file.
+ */
 package engine.rendering.opengl;
 
 import static org.lwjgl.glfw.Callbacks.*;
@@ -19,8 +23,14 @@ import engine.rendering.IDisplay;
 import engine.rendering.IRenderContext;
 import engine.rendering.IRenderDevice;
 import engine.rendering.RenderContext;
+import engine.rendering.RenderTarget;
 import engine.util.Debug;
 
+/**
+ * A display that is capable of recieving OpenGL rendering.
+ * 
+ * @author Benny Bobaganoosh (thebennybox@gmail.com)
+ */
 public class OpenGLDisplay implements IDisplay {
 	private final IRenderDevice device;
 	private final IAudioDevice audioDevice;
@@ -30,6 +40,15 @@ public class OpenGLDisplay implements IDisplay {
 	private GLFWErrorCallback errorCallback;
 	private long window;
 
+	private RenderTarget target;
+
+	/**
+	 * Creates a new OpenGL display.
+	 * 
+	 * @param width The width of the display, in pixels.
+	 * @param height The height of the display, in pixels.
+	 * @param title The text appearing in the display's title bar.
+	 */
 	public OpenGLDisplay(int width, int height, String title) {
 		glfwSetErrorCallback(errorCallback = errorCallbackPrint(System.err));
 
@@ -57,20 +76,21 @@ public class OpenGLDisplay implements IDisplay {
 		GLContext.createFromCurrent();
 
 		device = new OpenGLRenderDevice(width, height);
-		frameBuffer = new RenderContext(device);
+		this.target = new RenderTarget(device, width, height, 0, 0);
+		frameBuffer = new RenderContext(device, target);
 		input = new OpenGLInput(window);
 		audioDevice = new OpenALAudioDevice();
 	}
 
 	@Override
-	public void swapBuffers() {
+	public void present() {
 		glfwSwapBuffers(window);
 	}
-	
+
 	@Override
 	public void update() {
 		glfwPollEvents();
-        input.update();
+		input.update();
 	}
 
 	@Override
@@ -81,11 +101,12 @@ public class OpenGLDisplay implements IDisplay {
 	@Override
 	public void dispose() {
 		device.dispose();
+		target.dispose();
 		audioDevice.dispose();
 		frameBuffer.dispose();
 		glfwDestroyWindow(window);
-        glfwTerminate();
-        errorCallback.release();
+		glfwTerminate();
+		errorCallback.release();
 	}
 
 	@Override

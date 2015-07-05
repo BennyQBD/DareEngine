@@ -1,3 +1,7 @@
+/** 
+ * Copyright (c) 2015, Benny Bobaganoosh. All rights reserved.
+ * License terms are in the included LICENSE.txt file.
+ */
 package engine.audio.openal;
 
 import static org.lwjgl.openal.AL10.*;
@@ -15,6 +19,11 @@ import org.lwjgl.openal.ALContext;
 
 import engine.audio.IAudioDevice;
 
+/**
+ * An Audio Device implemented using OpenAL.
+ * 
+ * @author Benny Bobaganoosh (thebennybox@gmail.com)
+ */
 public class OpenALAudioDevice implements IAudioDevice {
 	private class AudioObject {
 		public AudioObject(int dataId, double volume, double pitch, boolean loop) {
@@ -55,6 +64,9 @@ public class OpenALAudioDevice implements IAudioDevice {
 	private int currentObjectId;
 	private ALContext context;
 
+	/**
+	 * Creates a new OpenALAudioDevice.
+	 */
 	public OpenALAudioDevice() {
 		context = ALContext.create();
 		channels = new HashMap<>();

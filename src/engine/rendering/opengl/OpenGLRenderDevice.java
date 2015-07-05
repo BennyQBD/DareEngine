@@ -1,3 +1,7 @@
+/** 
+ * Copyright (c) 2015, Benny Bobaganoosh. All rights reserved.
+ * License terms are in the included LICENSE.txt file.
+ */
 package engine.rendering.opengl;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -14,6 +18,11 @@ import engine.rendering.ArrayBitmap;
 import engine.rendering.Color;
 import engine.rendering.IRenderDevice;
 
+/**
+ * A device that is capable of OpenGL rendering
+ * 
+ * @author Benny Bobaganoosh (thebennybox@gmail.com)
+ */
 public class OpenGLRenderDevice implements IRenderDevice {
 	private class FramebufferData {
 		public FramebufferData(int width, int height) {
@@ -40,6 +49,12 @@ public class OpenGLRenderDevice implements IRenderDevice {
 	private int boundFbo;
 	private int boundTex;
 
+	/**
+	 * Creates a new OpenGLRenderDevice
+	 * 
+	 * @param width The width of the primary render target.
+	 * @param height The height of the primary render target.
+	 */
 	public OpenGLRenderDevice(int width, int height) {
 		boundFbo = -1;
 		boundTex = -1;
@@ -58,7 +73,8 @@ public class OpenGLRenderDevice implements IRenderDevice {
 	}
 
 	@Override
-	public int createTexture(int width, int height, ArrayBitmap image, int filter) {
+	public int createTexture(int width, int height, ArrayBitmap image,
+			int filter) {
 		return createTexture(width, height, image, filter, GL_RGBA8);
 	}
 
@@ -94,20 +110,10 @@ public class OpenGLRenderDevice implements IRenderDevice {
 		framebuffers.put(fbo, data);
 		if (texId != 0 && texId != -1) {
 			bindRenderTarget(fbo);
-			glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
-					GL_TEXTURE_2D, texId, 0);
+			glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
+					GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, texId, 0);
 		}
 		return fbo;
-	}
-
-	@Override
-	public int getRenderTargetWidth(int fbo) {
-		return framebuffers.get(fbo).width;
-	}
-
-	@Override
-	public int getRenderTargetHeight(int fbo) {
-		return framebuffers.get(fbo).height;
 	}
 
 	@Override
@@ -123,9 +129,10 @@ public class OpenGLRenderDevice implements IRenderDevice {
 	}
 
 	@Override
-	public void clear(int fbo, double a, double r, double g, double b) {
+	public void clear(int fbo, Color color) {
 		bindRenderTarget(fbo);
-		glClearColor((float) r, (float) g, (float) b, (float) a);
+		glClearColor((float) color.getRed(), (float) color.getGreen(),
+				(float) color.getBlue(), (float) color.getAlpha());
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
 
@@ -137,7 +144,7 @@ public class OpenGLRenderDevice implements IRenderDevice {
 		bindRenderTarget(fbo);
 
 		glColor4f((float) c.getRed(), (float) c.getGreen(),
-				(float) c.getBlue(), (float) transparency);
+				(float) c.getBlue(), (float) (c.getAlpha() * transparency));
 
 		switch (mode) {
 		case ADD_LIGHT:
@@ -189,8 +196,8 @@ public class OpenGLRenderDevice implements IRenderDevice {
 		boundTex = texId;
 	}
 
-	private int createTexture(int width, int height, ArrayBitmap image, int filter,
-			int format) {
+	private int createTexture(int width, int height, ArrayBitmap image,
+			int filter, int format) {
 		int id = glGenTextures();
 		bindTexture(id);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -207,7 +214,8 @@ public class OpenGLRenderDevice implements IRenderDevice {
 		if (image == null) {
 			return null;
 		}
-		final ByteBuffer buffer = BufferUtils.createByteBuffer(image.getWidth() * image.getHeight() * 4);
+		final ByteBuffer buffer = BufferUtils.createByteBuffer(image.getWidth()
+				* image.getHeight() * 4);
 		image.visitAll(new ArrayBitmap.IVisitor() {
 			@Override
 			public void visit(int x, int y, int pixel) {

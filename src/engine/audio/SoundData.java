@@ -1,3 +1,7 @@
+/** 
+ * Copyright (c) 2015, Benny Bobaganoosh. All rights reserved.
+ * License terms are in the included LICENSE.txt file.
+ */
 package engine.audio;
 
 import java.io.File;
@@ -8,10 +12,28 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+/**
+ * Represents audio data for a particular audio device.
+ * 
+ * @author Benny Bobaganoosh (thebennybox@gmail.com)
+ */
 public class SoundData {
 	private final IAudioDevice device;
 	private int id;
 
+	/**
+	 * Creates a new SoundData object. It is preferred to use this object
+	 * instead of manipulating an {@link IAudioDevice}'s audio data methods
+	 * directly.
+	 * 
+	 * @param device
+	 *            The device the sound data will be created for.
+	 * @param fileName
+	 *            The name and path to the sound file to be loaded.
+	 * @throws IOException
+	 *             If the audio file cannot be loaded and sent to the
+	 *             {@code device}
+	 */
 	public SoundData(IAudioDevice device, String fileName) throws IOException {
 		this.device = device;
 		this.id = 0;
@@ -28,10 +50,20 @@ public class SoundData {
 		super.finalize();
 	}
 
+	/**
+	 * Releases this object. This should be called when the object will no
+	 * longer be used, and no methods or fields should be used after this method
+	 * is called.
+	 */
 	public void dispose() {
 		id = device.releaseAudioData(id);
 	}
 
+	/**
+	 * Gets the audio device's integer id for this audio data.
+	 * 
+	 * @return The audio device's integer id for this audio data.
+	 */
 	public int getId() {
 		return id;
 	}

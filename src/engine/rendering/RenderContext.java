@@ -1,18 +1,29 @@
+/** 
+ * Copyright (c) 2015, Benny Bobaganoosh. All rights reserved.
+ * License terms are in the included LICENSE.txt file.
+ */
 package engine.rendering;
 
 import engine.util.Util;
 
+/**
+ * An implementation of higher-level rendering functions.
+ * 
+ * @author Benny Bobaganoosh (thebennybox@gmail.com)
+ */
 public class RenderContext implements IRenderContext {
-	private final int width;
-	private final int height;
-	private final IRenderDevice device;
 	private final LightMap lightMap;
+	private final RenderTarget target;
 
-	public RenderContext(IRenderDevice device) {
-		this.device = device;
-		this.width = device.getRenderTargetWidth(0);
-		this.height = device.getRenderTargetHeight(0);
-		this.lightMap = new LightMap(device, width, height, 1);
+	/**
+	 * Creates a new RenderContext.
+	 * 
+	 * @param device The device being used for rendering.
+	 * @param target The target being rendered to.
+	 */
+	public RenderContext(IRenderDevice device, RenderTarget target) {
+		this.target = target;
+		this.lightMap = new LightMap(device, target.getWidth(), target.getHeight(), 1);
 	}
 
 	@Override
@@ -20,19 +31,9 @@ public class RenderContext implements IRenderContext {
 		lightMap.dispose();
 	}
 
-	// @Override
-	// public int getWidth() {
-	// return width;
-	// }
-	//
-	// @Override
-	// public int getHeight() {
-	// return height;
-	// }
-
 	@Override
-	public void clear(double a, double r, double g, double b) {
-		device.clear(0, a, r, g, b);
+	public void clear(Color color) {
+		target.clear(color);
 	}
 
 	@Override
@@ -60,7 +61,7 @@ public class RenderContext implements IRenderContext {
 			texMaxY = temp;
 		}
 
-		device.drawRect(0, sheet.getSheet().getDeviceID(),
+		target.drawRect(sheet.getSheet().getDeviceID(),
 				IRenderDevice.BlendMode.SPRITE, startX, startY, endX, endY,
 				texMinX, texMinY, texMaxX, texMaxY, color, transparency);
 	}
@@ -101,8 +102,8 @@ public class RenderContext implements IRenderContext {
 	}
 
 	@Override
-	public void clearLighting(double a, double r, double g, double b) {
-		lightMap.clear(a, r, g, b);
+	public void clearLighting(Color color) {
+		lightMap.clear(color);
 	}
 
 	@Override
@@ -115,7 +116,7 @@ public class RenderContext implements IRenderContext {
 
 	@Override
 	public void applyLighting() {
-		device.drawRect(0, lightMap.getId(),
+		target.drawRect(lightMap.getId(),
 				IRenderDevice.BlendMode.APPLY_LIGHT, -1, -1, 1, 1, 0, 0, 1, 1,
 				Color.WHITE, 1.0);
 	}
