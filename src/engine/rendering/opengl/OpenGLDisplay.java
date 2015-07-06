@@ -70,7 +70,7 @@ public class OpenGLDisplay implements IDisplay {
 				(GLFWvidmode.height(vidmode) - height) / 2);
 
 		glfwMakeContextCurrent(window);
-		glfwSwapInterval(Debug.IGNORE_FRAME_CAP ? 0 : 1);
+		glfwSwapInterval(Debug.isIgnoringFrameCap() ? 0 : 1);
 
 		glfwShowWindow(window);
 		GLContext.createFromCurrent();

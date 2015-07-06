@@ -37,7 +37,6 @@ public class CoreEngine {
 	/**
 	 * Begins running the game engine and all it's various components
 	 */
-	@SuppressWarnings("unused")
 	public void start() {
 		int frames = 0;
 		double unprocessedTime = 0.0;
@@ -76,7 +75,7 @@ public class CoreEngine {
 				unprocessedTime -= frameTime;
 			}
 
-			if (render || Debug.IGNORE_FRAME_CAP) {
+			if (render || Debug.isIgnoringFrameCap()) {
 				frames++;
 				scene.render(display.getRenderContext());
 				display.present();

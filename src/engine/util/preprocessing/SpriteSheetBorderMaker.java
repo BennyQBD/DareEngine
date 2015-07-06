@@ -1,10 +1,38 @@
+/** 
+ * Copyright (c) 2015, Benny Bobaganoosh. All rights reserved.
+ * License terms are in the included LICENSE.txt file.
+ */
 package engine.util.preprocessing;
 
 import java.io.IOException;
 
 import engine.rendering.ArrayBitmap;
 
+/**
+ * Generates borders on an existing sprite sheet with no borders.
+ * 
+ * @author Benny Bobaganoosh (thebennybox@gmail.com)
+ */
 public class SpriteSheetBorderMaker {
+	/**
+	 * Generates borders on an existing sprite sheet with no borders.
+	 * 
+	 * @param inputFileName
+	 *            The name and path to the original sprite sheet with no
+	 *            borders.
+	 * @param outputFileName
+	 *            The name and path to the desired output location.
+	 * @param outputFormat
+	 *            The image format to be used. For example, "png" and "jpg" are
+	 *            valid values.
+	 * @param spritesX
+	 *            Number of sprites on the X axis.
+	 * @param spritesY
+	 *            Number of sprites on the Y axis.
+	 * @param spriteSheetBorder
+	 *            The number of pixels to border each sprite with on all sides.
+	 * @throws IOException
+	 */
 	public static void generateBorder(String inputFileName,
 			String outputFileName, String outputFormat, int spritesX,
 			int spritesY, final int spriteSheetBorder) throws IOException {

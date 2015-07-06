@@ -1,3 +1,7 @@
+/** 
+ * Copyright (c) 2015, Benny Bobaganoosh. All rights reserved.
+ * License terms are in the included LICENSE.txt file.
+ */
 package engine.parsing.json;
 
 import java.io.IOException;
@@ -10,7 +14,25 @@ import java.util.List;
 
 import engine.parsing.TokenReader;
 
+/**
+ * An array in a JSON file.
+ * 
+ * @author Benny Bobaganoosh (thebennybox@gmail.com)
+ */
 public class JSONArray extends JSONValue {
+	/**
+	 * Parses a value from a token source.
+	 * 
+	 * @param tokens
+	 *            The tokens to parse
+	 * @param token
+	 *            The current token of interest.
+	 * @return A JSONValue parsed from the tokens
+	 * @throws IOException
+	 *             If a token cannot be read
+	 * @throws ParseException
+	 *             If the tokens cannot be parsed into a JSONValue.
+	 */
 	public static JSONValue parse(TokenReader tokens, String token)
 			throws IOException, ParseException {
 		JSONArray result = new JSONArray();
@@ -33,136 +55,253 @@ public class JSONArray extends JSONValue {
 
 	private List<JSONValue> values;
 
+	/**
+	 * Creates a new JSONArray.
+	 */
 	public JSONArray() {
 		values = new ArrayList<JSONValue>();
 	}
-	
+
+	/**
+	 * Creates a new JSONArray from an existing array.
+	 * 
+	 * @param arr
+	 *            The array to create from.
+	 */
 	public JSONArray(JSONValue[] arr) {
 		this();
-		for(int i = 0; i < arr.length; i++) {
-			add(arr[i]);
-		}
-	}
-	
-	public JSONArray(Integer[] arr) {
-		this();
-		for(int i = 0; i < arr.length; i++) {
-			add(arr[i]);
-		}
-	}
-	
-	public JSONArray(Short[] arr) {
-		this();
-		for(int i = 0; i < arr.length; i++) {
-			add(arr[i]);
-		}
-	}
-	
-	public JSONArray(Long[] arr) {
-		this();
-		for(int i = 0; i < arr.length; i++) {
-			add(arr[i]);
-		}
-	}
-	
-	public JSONArray(Byte[] arr) {
-		this();
-		for(int i = 0; i < arr.length; i++) {
-			add(arr[i]);
-		}
-	}
-	
-	public JSONArray(Character[] arr) {
-		this();
-		for(int i = 0; i < arr.length; i++) {
-			add(arr[i]);
-		}
-	}
-	
-	public JSONArray(Float[] arr) {
-		this();
-		for(int i = 0; i < arr.length; i++) {
-			add(arr[i]);
-		}
-	}
-	
-	public JSONArray(Double[] arr) {
-		this();
-		for(int i = 0; i < arr.length; i++) {
-			add(arr[i]);
-		}
-	}
-	
-	public JSONArray(Boolean[] arr) {
-		this();
-		for(int i = 0; i < arr.length; i++) {
-			add(arr[i]);
-		}
-	}
-	
-	public JSONArray(int[] arr) {
-		this();
-		for(int i = 0; i < arr.length; i++) {
-			add(arr[i]);
-		}
-	}
-	
-	public JSONArray(long[] arr) {
-		this();
-		for(int i = 0; i < arr.length; i++) {
-			add(arr[i]);
-		}
-	}
-	
-	public JSONArray(short[] arr) {
-		this();
-		for(int i = 0; i < arr.length; i++) {
-			add(arr[i]);
-		}
-	}
-	
-	public JSONArray(byte[] arr) {
-		this();
-		for(int i = 0; i < arr.length; i++) {
-			add(arr[i]);
-		}
-	}
-	
-	public JSONArray(float[] arr) {
-		this();
-		for(int i = 0; i < arr.length; i++) {
-			add(arr[i]);
-		}
-	}
-	
-	public JSONArray(double[] arr) {
-		this();
-		for(int i = 0; i < arr.length; i++) {
-			add(arr[i]);
-		}
-	}
-	
-	public JSONArray(char[] arr) {
-		this();
-		for(int i = 0; i < arr.length; i++) {
-			add(arr[i]);
-		}
-	}
-	
-	public JSONArray(boolean[] arr) {
-		this();
-		for(int i = 0; i < arr.length; i++) {
-			add(arr[i]);
-		}
-	}
-	
-	public JSONArray(String[] arr) {
-		this();
-		for(int i = 0; i < arr.length; i++) {
+		for (int i = 0; i < arr.length; i++) {
 			add(arr[i]);
 		}
 	}
 
+	/**
+	 * Creates a new JSONArray from an existing array.
+	 * 
+	 * @param arr
+	 *            The array to create from.
+	 */
+	public JSONArray(Integer[] arr) {
+		this();
+		for (int i = 0; i < arr.length; i++) {
+			add(arr[i]);
+		}
+	}
+
+	/**
+	 * Creates a new JSONArray from an existing array.
+	 * 
+	 * @param arr
+	 *            The array to create from.
+	 */
+	public JSONArray(Short[] arr) {
+		this();
+		for (int i = 0; i < arr.length; i++) {
+			add(arr[i]);
+		}
+	}
+
+	/**
+	 * Creates a new JSONArray from an existing array.
+	 * 
+	 * @param arr
+	 *            The array to create from.
+	 */
+	public JSONArray(Long[] arr) {
+		this();
+		for (int i = 0; i < arr.length; i++) {
+			add(arr[i]);
+		}
+	}
+
+	/**
+	 * Creates a new JSONArray from an existing array.
+	 * 
+	 * @param arr
+	 *            The array to create from.
+	 */
+	public JSONArray(Byte[] arr) {
+		this();
+		for (int i = 0; i < arr.length; i++) {
+			add(arr[i]);
+		}
+	}
+
+	/**
+	 * Creates a new JSONArray from an existing array.
+	 * 
+	 * @param arr
+	 *            The array to create from.
+	 */
+	public JSONArray(Character[] arr) {
+		this();
+		for (int i = 0; i < arr.length; i++) {
+			add(arr[i]);
+		}
+	}
+
+	/**
+	 * Creates a new JSONArray from an existing array.
+	 * 
+	 * @param arr
+	 *            The array to create from.
+	 */
+	public JSONArray(Float[] arr) {
+		this();
+		for (int i = 0; i < arr.length; i++) {
+			add(arr[i]);
+		}
+	}
+
+	/**
+	 * Creates a new JSONArray from an existing array.
+	 * 
+	 * @param arr
+	 *            The array to create from.
+	 */
+	public JSONArray(Double[] arr) {
+		this();
+		for (int i = 0; i < arr.length; i++) {
+			add(arr[i]);
+		}
+	}
+
+	/**
+	 * Creates a new JSONArray from an existing array.
+	 * 
+	 * @param arr
+	 *            The array to create from.
+	 */
+	public JSONArray(Boolean[] arr) {
+		this();
+		for (int i = 0; i < arr.length; i++) {
+			add(arr[i]);
+		}
+	}
+
+	/**
+	 * Creates a new JSONArray from an existing array.
+	 * 
+	 * @param arr
+	 *            The array to create from.
+	 */
+	public JSONArray(int[] arr) {
+		this();
+		for (int i = 0; i < arr.length; i++) {
+			add(arr[i]);
+		}
+	}
+
+	/**
+	 * Creates a new JSONArray from an existing array.
+	 * 
+	 * @param arr
+	 *            The array to create from.
+	 */
+	public JSONArray(long[] arr) {
+		this();
+		for (int i = 0; i < arr.length; i++) {
+			add(arr[i]);
+		}
+	}
+
+	/**
+	 * Creates a new JSONArray from an existing array.
+	 * 
+	 * @param arr
+	 *            The array to create from.
+	 */
+	public JSONArray(short[] arr) {
+		this();
+		for (int i = 0; i < arr.length; i++) {
+			add(arr[i]);
+		}
+	}
+
+	/**
+	 * Creates a new JSONArray from an existing array.
+	 * 
+	 * @param arr
+	 *            The array to create from.
+	 */
+	public JSONArray(byte[] arr) {
+		this();
+		for (int i = 0; i < arr.length; i++) {
+			add(arr[i]);
+		}
+	}
+
+	/**
+	 * Creates a new JSONArray from an existing array.
+	 * 
+	 * @param arr
+	 *            The array to create from.
+	 */
+	public JSONArray(float[] arr) {
+		this();
+		for (int i = 0; i < arr.length; i++) {
+			add(arr[i]);
+		}
+	}
+
+	/**
+	 * Creates a new JSONArray from an existing array.
+	 * 
+	 * @param arr
+	 *            The array to create from.
+	 */
+	public JSONArray(double[] arr) {
+		this();
+		for (int i = 0; i < arr.length; i++) {
+			add(arr[i]);
+		}
+	}
+
+	/**
+	 * Creates a new JSONArray from an existing array.
+	 * 
+	 * @param arr
+	 *            The array to create from.
+	 */
+	public JSONArray(char[] arr) {
+		this();
+		for (int i = 0; i < arr.length; i++) {
+			add(arr[i]);
+		}
+	}
+
+	/**
+	 * Creates a new JSONArray from an existing array.
+	 * 
+	 * @param arr
+	 *            The array to create from.
+	 */
+	public JSONArray(boolean[] arr) {
+		this();
+		for (int i = 0; i < arr.length; i++) {
+			add(arr[i]);
+		}
+	}
+
+	/**
+	 * Creates a new JSONArray from an existing array.
+	 * 
+	 * @param arr
+	 *            The array to create from.
+	 */
+	public JSONArray(String[] arr) {
+		this();
+		for (int i = 0; i < arr.length; i++) {
+			add(arr[i]);
+		}
+	}
+
+	/**
+	 * Adds a new value to the array.
+	 * 
+	 * @param value
+	 *            The value to add.
+	 */
 	public void add(JSONValue value) {
 		if (value == null) {
 			value = JSONLiteral.NULL;
@@ -170,38 +309,92 @@ public class JSONArray extends JSONValue {
 		values.add(value);
 	}
 
+	/**
+	 * Adds a new value to the array.
+	 * 
+	 * @param val
+	 *            The value to add.
+	 */
 	public void add(int val) {
 		add(JSONValue.create(val));
 	}
 
+	/**
+	 * Adds a new value to the array.
+	 * 
+	 * @param val
+	 *            The value to add.
+	 */
 	public void add(long val) {
 		add(JSONValue.create(val));
 	}
 
+	/**
+	 * Adds a new value to the array.
+	 * 
+	 * @param val
+	 *            The value to add.
+	 */
 	public void add(byte val) {
 		add(JSONValue.create(val));
 	}
 
+	/**
+	 * Adds a new value to the array.
+	 * 
+	 * @param val
+	 *            The value to add.
+	 */
 	public void add(short val) {
 		add(JSONValue.create(val));
 	}
 
+	/**
+	 * Adds a new value to the array.
+	 * 
+	 * @param val
+	 *            The value to add.
+	 */
 	public void add(float val) {
 		add(JSONValue.create(val));
 	}
 
+	/**
+	 * Adds a new value to the array.
+	 * 
+	 * @param val
+	 *            The value to add.
+	 */
 	public void add(double val) {
 		add(JSONValue.create(val));
 	}
 
+	/**
+	 * Adds a new value to the array.
+	 * 
+	 * @param val
+	 *            The value to add.
+	 */
 	public void add(boolean val) {
 		add(JSONValue.create(val));
 	}
-	
+
+	/**
+	 * Adds a new value to the array.
+	 * 
+	 * @param val
+	 *            The value to add.
+	 */
 	public void add(char val) {
 		add(JSONValue.create(val));
 	}
 
+	/**
+	 * Adds a new value to the array.
+	 * 
+	 * @param val
+	 *            The value to add.
+	 */
 	public void add(String val) {
 		add(JSONValue.create(val));
 	}

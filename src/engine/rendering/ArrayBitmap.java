@@ -247,7 +247,7 @@ public class ArrayBitmap {
 	}
 
 	private void boundsCheck(int x, int y) {
-		Util.boundsCheck(x, 0, width - 1);
-		Util.boundsCheck(y, 0, height - 1);
+		Util.boundsAssert(x, 0, width - 1);
+		Util.boundsAssert(y, 0, height - 1);
 	}
 }

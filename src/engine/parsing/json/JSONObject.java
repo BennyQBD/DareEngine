@@ -1,3 +1,7 @@
+/** 
+ * Copyright (c) 2015, Benny Bobaganoosh. All rights reserved.
+ * License terms are in the included LICENSE.txt file.
+ */
 package engine.parsing.json;
 
 import java.io.IOException;
@@ -10,7 +14,25 @@ import java.util.Map;
 
 import engine.parsing.TokenReader;
 
+/**
+ * An Object in a JSON file.
+ * 
+ * @author Benny Bobaganoosh (thebennybox@gmail.com)
+ */
 public class JSONObject extends JSONValue {
+	/**
+	 * Parses a value from a token source.
+	 * 
+	 * @param tokens
+	 *            The tokens to parse
+	 * @param token
+	 *            The current token of interest.
+	 * @return A JSONValue parsed from the tokens
+	 * @throws IOException
+	 *             If a token cannot be read
+	 * @throws ParseException
+	 *             If the tokens cannot be parsed into a JSONValue.
+	 */
 	public static JSONValue parse(TokenReader tokens, String token)
 			throws IOException, ParseException {
 		JSONObject result = new JSONObject();
@@ -33,49 +55,130 @@ public class JSONObject extends JSONValue {
 		tokens.parseAssert(token.equals("}"), "Closing '}' expected!");
 		return result;
 	}
-	
+
 	private Map<String, JSONValue> map;
 
+	/** Creates a new JSONObject */
 	public JSONObject() {
 		map = new HashMap<String, JSONValue>();
 	}
-	
+
+	/**
+	 * Adds a new value to the JSONObject.
+	 * 
+	 * @param key
+	 *            The name for the value.
+	 * @param value
+	 *            The actual value.
+	 */
 	public void put(String key, int value) {
 		put(key, JSONValue.create(value));
 	}
-	
+
+	/**
+	 * Adds a new value to the JSONObject.
+	 * 
+	 * @param key
+	 *            The name for the value.
+	 * @param value
+	 *            The actual value.
+	 */
 	public void put(String key, byte value) {
 		put(key, JSONValue.create(value));
 	}
-	
+
+	/**
+	 * Adds a new value to the JSONObject.
+	 * 
+	 * @param key
+	 *            The name for the value.
+	 * @param value
+	 *            The actual value.
+	 */
 	public void put(String key, short value) {
 		put(key, JSONValue.create(value));
 	}
-	
+
+	/**
+	 * Adds a new value to the JSONObject.
+	 * 
+	 * @param key
+	 *            The name for the value.
+	 * @param value
+	 *            The actual value.
+	 */
 	public void put(String key, long value) {
 		put(key, JSONValue.create(value));
 	}
-	
+
+	/**
+	 * Adds a new value to the JSONObject.
+	 * 
+	 * @param key
+	 *            The name for the value.
+	 * @param value
+	 *            The actual value.
+	 */
 	public void put(String key, float value) {
 		put(key, JSONValue.create(value));
 	}
-	
+
+	/**
+	 * Adds a new value to the JSONObject.
+	 * 
+	 * @param key
+	 *            The name for the value.
+	 * @param value
+	 *            The actual value.
+	 */
 	public void put(String key, double value) {
 		put(key, JSONValue.create(value));
 	}
-	
+
+	/**
+	 * Adds a new value to the JSONObject.
+	 * 
+	 * @param key
+	 *            The name for the value.
+	 * @param value
+	 *            The actual value.
+	 */
 	public void put(String key, boolean value) {
 		put(key, JSONValue.create(value));
 	}
-	
+
+	/**
+	 * Adds a new value to the JSONObject.
+	 * 
+	 * @param key
+	 *            The name for the value.
+	 * @param value
+	 *            The actual value.
+	 */
 	public void put(String key, char value) {
 		put(key, JSONValue.create(value));
 	}
-	
+
+	/**
+	 * Adds a new value to the JSONObject.
+	 * 
+	 * @param key
+	 *            The name for the value.
+	 * @param value
+	 *            The actual value.
+	 */
 	public void put(String key, String value) {
 		put(key, JSONValue.create(value));
 	}
 
+	/**
+	 * Adds a new value to the JSONObject.
+	 * 
+	 * @param key
+	 *            The name for the value.
+	 * @param value
+	 *            The actual value.
+	 */
 	public void put(String key, JSONValue value) {
 		if (key == null) {
 			throw new NullPointerException("Key cannot be null");
@@ -130,38 +233,38 @@ public class JSONObject extends JSONValue {
 	public void write(Writer writer) throws IOException {
 		write(writer, 1);
 	}
-	
+
 	private void writeNewLine(Writer writer, int tabLevel) throws IOException {
 		writer.write('\n');
-		for(int i = 0; i < tabLevel; i++) {
+		for (int i = 0; i < tabLevel; i++) {
 			writer.write('\t');
 		}
 	}
-	
+
 	private void write(Writer writer, int tabLevel) throws IOException {
 		writer.write('{');
 		writeNewLine(writer, tabLevel);
-		
+
 		Iterator<Map.Entry<String, JSONValue>> it = map.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry<String, JSONValue> current = it.next();
 			new JSONString(current.getKey()).write(writer);
 			writer.write(':');
 			writer.write(' ');
-			
+
 			JSONValue value = current.getValue();
-			if(value.isObject()) {
-				((JSONObject)value).write(writer, tabLevel+1);
+			if (value.isObject()) {
+				((JSONObject) value).write(writer, tabLevel + 1);
 			} else {
 				value.write(writer);
 			}
-			
+
 			if (it.hasNext()) {
 				writer.write(", ");
 				writeNewLine(writer, tabLevel);
 			}
 		}
-		writeNewLine(writer, tabLevel-1);
+		writeNewLine(writer, tabLevel - 1);
 		writer.write('}');
 	}
 }

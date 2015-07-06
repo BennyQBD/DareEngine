@@ -29,6 +29,7 @@ import engine.rendering.SpriteSheet;
 import engine.rendering.opengl.OpenGLDisplay;
 import engine.space.AABB;
 import engine.space.QuadTree;
+import engine.util.Debug;
 import engine.util.factory.SpriteSheetFactory;
 import engine.util.factory.TextureFactory;
 
@@ -119,6 +120,7 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws IOException, ParseException {
+		Debug.init(true, true);
 		IDisplay display = new OpenGLDisplay(640, 480, "My Display");
 		CoreEngine engine = new CoreEngine(display, new TestScene(
 				display.getInput(), display.getRenderDevice(),

@@ -125,7 +125,7 @@ public class SpriteSheet {
 	 *         texture.
 	 */
 	public int getStartX(int index) {
-		Util.boundsCheck(index, 0, getNumSprites() - 1);
+		Util.boundsAssert(index, 0, getNumSprites() - 1);
 		return (index % spritesPerX) * borderedSpriteWidth + spriteBorderSize;
 	}
 
@@ -139,7 +139,7 @@ public class SpriteSheet {
 	 *         texture.
 	 */
 	public int getStartY(int index) {
-		Util.boundsCheck(index, 0, getNumSprites() - 1);
+		Util.boundsAssert(index, 0, getNumSprites() - 1);
 		return ((index / spritesPerX) % spritesPerY) * borderedSpriteHeight
 				+ spriteBorderSize;
 	}
