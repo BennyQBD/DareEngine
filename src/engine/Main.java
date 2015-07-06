@@ -11,8 +11,15 @@ import engine.components.SpriteComponent;
 import engine.core.CoreEngine;
 import engine.core.Scene;
 import engine.core.entity.Entity;
-import engine.input.Axis;
+import engine.input.ButtonAxis;
+import engine.input.CompoundAxis;
+import engine.input.CompoundButton;
+import engine.input.IAxis;
+import engine.input.IButton;
 import engine.input.IInput;
+import engine.input.JoystickAxis;
+import engine.input.JoystickButton;
+import engine.input.KeyButton;
 import engine.rendering.Color;
 import engine.rendering.IDisplay;
 import engine.rendering.IRenderContext;
@@ -30,8 +37,8 @@ public class Main {
 		SpriteSheet font;
 		Entity e2;
 
-		Axis movementX;
-		Axis movementY;
+		IAxis movementX;
+		IAxis movementY;
 
 		public TestScene(IInput input, IRenderDevice device,
 				IAudioDevice audioDevice) throws IOException {
@@ -50,29 +57,51 @@ public class Main {
 			LightMap light = new LightMap(device, 32, Color.WHITE);
 			new LightComponent(e, light, 2.0, 2.0, 0.0, 0.0);
 
-			e2 = new Entity(getStructure(), -1.25, 0, 0);
+			e2 = new Entity(getStructure(), -1.0, 0, 0);
 			new ColliderComponent(e2);
 			new CollisionComponent(e2);
 			new SpriteComponent(e2, 0.5, 0.5, sprites.get("bricks.jpg", 1, 1,
 					0, IRenderDevice.FILTER_LINEAR), 0, Color.WHITE);
 			new LightComponent(e2, light, 1.0, 1.0, 0.0, 0.0);
 
-			movementX = new Axis(input, new int[] { IInput.KEY_A,
-					IInput.KEY_LEFT }, new int[] { IInput.KEY_D,
-					IInput.KEY_RIGHT }, null, null, 0.0, 0.0, 0, new int[] { 7 },
-					new int[] { 5 }, new int[] { 0 });
-			movementY = new Axis(input, new int[] { IInput.KEY_W,
-					IInput.KEY_UP }, new int[] { IInput.KEY_S,
-					IInput.KEY_DOWN }, null, null, 0.0, 0.0, 0, new int[] { 4 },
-					new int[] { 6 }, new int[] { 1 });
+			IButton leftKeyButtons = new KeyButton(input, new int[] {
+					IInput.KEY_A, IInput.KEY_LEFT });
+			IButton rightKeyButtons = new KeyButton(input, new int[] {
+					IInput.KEY_D, IInput.KEY_RIGHT });
+			IButton upKeyButtons = new KeyButton(input, new int[] {
+					IInput.KEY_W, IInput.KEY_UP });
+			IButton downKeyButtons = new KeyButton(input, new int[] {
+					IInput.KEY_S, IInput.KEY_DOWN });
+
+			IButton leftJoyButtons = new JoystickButton(input, 0, 7);
+			IButton rightJoyButtons = new JoystickButton(input, 0, 5);
+			IButton upJoyButtons = new JoystickButton(input, 0, 4);
+			IButton downJoyButtons = new JoystickButton(input, 0, 6);
+
+			IButton leftButtons = new CompoundButton(leftKeyButtons,
+					leftJoyButtons);
+			IButton rightButtons = new CompoundButton(rightKeyButtons,
+					rightJoyButtons);
+			IButton upButtons = new CompoundButton(upKeyButtons, upJoyButtons);
+			IButton downButtons = new CompoundButton(downKeyButtons,
+					downJoyButtons);
+			
+			IAxis buttonX = new ButtonAxis(leftButtons, rightButtons);
+			IAxis buttonY = new ButtonAxis(upButtons, downButtons);
+			
+			IAxis joystickX = new JoystickAxis(input, 0, 0);
+			IAxis joystickY = new JoystickAxis(input, 0, 1);
+
+			movementX = new CompoundAxis(buttonX, joystickX);
+			movementY = new CompoundAxis(buttonY, joystickY);
 		}
 
 		@Override
 		public boolean update(double delta) {
 			super.updateRange(delta, new AABB(-2, -2, 2, 2));
 			double speed = delta;
-			e2.move((float)(movementX.getAmount() * speed), 0);
-			e2.move(0, (float)(-movementY.getAmount() * speed));
+			e2.move((float) (movementX.getAmount() * speed), 0);
+			e2.move(0, (float) (-movementY.getAmount() * speed));
 			return false;
 		}
 
