@@ -1,13 +1,37 @@
+/** 
+ * Copyright (c) 2015, Benny Bobaganoosh. All rights reserved.
+ * License terms are in the included LICENSE.txt file.
+ */
 package engine.components;
 
 import engine.core.entity.Entity;
 
+/**
+ * A RemoveComponent that fades out until the entity disappears.
+ * 
+ * @author Benny Bobaganoosh (thebennybox@gmail.com)
+ */
 public class FadeRemove extends RemoveComponent {
 	private double timer;
 	private double duration;
 	private int animationFrame;
 	private double solidityDuration;
 
+	/**
+	 * Creates a new FadeRemove
+	 * 
+	 * @param entity
+	 *            The entity this component is attached to.
+	 * @param duration
+	 *            How long the fade out takes.
+	 * @param animationFrame
+	 *            If the entity has a sprite component, which animation frame
+	 *            should be jumped to before the fadeout sequence. If no jump is
+	 *            desired, specify -1.
+	 * @param solidityDuration
+	 *            How long the entity continues colliding with other objects
+	 *            before the collision component is remove.
+	 */
 	public FadeRemove(Entity entity, double duration, int animationFrame,
 			double solidityDuration) {
 		super(entity);
@@ -45,7 +69,7 @@ public class FadeRemove extends RemoveComponent {
 
 		LightComponent l = (LightComponent) getEntity().getComponent(
 				LightComponent.ID);
-		if(l != null) {
+		if (l != null) {
 			l.setIntensity(amt);
 		}
 	}

@@ -74,7 +74,7 @@ public class Sound {
 	}
 
 	/**
-	 * Stops playing this sound, but leaves it's position alone. When the object
+	 * Stops playing this sound, but leaves its position alone. When the object
 	 * is played again, it should start where it left off.
 	 */
 	public void pause() {

@@ -1,3 +1,7 @@
+/** 
+ * Copyright (c) 2015, Benny Bobaganoosh. All rights reserved.
+ * License terms are in the included LICENSE.txt file.
+ */
 package engine.components;
 
 import engine.core.entity.Entity;
@@ -8,6 +12,11 @@ import engine.rendering.SpriteSheet;
 import engine.space.AABB;
 import engine.util.IDAssigner;
 
+/**
+ * Draws a sprite where this entity is.
+ * 
+ * @author Benny Bobaganoosh (thebennybox@gmail.com)
+ */
 public class SpriteComponent extends EntityComponent {
 	private class Animation {
 		private SpriteSheet[] sheets;
@@ -62,14 +71,50 @@ public class SpriteComponent extends EntityComponent {
 	private boolean flipY;
 	private Color color;
 
-	public SpriteComponent(Entity entity, double width, double height, SpriteSheet sheet, int spriteIndex,
-			Color color) {
-		this(entity, width, height, new SpriteSheet[] { sheet }, new int[] { spriteIndex },
-				0.0, color);
+	/**
+	 * Creates a new SpriteComponent
+	 * 
+	 * @param entity
+	 *            The entity this component is attached to.
+	 * @param width
+	 *            How wide of an area the sprite consumes, normalized such that
+	 *            the screen width is 2.
+	 * @param height
+	 *            How tall of an area the sprite consumes, normalized such that
+	 *            the screen height is 2.
+	 * @param sheet
+	 *            The sheet containing this sprite.
+	 * @param spriteIndex
+	 *            The index of this sprite in the sheet.
+	 * @param color
+	 *            The color applied to the sprite.
+	 */
+	public SpriteComponent(Entity entity, double width, double height,
+			SpriteSheet sheet, int spriteIndex, Color color) {
+		this(entity, width, height, new SpriteSheet[] { sheet },
+				new int[] { spriteIndex }, 0.0, color);
 	}
 
-	public SpriteComponent(Entity entity, double width, double height, SpriteSheet sheet, double frameTime,
-			Color color) {
+	/**
+	 * Creates a new SpriteComponent
+	 * 
+	 * @param entity
+	 *            The entity this component is attached to.
+	 * @param width
+	 *            How wide of an area the sprite consumes, normalized such that
+	 *            the screen width is 2.
+	 * @param height
+	 *            How tall of an area the sprite consumes, normalized such that
+	 *            the screen height is 2.
+	 * @param sheet
+	 *            The sheet containing the sprites for the animation.
+	 * @param frameTime
+	 *            How long each sprite in the sheet is displayed.
+	 * @param color
+	 *            The color applied to each sprite.
+	 */
+	public SpriteComponent(Entity entity, double width, double height,
+			SpriteSheet sheet, double frameTime, Color color) {
 		super(entity, ID);
 		SpriteSheet[] sheets = new SpriteSheet[sheet.getNumSprites()];
 		int[] indices = new int[sheets.length];
@@ -80,8 +125,28 @@ public class SpriteComponent extends EntityComponent {
 		init(entity, width, height, sheets, indices, frameTime, color);
 	}
 
-	public SpriteComponent(Entity entity, double width, double height, SpriteSheet sheet, int[] indices,
-			double frameTime, Color color) {
+	/**
+	 * Creates a new SpriteComponent
+	 * 
+	 * @param entity
+	 *            The entity this component is attached to.
+	 * @param width
+	 *            How wide of an area the sprite consumes, normalized such that
+	 *            the screen width is 2.
+	 * @param height
+	 *            How tall of an area the sprite consumes, normalized such that
+	 *            the screen height is 2.
+	 * @param sheet
+	 *            The sheet containing the sprites for the animation.
+	 * @param indices
+	 *            The index of each sprite in the animation, in order.
+	 * @param frameTime
+	 *            How long each sprite in the sheet is displayed.
+	 * @param color
+	 *            The color applied to each sprite.
+	 */
+	public SpriteComponent(Entity entity, double width, double height,
+			SpriteSheet sheet, int[] indices, double frameTime, Color color) {
 		super(entity, ID);
 		SpriteSheet[] sheets = new SpriteSheet[indices.length];
 		for (int i = 0; i < sheets.length; i++) {
@@ -90,20 +155,64 @@ public class SpriteComponent extends EntityComponent {
 		init(entity, width, height, sheets, indices, frameTime, color);
 	}
 
-	public SpriteComponent(Entity entity, double width, double height, SpriteSheet[] sheets, int[] indices,
-			double frameTime, Color color) {
+	/**
+	 * Creates a new SpriteComponent
+	 * 
+	 * @param entity
+	 *            The entity this component is attached to.
+	 * @param width
+	 *            How wide of an area the sprite consumes, normalized such that
+	 *            the screen width is 2.
+	 * @param height
+	 *            How tall of an area the sprite consumes, normalized such that
+	 *            the screen height is 2.
+	 * @param sheets
+	 *            The sheets containing the sprites for the animation.
+	 * @param indices
+	 *            The index of each sprite in the animation, in order.
+	 * @param frameTime
+	 *            How long each sprite in the sheet is displayed.
+	 * @param color
+	 *            The color applied to each sprite.
+	 */
+	public SpriteComponent(Entity entity, double width, double height,
+			SpriteSheet[] sheets, int[] indices, double frameTime, Color color) {
 		super(entity, ID);
 		init(entity, width, height, sheets, indices, frameTime, color);
 	}
 
-	public SpriteComponent(Entity entity, double width, double height, SpriteSheet[] sheets, int[] indices,
-			double[] frameTimes, int[] nextFrames, Color color) {
+	/**
+	 * Creates a new SpriteComponent
+	 * 
+	 * @param entity
+	 *            The entity this component is attached to.
+	 * @param width
+	 *            How wide of an area the sprite consumes, normalized such that
+	 *            the screen width is 2.
+	 * @param height
+	 *            How tall of an area the sprite consumes, normalized such that
+	 *            the screen height is 2.
+	 * @param sheets
+	 *            The sheets containing the sprites for the animation.
+	 * @param indices
+	 *            The index of each sprite in the animation, in order.
+	 * @param frameTimes
+	 *            How long each frame of animation is displayed for
+	 * @param nextFrames
+	 *            Which animation frame is displayed after which.
+	 * @param color
+	 *            The color applied to each sprite.
+	 */
+	public SpriteComponent(Entity entity, double width, double height,
+			SpriteSheet[] sheets, int[] indices, double[] frameTimes,
+			int[] nextFrames, Color color) {
 		super(entity, ID);
-		init(entity, width, height, sheets, indices, frameTimes, nextFrames, color);
+		init(entity, width, height, sheets, indices, frameTimes, nextFrames,
+				color);
 	}
 
-	private void init(Entity entity, double width, double height, SpriteSheet[] sheets, int[] indices,
-			double frameTime, Color color) {
+	private void init(Entity entity, double width, double height,
+			SpriteSheet[] sheets, int[] indices, double frameTime, Color color) {
 		double frameTimes[] = new double[sheets.length];
 		int nextFrames[] = new int[sheets.length];
 
@@ -112,14 +221,16 @@ public class SpriteComponent extends EntityComponent {
 			nextFrames[i] = i + 1;
 		}
 		nextFrames[sheets.length - 1] = 0;
-		init(entity, width, height, sheets, indices, frameTimes, nextFrames, color);
+		init(entity, width, height, sheets, indices, frameTimes, nextFrames,
+				color);
 	}
 
-	private void init(Entity entity, double width, double height, SpriteSheet[] sheets, int[] indices,
-			double[] frameTimes, int[] nextFrames, Color color) {
+	private void init(Entity entity, double width, double height,
+			SpriteSheet[] sheets, int[] indices, double[] frameTimes,
+			int[] nextFrames, Color color) {
 		this.animation = new Animation(sheets, indices, frameTimes, nextFrames);
-		this.halfWidth = width/2.0;
-		this.halfHeight = height/2.0;
+		this.halfWidth = width / 2.0;
+		this.halfHeight = height / 2.0;
 
 		AABB spriteAABB = animation.getSheet().getAABB(
 				animation.getSpriteIndex(), width, height);
@@ -165,22 +276,51 @@ public class SpriteComponent extends EntityComponent {
 		}
 	}
 
+	/**
+	 * Sets whether the sprites is flipped on X
+	 * 
+	 * @param flipX
+	 *            Whether the sprites are flipped on X
+	 */
 	public void setFlipX(boolean flipX) {
 		this.flipX = flipX;
 	}
 
+	/**
+	 * Sets whether the sprites is flipped on Y
+	 * 
+	 * @param flipY
+	 *            Whether the sprites are flipped on Y
+	 */
 	public void setFlipY(boolean flipY) {
 		this.flipY = flipY;
 	}
 
+	/**
+	 * Gets how transparent this sprite is.
+	 * 
+	 * @return The transparency of this sprite.
+	 */
 	public double getTransparency() {
 		return transparency;
 	}
 
+	/**
+	 * Sets the transparency of this sprite.
+	 * 
+	 * @param transparency
+	 *            The new transparency of this sprite.
+	 */
 	public void setTransparency(double transparency) {
 		this.transparency = transparency;
 	}
 
+	/**
+	 * Sets which frame of animation this is currently on.
+	 * 
+	 * @param frame
+	 *            The new current frame of animation.
+	 */
 	public void setFrame(int frame) {
 		animation.setFrame(frame);
 	}

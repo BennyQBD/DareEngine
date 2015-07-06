@@ -1,3 +1,7 @@
+/** 
+ * Copyright (c) 2015, Benny Bobaganoosh. All rights reserved.
+ * License terms are in the included LICENSE.txt file.
+ */
 package engine.components;
 
 import engine.core.entity.Entity;
@@ -8,6 +12,11 @@ import engine.rendering.LightMap;
 import engine.space.AABB;
 import engine.util.IDAssigner;
 
+/**
+ * Casts a dynamic light on the entity and nearby entities.
+ * 
+ * @author Benny Bobaganoosh (thebennybox@gmail.com)
+ */
 public class LightComponent extends EntityComponent {
 	public static final int ID = IDAssigner.getId();
 	private LightMap light;
@@ -17,6 +26,24 @@ public class LightComponent extends EntityComponent {
 	private double halfWidth;
 	private double halfHeight;
 
+	/**
+	 * Creates a new LightComponent
+	 * 
+	 * @param entity
+	 *            The entity this component is attached to.
+	 * @param light
+	 *            The light to be cast.
+	 * @param width
+	 *            How wide of an area the light is cast over, normalized into the range (-1, 1)
+	 * @param height
+	 *            How tall of an area the light is cast over, normalized into the range (-1, 1)
+	 * @param offsetX
+	 *            How much the light is offset from the center of the entity on
+	 *            X.
+	 * @param offsetY
+	 *            How much the light is offset from the center of the entity on
+	 *            Y.
+	 */
 	public LightComponent(Entity entity, LightMap light, double width,
 			double height, double offsetX, double offsetY) {
 		super(entity, ID);
@@ -37,6 +64,12 @@ public class LightComponent extends EntityComponent {
 				centerX + halfWidth, centerY + halfHeight, 0, 0, 1, 1, color);
 	}
 
+	/**
+	 * Sets the intensity of the light
+	 * 
+	 * @param amt
+	 *            How intense the light is, where 0.0 is none and 1.0 is full.
+	 */
 	public void setIntensity(double amt) {
 		this.color = new Color(amt, amt, amt);
 	}
