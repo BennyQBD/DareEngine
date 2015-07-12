@@ -22,4 +22,4 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 main:
-	javac -d bin -sourcepath src src/engine/Main.java
+	javac -cp lib/lwjgl.jar:. -d bin -sourcepath src src/engine/Main.java

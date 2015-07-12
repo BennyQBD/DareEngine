@@ -1,7 +1,7 @@
 mv res bin/res
 cd bin
 
-java engine/Main
+java -cp ../lib/lwjgl.jar:. -Djava.library.path="../lib/native" engine/Main
 
 mv res ../res
 cd ../
